@@ -1,5 +1,8 @@
 name: SuperApiX
-main: org.valdi.SuperApiX.SuperApi
+main: org.valdi.SuperApiX.bukkit.BukkitBootstrap
 version: ${version}
 description: Api for anything
 author: Valdi_1111
+load: startup
+commands:
+    prova:
