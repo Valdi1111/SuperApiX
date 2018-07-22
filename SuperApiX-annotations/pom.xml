@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  	<modelVersion>4.0.0</modelVersion>
+
+  	<groupId>org.valdi</groupId>
+  	<artifactId>SuperApiX-annotations</artifactId>
+  	<version>1.0.1-BETA</version>
+  	<packaging>jar</packaging>
+
+  	<name>SuperApiX-annotations</name>
+  	<url>http://maven.apache.org</url>
+
+  	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  	</properties>
+
+  	<dependencies>
+    	<dependency>
+	      	<groupId>junit</groupId>
+	      	<artifactId>junit</artifactId>
+	      	<version>3.8.1</version>
+	      	<scope>test</scope>
+    	</dependency>
+	   
+	   	<!--Bukkit API-->
+	   	<dependency>
+	     	<groupId>org.bukkit</groupId>
+	     	<artifactId>bukkit</artifactId>
+	     	<version>1.12-R0.1-SNAPSHOT</version>
+		  	<scope>provided</scope>
+	   	</dependency>
+	   
+	   	<!--BungeeCord API-->
+	   	<dependency>
+	     	<groupId>net.md-5</groupId>
+	     	<artifactId>bungeecord-api</artifactId>
+	     	<version>1.12-SNAPSHOT</version>
+	     	<type>jar</type>
+		  	<scope>provided</scope>
+	   	</dependency>
+
+        <!-- Nukkit -->
+        <dependency>
+            <groupId>cn.nukkit</groupId>
+            <artifactId>nukkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+		  	<scope>provided</scope>
+        </dependency>
+  	</dependencies>
+	
+	<repositories>
+	    <!--Spigot Repository-->
+	    <repository>
+	      	<id>spigot-repo</id>
+	      	<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+	    </repository>
+	    
+	    <!--BungeeCord Repository-->
+	    <repository>
+	      	<id>bungeecord-repo</id>
+	      	<url>https://repo.md-5.net/content/groups/public/</url>
+	    </repository>
+	    
+	    <!--Nukkit Repository-->
+        <repository>
+            <id>nukkit-repo</id>
+            <url>https://repo.potestas.xyz/main/</url>
+        </repository>
+	</repositories>
+
+    <!-- required until fixed plexus-compiler-eclipse is deployed -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spigotmc-public</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+  
+  	<build>
+		<finalName>${project.artifactId} v${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources/META-INF</directory>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!-- versions after this appear to be broken -->
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <!-- we use the Eclipse compiler as it doesn't need a JDK -->
+                    <compilerId>eclipse</compilerId>
+                    <!-- source and target are ignored if this isn't true -->
+                    <optimize>true</optimize>
+                </configuration>
+                <dependencies>
+                    <!-- we need our custom version as it fixes some bugs on case sensitive file systems -->
+                    <dependency>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-compiler-eclipse</artifactId>
+                        <version>2.5.0-spigotmc</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.16</version>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java18</artifactId>
+                        <version>1.0</version>
+                    </signature>
+                </configuration>
+            </plugin>
+        </plugins>
+  	</build> 
+</project>
