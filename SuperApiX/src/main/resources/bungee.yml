@@ -1,4 +1,0 @@
-name: SuperApiX
-main: org.valdi.SuperApiX.bungee.BungeeBootstrap
-version: ${project.version}
-author: Valdi_1111

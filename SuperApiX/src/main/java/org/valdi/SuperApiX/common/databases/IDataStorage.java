@@ -124,7 +124,12 @@ public interface IDataStorage {
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
 				try {
-					callback.onStatementDone(statement.execute());
+					if(callback != null)
+						callback.onStatementDone(statement.execute());
+					else
+						statement.execute();
+					
+					statement.close();
 				} catch (SQLException e) {
 					throw new DataManipulationException(e);
 				}
@@ -150,7 +155,12 @@ public interface IDataStorage {
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
 				try {
-					callback.onQueryDone(statement.executeQuery());
+					if(callback != null)
+						callback.onQueryDone(statement.executeQuery());
+					else
+						statement.executeQuery();
+					
+					statement.close();
 				} catch (SQLException e) {
 					throw new DataManipulationException(e);
 				}
@@ -178,7 +188,12 @@ public interface IDataStorage {
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
 				try {
-					callback.onUpdateDone(statement.executeUpdate());
+					if(callback != null)
+						callback.onUpdateDone(statement.executeUpdate());
+					else
+						statement.executeUpdate();
+					
+					statement.close();
 				} catch (SQLException e) {
 					throw new DataManipulationException(e);
 				}

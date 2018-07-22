@@ -58,7 +58,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	public void create() {	
 	    if (!configFile.exists()) {
 			try {
-	    		configFile.mkdirs();
+    	    	configFile.getParentFile().mkdirs();
 				configFile.createNewFile();
 			} catch (IOException e) {
 				plugin.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
@@ -136,6 +136,11 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	}
 
 	@Override
+	public float getFloat(String path, float def) {
+		return getFixedNode(path).getFloat();
+	}
+
+	@Override
 	public double getDouble(String path, double def) {
 		return getFixedNode(path).getDouble();
 	}
@@ -153,6 +158,36 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         }
 
         return node.getList(Object::toString);
+	}
+
+	@Override
+	public void setString(String path, String value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setInt(String path, int value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setFloat(String path, float value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setDouble(String path, double value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setBoolean(String path, boolean value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setStringList(String path, List<String> value) {
+        getFixedNode(path).setValue(value);
 	}
 
 	@Override

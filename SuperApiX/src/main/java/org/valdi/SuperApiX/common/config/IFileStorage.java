@@ -33,11 +33,25 @@ public interface IFileStorage {
 
 	public int getInt(String path, int def);
 
+	public float getFloat(String path, float def);
+
 	public double getDouble(String path, double def);
 
 	public boolean getBoolean(String path, boolean def);
 
 	public List<String> getStringList(String path, List<String> def);
+
+	public void setString(String path, String value);
+
+	public void setInt(String path, int value);
+
+	public void setFloat(String path, float value);
+
+	public void setDouble(String path, double value);
+
+	public void setBoolean(String path, boolean value);
+
+	public void setStringList(String path, List<String> value);
 
 	public List<String> getKeys(String path, List<String> def);
 

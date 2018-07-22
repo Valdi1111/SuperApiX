@@ -9,7 +9,11 @@ import java.util.stream.Stream;
 
 import org.valdi.SuperApiX.ISuperBootstrap;
 import org.valdi.SuperApiX.PlatformType;
+import org.valdi.SuperApiX.bukkit.PluginDetails;
 import org.valdi.SuperApiX.bungee.utils.RedisBungeeUtil;
+import org.valdi.SuperApiX.common.annotation.plugin.Description;
+import org.valdi.SuperApiX.common.annotation.plugin.BungeePlugin;
+import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
 import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
 import org.valdi.SuperApiX.common.logging.JavaPluginLogger;
@@ -18,9 +22,11 @@ import org.valdi.SuperApiX.common.scheduler.BungeeSchedulerAdapter;
 import org.valdi.SuperApiX.common.scheduler.SchedulerAdapter;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
 
-public class BungeeBootstrap extends Plugin implements ISuperBootstrap {
+@BungeePlugin(name = PluginDetails.NAME, version = PluginDetails.VERSION)
+@Description(PluginDetails.DESCRIPTION)
+@Author(PluginDetails.AUTHOR)
+public class BungeeBootstrap extends net.md_5.bungee.api.plugin.Plugin implements ISuperBootstrap {
 
     /**
      * The plugin logger

@@ -1,0 +1,3 @@
+org.valdi.SuperApiX.common.annotation.BukkitAnnotationProcessor
+org.valdi.SuperApiX.common.annotation.BungeeAnnotationProcessor
+org.valdi.SuperApiX.common.annotation.NukkitAnnotationProcessor

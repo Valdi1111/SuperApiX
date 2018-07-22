@@ -24,7 +24,7 @@ public interface ISuperBootstrap {
      * @return the logger
      */
 	public PluginLogger getPluginLogger();
-
+	
     /**
      * Gets an adapter for the platforms scheduler
      *
