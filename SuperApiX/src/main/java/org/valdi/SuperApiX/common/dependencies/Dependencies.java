@@ -138,7 +138,7 @@ public class Dependencies {
             "h2",
             "1.4.197",
             "N/UhbhSvJ3KTDf+bhzQ1PwqA6Juj8z4GVEHeZTfF6EI=",
-            false
+            true
             // we don't apply relocations to h2 - it gets loaded via
             // an isolated classloader
     );

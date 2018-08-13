@@ -2,7 +2,6 @@ package org.valdi.SuperApiX.bukkit;
 
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -15,6 +14,8 @@ import org.valdi.SuperApiX.AbstractPlugin;
 import org.valdi.SuperApiX.ISuperPlugin;
 import org.valdi.SuperApiX.bukkit.bossbar.BossBarManager;
 import org.valdi.SuperApiX.bukkit.bossbar.IBossBarProvider;
+import org.valdi.SuperApiX.bukkit.config.serializers.LocationSerializer;
+import org.valdi.SuperApiX.bukkit.config.serializers.VectorSerializer;
 import org.valdi.SuperApiX.bukkit.nms.core.NmsProvider;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionManager;
 import org.valdi.SuperApiX.common.config.ConfigType;
@@ -46,7 +47,7 @@ public class SuperApiBukkit extends AbstractPlugin implements ISuperPlugin {
     
     public SuperApiBukkit(BukkitBootstrap bootstrap) {
         this.bootstrap = bootstrap;
-    } 
+    }
 	
 	@Override
 	public void load() {
@@ -66,7 +67,10 @@ public class SuperApiBukkit extends AbstractPlugin implements ISuperPlugin {
         });
         this.dependencyManager.loadStorageDependencies(EnumSet.of(ConfigType.YAML, ConfigType.HOCON, ConfigType.JSON, ConfigType.TOML), 
         		EnumSet.of(StorageType.SQLITE, StorageType.H2, StorageType.MYSQL, StorageType.POSTGRESQL, StorageType.MARIADB, StorageType.MONGODB));
-		
+
+    	new VectorSerializer().register();
+    	new LocationSerializer().register();
+        
 		provider = new ServiceProviderManager(this);		
         executorService = Executors.newScheduledThreadPool(100);
 		version = new VersionManager(this);

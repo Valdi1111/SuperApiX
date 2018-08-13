@@ -118,7 +118,7 @@ public interface IDataStorage {
 	 * @param handler
 	 * @param callback
 	 */
-	public default void executeStatement(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackStatement callback) {
+	public default void executeStatement(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackStatement callback, boolean async) {
 		SafeStatementRunnable safeStatement = new SafeStatementRunnable(SuperApiBukkit.getInstance(), explenation, handler) {
 
 			@Override
@@ -137,7 +137,11 @@ public interface IDataStorage {
 			
 		};
 
-		SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		if(async) {
+			SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		} else {
+			safeStatement.run();
+		}
 	}
 	
 	/**
@@ -149,7 +153,7 @@ public interface IDataStorage {
 	 * @param handler
 	 * @param callback
 	 */
-	public default void executeQuery(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackQuery callback) {
+	public default void executeQuery(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackQuery callback, boolean async) {
 		SafeStatementRunnable safeStatement = new SafeStatementRunnable(SuperApiBukkit.getInstance(), explenation, handler) {
 
 			@Override
@@ -168,7 +172,11 @@ public interface IDataStorage {
 			
 		};
 
-		SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		if(async) {
+			SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		} else {
+			safeStatement.run();
+		}
 	}
 	
 	/**
@@ -182,7 +190,7 @@ public interface IDataStorage {
 	 * @param handler
 	 * @param callback
 	 */
-	public default void executeUpdate(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackUpdate callback) {
+	public default void executeUpdate(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackUpdate callback, boolean async) {
 		SafeStatementRunnable safeStatement = new SafeStatementRunnable(SuperApiBukkit.getInstance(), explenation, handler) {
 
 			@Override
@@ -201,7 +209,11 @@ public interface IDataStorage {
 			
 		};
 
-		SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		if(async) {
+			SuperApiBukkit.getInstance().getBootstrap().getScheduler().executeAsync(safeStatement);
+		} else {
+			safeStatement.run();
+		}
 	}
 
 	public StorageType getType();

@@ -13,8 +13,11 @@ import java.util.stream.Collectors;
 import org.valdi.SuperApiX.ISuperPlugin;
 import org.valdi.SuperApiX.common.config.IFileStorage;
 
+import com.google.common.reflect.TypeToken;
+
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public abstract class AbstractConfigAdapter implements IFileStorage {
     private final ISuperPlugin plugin;
@@ -113,11 +116,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
     public ConfigurationNode getNode(Object[] objects) {
-        if (this.root == null) {
-            throw new RuntimeException("Config is not loaded.");
-        }
-        
-        return this.root.getNode(objects);
+        return this.getRoot().getNode(objects);
 	}
 
 	@Override
@@ -126,8 +125,46 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
     }
 
 	@Override
+	public Object get(String path) {
+        return getFixedNode(path).getValue();
+	}
+
+	@Override
+	public Object get(String path, Object def) {
+        return getFixedNode(path).getValue(def);
+	}
+
+	@Override
+	public <T> T get(String path, TypeToken<T> type) {
+        try {
+			return getFixedNode(path).getValue(type);
+		} catch (ObjectMappingException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public <T> T get(String path, TypeToken<T> type, T def) {
+        try {
+			return getFixedNode(path).getValue(type, def);
+		} catch (ObjectMappingException e) {
+			return def;
+		}
+	}
+
+	@Override
+	public String getString(String path) {
+        return getFixedNode(path).getString();
+	}
+
+	@Override
 	public String getString(String path, String def) {
         return getFixedNode(path).getString(def);
+	}
+
+	@Override
+	public int getInt(String path) {
+        return getFixedNode(path).getInt();
 	}
 
 	@Override
@@ -136,18 +173,101 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	}
 
 	@Override
-	public float getFloat(String path, float def) {
+	public long getLong(String path) {
+        return getFixedNode(path).getLong();
+	}
+
+	@Override
+	public long getLong(String path, long def) {
+        return getFixedNode(path).getLong(def);
+	}
+
+	@Override
+	public float getFloat(String path) {
 		return getFixedNode(path).getFloat();
 	}
 
 	@Override
-	public double getDouble(String path, double def) {
+	public float getFloat(String path, float def) {
+		return getFixedNode(path).getFloat(def);
+	}
+
+	@Override
+	public double getDouble(String path) {
 		return getFixedNode(path).getDouble();
+	}
+
+	@Override
+	public double getDouble(String path, double def) {
+		return getFixedNode(path).getDouble(def);
+	}
+
+	@Override
+	public boolean getBoolean(String path) {
+        return getFixedNode(path).getBoolean();
 	}
 
 	@Override
 	public boolean getBoolean(String path, boolean def) {
         return getFixedNode(path).getBoolean(def);
+	}
+
+	@Override
+	public <T> List<T> getList(String path, TypeToken<T> type) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+        try {
+			return node.getList(type);
+		} catch (ObjectMappingException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public <T> List<T> getList(String path, TypeToken<T> type, List<T> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+        try {
+			return node.getList(type, def);
+		} catch (ObjectMappingException e) {
+			return def;
+		}
+	}
+
+	@Override
+	public List<?> getList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<?>) node.getValue();
+	}
+
+	@Override
+	public List<?> getList(String path, List<?> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<?>) node.getValue(def);
+	}
+
+	@Override
+	public List<String> getStringList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<String>) node.getValue();
 	}
 
 	@Override
@@ -157,7 +277,107 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
             return def;
         }
 
-        return node.getList(Object::toString);
+		return (List<String>) node.getValue(def);
+	}
+
+	@Override
+	public List<Integer> getIntList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<Integer>) node.getValue();
+	}
+
+	@Override
+	public List<Integer> getIntList(String path, List<Integer> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<Integer>) node.getValue(def);
+	}
+
+	@Override
+	public List<Long> getLongList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<Long>) node.getValue();
+	}
+
+	@Override
+	public List<Long> getLongList(String path, List<Long> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<Long>) node.getValue(def);
+	}
+
+	@Override
+	public List<Float> getFloatList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<Float>) node.getValue();
+	}
+
+	@Override
+	public List<Float> getFloatList(String path, List<Float> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<Float>) node.getValue(def);
+	}
+
+	@Override
+	public List<Double> getDoubleList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<Double>) node.getValue();
+	}
+
+	@Override
+	public List<Double> getDoubleList(String path, List<Double> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<Double>) node.getValue(def);
+	}
+
+	@Override
+	public List<Boolean> getBooleanList(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+		return (List<Boolean>) node.getValue();
+	}
+
+	@Override
+	public List<Boolean> getBooleanList(String path, List<Boolean> def) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return def;
+        }
+
+		return (List<Boolean>) node.getValue(def);
 	}
 
 	@Override
@@ -167,6 +387,11 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void setInt(String path, int value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setLong(String path, long value) {
         getFixedNode(path).setValue(value);
 	}
 
@@ -188,6 +413,26 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	@Override
 	public void setStringList(String path, List<String> value) {
         getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public boolean isSection(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return false;
+        }
+
+        return node.getChildrenMap() != null && !node.getChildrenMap().isEmpty() && node.getChildrenMap().keySet() != null && !node.getChildrenMap().keySet().isEmpty();
+	}
+
+	@Override
+	public List<String> getKeys(String path) {
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return null;
+        }
+
+        return node.getChildrenMap().keySet().stream().map(Object::toString).collect(Collectors.toList());
 	}
 
 	@Override

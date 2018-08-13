@@ -44,7 +44,7 @@ public class DatabasesProvider implements IDatabasesProvider {
 			throw new IllegalArgumentException("Database path & name cannot be null!");
 		}
 		
-		return createSqLiteDatabase(new File(path, name));
+		return createH2Database(new File(path, name));
 	}
 
 	@Override

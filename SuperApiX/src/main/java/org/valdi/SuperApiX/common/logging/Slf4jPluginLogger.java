@@ -10,18 +10,43 @@ public class Slf4jPluginLogger implements PluginLogger {
     }
 
     @Override
-    public void info(String s) {
-        this.logger.info(s);
+    public void debug(String msg) {
+        this.logger.debug(msg);
     }
 
     @Override
-    public void warning(String s) {
-        this.logger.warn(s);
+    public void info(String msg) {
+        this.logger.info(msg);
     }
 
     @Override
-    public void severe(String s) {
-        this.logger.error(s);
+    public void warning(String msg) {
+        this.logger.warn(msg);
+    }
+
+    @Override
+    public void severe(String msg) {
+        this.logger.error(msg);
+    }
+
+    @Override
+    public void debug(String msg, Throwable thrown) {
+        this.logger.debug(msg, thrown);
+    }
+
+    @Override
+    public void info(String msg, Throwable thrown) {
+        this.logger.info(msg, thrown);
+    }
+
+    @Override
+    public void warning(String msg, Throwable thrown) {
+        this.logger.warn(msg, thrown);
+    }
+
+    @Override
+    public void severe(String msg, Throwable thrown) {
+        this.logger.error(msg, thrown);
     }
 
 }

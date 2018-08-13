@@ -17,6 +17,8 @@ import org.valdi.SuperApiX.ISuperBootstrap;
 import org.valdi.SuperApiX.PlatformType;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.common.annotation.plugin.Description;
+import org.valdi.SuperApiX.common.annotation.plugin.LoadOrder;
+import org.valdi.SuperApiX.common.annotation.plugin.LoadOrder.Phase;
 import org.valdi.SuperApiX.common.annotation.plugin.BukkitPlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
@@ -28,6 +30,7 @@ import org.valdi.SuperApiX.common.scheduler.BukkitSchedulerAdapter;
 @BukkitPlugin(name = PluginDetails.NAME, version = PluginDetails.VERSION)
 @Description(PluginDetails.DESCRIPTION)
 @Author(PluginDetails.AUTHOR)
+@LoadOrder(Phase.STARTUP)
 public class BukkitBootstrap extends JavaPlugin implements ISuperBootstrap {
 
     /**
