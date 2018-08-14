@@ -121,6 +121,10 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
     public ConfigurationNode getFixedNode(String path) {
+		if(path.equals("")) {
+			return this.getRoot();
+		}
+		
         return this.getNode(path.split("\\."));
     }
 
@@ -382,6 +386,11 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void setString(String path, String value) {
+        getFixedNode(path).setValue(value);
+	}
+
+	@Override
+	public void setObject(String path, Object value) {
         getFixedNode(path).setValue(value);
 	}
 

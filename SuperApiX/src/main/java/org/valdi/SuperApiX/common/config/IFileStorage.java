@@ -95,6 +95,8 @@ public interface IFileStorage {
 	
 	public List<Boolean> getBooleanList(String path, List<Boolean> def);
 
+	public void setObject(String path, Object value);
+
 	public void setString(String path, String value);
 
 	public void setInt(String path, int value);
