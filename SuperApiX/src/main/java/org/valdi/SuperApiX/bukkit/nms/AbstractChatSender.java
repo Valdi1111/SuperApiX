@@ -22,6 +22,8 @@ public abstract class AbstractChatSender extends AbstractNmsProvider implements 
 					sendActionBar(player, "");
 				} catch (VersionUnsupportedException ignored) {}
 			}, duration * 50 + 20, TimeUnit.MILLISECONDS);
+        } else {
+			sendActionBar(player, message);
         }
 
         // Re-sends the messages every 3 seconds so it doesn't go away from the player's screen.

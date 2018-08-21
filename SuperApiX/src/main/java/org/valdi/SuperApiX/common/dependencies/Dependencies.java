@@ -72,8 +72,7 @@ public class Dependencies {
             "text",
             "1.11-1.4.0",
             "drQpwf+oI1+DPrn0iCvEtoID+xXR3dpZK5ySaBrUiok=",
-            true,
-            Relocation.of("text", "net{}kyori{}text")
+            true
     );
     public static final Dependency CAFFEINE = new Dependency(
     		"CAFFEINE",

@@ -95,7 +95,7 @@ public interface IFileStorage {
 	
 	public List<Boolean> getBooleanList(String path, List<Boolean> def);
 
-	public void setObject(String path, Object value);
+	public void set(String path, Object value);
 
 	public void setString(String path, String value);
 
@@ -110,6 +110,8 @@ public interface IFileStorage {
 	public void setBoolean(String path, boolean value);
 
 	public void setStringList(String path, List<String> value);
+
+	public boolean contains(String path);
 
 	public boolean isSection(String path);
 

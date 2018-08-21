@@ -6,8 +6,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.valdi.SuperApiX.bukkit.nms.IChatProvider;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
+@Deprecated
 public class ApiUtils {
-	
+
+	@Deprecated
 	public static void sendActionBar(Player player, String message) {
         RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
         if(provider == null) {
@@ -56,7 +58,8 @@ public class ApiUtils {
 			provider.getProvider().sendSubtitle(player, fadeIn, stay, fadeOut, subtitle);
 		} catch (VersionUnsupportedException ignored) {}
 	}
-	
+
+	@Deprecated	
 	public static void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
         RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
         if(provider == null) {

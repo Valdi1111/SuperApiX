@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX</artifactId>
-  	<version>1.0.1-BETA</version>
+  	<version>1.0.2-BETA</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX</name>
@@ -474,10 +474,6 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <relocations>
                                 <!-- relocated dependencies -->
-                                <relocation>
-                                    <pattern>net.kyori.text</pattern>
-                                    <shadedPattern>org.valdi.SuperApiX.lib.text</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>com.github.benmanes.caffeine</pattern>
                                     <shadedPattern>org.valdi.SuperApiX.lib.caffeine</shadedPattern>

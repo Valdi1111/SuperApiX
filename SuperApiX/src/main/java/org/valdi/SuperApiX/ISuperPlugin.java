@@ -5,6 +5,8 @@ import java.util.concurrent.ThreadFactory;
 import org.valdi.SuperApiX.common.logging.PluginLogger;
 
 public interface ISuperPlugin {
+	
+	public ISuperBootstrap getBootstrap();
 
     /**
      * Gets the plugin logger
@@ -14,7 +16,5 @@ public interface ISuperPlugin {
 	public PluginLogger getLogger();
 
 	public ThreadFactory getThreadFactory();
-	
-	public ISuperBootstrap getBootstrap();
 
 }

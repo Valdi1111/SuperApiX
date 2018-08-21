@@ -222,7 +222,7 @@ public class NukkitAnnotationProcessor extends AbstractProcessor {
 	    }
 	
 	    processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, "NOTE: You are using org.valdi.SuperApiX.common.annotation, an experimental API!" );
-	    return false;
+		return true;
 	}
 
     private boolean processExternalCommands(ProcessingEnvironment processingEnv, Set<? extends Element> commandExecutors, 

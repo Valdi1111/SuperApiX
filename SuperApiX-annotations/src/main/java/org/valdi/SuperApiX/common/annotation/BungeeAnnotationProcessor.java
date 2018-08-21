@@ -24,7 +24,6 @@ import org.valdi.SuperApiX.common.annotation.dependency.Dependency;
 import org.valdi.SuperApiX.common.annotation.dependency.SoftDependency;
 import org.valdi.SuperApiX.common.annotation.plugin.BungeePlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.Description;
-import org.valdi.SuperApiX.common.annotation.plugin.Website;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -136,7 +135,7 @@ public class BungeeAnnotationProcessor extends AbstractProcessor {
 	    }
 	
 	    processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, "NOTE: You are using org.valdi.SuperApiX.common.annotation, an experimental API!" );
-	    return false;
+		return true;
 	}
 
 }

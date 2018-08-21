@@ -4,7 +4,7 @@
   <groupId>org.valdi</groupId>
   <artifactId>SuperApiX</artifactId>
   <name>SuperApiX</name>
-  <version>1.0.1-BETA</version>
+  <version>1.0.2-BETA</version>
   <url>http://maven.apache.org</url>
   <build>
     <defaultGoal>clean package install</defaultGoal>
@@ -36,10 +36,6 @@
               <minimizeJar>false</minimizeJar>
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <relocations>
-                <relocation>
-                  <pattern>net.kyori.text</pattern>
-                  <shadedPattern>org.valdi.SuperApiX.lib.text</shadedPattern>
-                </relocation>
                 <relocation>
                   <pattern>com.github.benmanes.caffeine</pattern>
                   <shadedPattern>org.valdi.SuperApiX.lib.caffeine</shadedPattern>
