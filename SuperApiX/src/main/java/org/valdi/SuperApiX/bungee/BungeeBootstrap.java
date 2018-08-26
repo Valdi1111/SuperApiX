@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.valdi.SuperApiX.ISuperBootstrap;
 import org.valdi.SuperApiX.PlatformType;
+import org.valdi.SuperApiX.bukkit.BukkitPluginLogger;
 import org.valdi.SuperApiX.bukkit.PluginDetails;
 import org.valdi.SuperApiX.bungee.utils.RedisBungeeUtil;
 import org.valdi.SuperApiX.common.annotation.plugin.Description;
@@ -16,9 +17,7 @@ import org.valdi.SuperApiX.common.annotation.plugin.BungeePlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
 import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
-import org.valdi.SuperApiX.common.logging.JavaPluginLogger;
 import org.valdi.SuperApiX.common.logging.PluginLogger;
-import org.valdi.SuperApiX.common.scheduler.BungeeSchedulerAdapter;
 import org.valdi.SuperApiX.common.scheduler.SchedulerAdapter;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -91,7 +90,7 @@ public class BungeeBootstrap extends net.md_5.bungee.api.plugin.Plugin implement
 	 */
 	@Override
 	public void onLoad() {
-        this.logger = new JavaPluginLogger(getLogger());
+        this.logger = new BukkitPluginLogger(getLogger());
         
         try {
             this.plugin.load();

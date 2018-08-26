@@ -23,9 +23,7 @@ import org.valdi.SuperApiX.common.annotation.plugin.BukkitPlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
 import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
-import org.valdi.SuperApiX.common.logging.JavaPluginLogger;
 import org.valdi.SuperApiX.common.logging.PluginLogger;
-import org.valdi.SuperApiX.common.scheduler.BukkitSchedulerAdapter;
 
 @BukkitPlugin(name = PluginDetails.NAME, version = PluginDetails.VERSION)
 @Description(PluginDetails.DESCRIPTION)
@@ -69,7 +67,7 @@ public class BukkitBootstrap extends JavaPlugin implements ISuperBootstrap {
     private boolean incompatibleVersion = false;
 
     public BukkitBootstrap() {
-        this.logger = new JavaPluginLogger(getLogger());
+        this.logger = new BukkitPluginLogger(getLogger());
         this.schedulerAdapter = new BukkitSchedulerAdapter(this);
         this.classLoader = new ReflectionClassLoader(this);
         this.plugin = new SuperApiBukkit(this);
