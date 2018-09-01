@@ -68,8 +68,8 @@ public class SuperApiBukkit extends AbstractPlugin implements ISuperPlugin {
         this.dependencyManager.loadStorageDependencies(EnumSet.of(ConfigType.YAML, ConfigType.HOCON, ConfigType.JSON, ConfigType.TOML), 
         		EnumSet.of(StorageType.SQLITE, StorageType.H2, StorageType.MYSQL, StorageType.POSTGRESQL, StorageType.MARIADB, StorageType.MONGODB));
 
-    	new VectorSerializer().register();
-    	new LocationSerializer().register();
+    	//new VectorSerializer().register();
+    	//new LocationSerializer().register();
         
 		provider = new ServiceProviderManager(this);		
         executorService = Executors.newScheduledThreadPool(100);

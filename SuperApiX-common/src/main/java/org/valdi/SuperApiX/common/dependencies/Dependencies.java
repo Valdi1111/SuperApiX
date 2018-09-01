@@ -80,8 +80,7 @@ public class Dependencies {
             "caffeine",
             "2.6.2",
             "53pEV3NfB1FY29Ahx2YXl91IVpX8Ttkt/d401HFNl1A=",
-            true,
-            Relocation.of("caffeine", "com{}github{}benmanes{}caffeine")
+            true
     );
     public static final Dependency OKIO = new Dependency(
     		"OKIO",
@@ -89,8 +88,7 @@ public class Dependencies {
             RelocationHelper.OKIO_STRING,
             "1.14.1",
             "InCF6E8zEsc1QxiVJF3nwKe29qUK30KayCVqFQoR7ck=",
-            true,
-            Relocation.of(RelocationHelper.OKIO_STRING, RelocationHelper.OKIO_STRING)
+            true
     );
     public static final Dependency OKHTTP = new Dependency(
     		"OKHTTP",
@@ -98,11 +96,7 @@ public class Dependencies {
             "okhttp",
             "3.10.0",
             "Sso+VSr7HOtH+JVmhfYpWiduSfoD+QZvi2voO+xW+2Y=",
-            true,
-            Relocation.allOf(
-                    Relocation.of(RelocationHelper.OKHTTP3_STRING, RelocationHelper.OKHTTP3_STRING),
-                    Relocation.of(RelocationHelper.OKIO_STRING, RelocationHelper.OKIO_STRING)
-            )
+            true
     );
     public static final Dependency MARIADB_DRIVER = new Dependency(
     		"MARIADB_DRIVER",
@@ -110,8 +104,7 @@ public class Dependencies {
             "mariadb-java-client",
             "2.2.5",
             "kFfgzoMFrFKirAFh/DgobV7vAu9NhdnhZLHD4/PCddI=",
-            true,
-            Relocation.of("mariadb", "org{}mariadb{}jdbc")
+            true
     );
     public static final Dependency MYSQL_DRIVER = new Dependency(
     		"MYSQL_DRIVER",
@@ -119,8 +112,7 @@ public class Dependencies {
             "mysql-connector-java",
             "5.1.46",
             "MSIIl2HmQD8C6Kge1KLWWi4QKXNGUboA8uqS2SD/ex4=",
-            true,
-            Relocation.of("mysql", "com{}mysql")
+            true
     );
     public static final Dependency POSTGRESQL_DRIVER = new Dependency(
     		"POSTGRESQL_DRIVER",
@@ -128,8 +120,7 @@ public class Dependencies {
             "postgresql",
             "9.4.1212",
             "DLKhWL4xrPIY4KThjI89usaKO8NIBkaHc/xECUsMNl0=",
-            true,
-            Relocation.of("postgresql", "org{}postgresql")
+            true
     );
     public static final Dependency H2_DRIVER = new Dependency(
     		"H2_DRIVER",
@@ -157,8 +148,7 @@ public class Dependencies {
             "HikariCP",
             "3.2.0",
             "sAjeaLvYWBH0tujwhg0JZsastPLnX6vUbsIJRWnL7+s=",
-            true,
-            Relocation.of("hikari", "com{}zaxxer{}hikari")
+            true
     );
     public static final Dependency SLF4J_SIMPLE = new Dependency(
     		"SLF4J_SIMPLE",
@@ -182,11 +172,7 @@ public class Dependencies {
             "mongo-java-driver",
             "3.7.1",
             "yllBCqAZwWCNUoMPR0JWilqhVA46+9F47wIcnYOcoy4=",
-            true,
-            Relocation.allOf(
-                    Relocation.of("mongodb", "com{}mongodb"),
-                    Relocation.of("bson", "org{}bson")
-            )
+            true
     );
     public static final Dependency JEDIS = new Dependency(
     		"JEDIS",
@@ -194,12 +180,7 @@ public class Dependencies {
             "jedis",
             "2.9.0",
             "HqqWy45QVeTVF0Z/DzsrPLvGKn2dHotqI8YX7GDThvo=",
-            true,
-            Relocation.allOf(
-                    Relocation.of("jedis", "redis{}clients{}jedis"),
-                    Relocation.of("jedisutil", "redis{}clients{}util"),
-                    Relocation.of("commonspool2", "org{}apache{}commons{}pool2")
-            )
+            true
     );
     public static final Dependency COMMONS_POOL_2 = new Dependency(
     		"COMMONS_POOL_2",
@@ -207,8 +188,7 @@ public class Dependencies {
             "commons-pool2",
             "2.5.0",
             "IRhwQ8eZcdnISLlxhA3oQdoOXE3zDJI6lpFBMfue+Wk=",
-            true,
-            Relocation.of("commonspool2", "org{}apache{}commons{}pool2")
+            true
     );
     public static final Dependency CONFIGURATE_CORE = new Dependency(
     		"CONFIGURATE_CORE",
@@ -216,8 +196,7 @@ public class Dependencies {
             "configurate-core",
             "3.5",
             "J+1WnX1g5gr4ne8qA7DuBadLDOsZnOZjwHbdRmVgF6c=",
-            true,
-            Relocation.of("configurate", "ninja{}leaping{}configurate")
+            true
     );
     public static final Dependency CONFIGURATE_GSON = new Dependency(
     		"CONFIGURATE_GSON",
@@ -225,8 +204,7 @@ public class Dependencies {
             "configurate-gson",
             "3.5",
             "Q3wp3xpqy41bJW3yUhbHOzm+NUkT4bUUBI2/AQLaa3c=",
-            true,
-            Relocation.of("configurate", "ninja{}leaping{}configurate")
+            true
     );
     public static final Dependency CONFIGURATE_YAML = new Dependency(
     		"CONFIGURATE_YAML",
@@ -234,8 +212,7 @@ public class Dependencies {
             "configurate-yaml",
             "3.5",
             "Dxr1o3EPbpOOmwraqu+cors8O/nKwJnhS5EiPkTb3fc=",
-            true,
-            Relocation.of("configurate", "ninja{}leaping{}configurate")
+            true
     );
     public static final Dependency CONFIGURATE_HOCON = new Dependency(
     		"CONFIGURATE_HOCON",
@@ -243,11 +220,7 @@ public class Dependencies {
             "configurate-hocon",
             "3.5",
             "sOym1KPmQylGSfk90ZFqobuvoZfEWb7XMmMBwbHuxFw=",
-            true,
-            Relocation.allOf(
-                    Relocation.of("configurate", "ninja{}leaping{}configurate"),
-                    Relocation.of("hocon", "com{}typesafe{}config")
-            )
+            true
     );
     public static final Dependency HOCON_CONFIG = new Dependency(
     		"HOCON_CONFIG",
@@ -255,8 +228,7 @@ public class Dependencies {
             "config",
             "1.3.3",
             "tfHWBx8VSNBb6C9Z+QOcfTeheHvY48Z34x7ida9KRiE=",
-            true,
-            Relocation.of("hocon", "com{}typesafe{}config")
+            true
     );
     public static final Dependency CONFIGURATE_TOML = new Dependency(
     		"CONFIGURATE_TOML",
@@ -264,11 +236,7 @@ public class Dependencies {
             "configurate-toml",
             "3.5",
             "U8p0XSTaNT/uebvLpO/vb6AhVGQDYiZsauSGB9zolPU=",
-            true,
-            Relocation.allOf(
-                    Relocation.of("configurate", "ninja{}leaping{}configurate"),
-                    Relocation.of("toml4j", "com{}moandjiezana{}toml")
-            )
+            true
     );
     public static final Dependency TOML4J = new Dependency(
     		"TOML4J",
@@ -276,8 +244,7 @@ public class Dependencies {
             "toml4j",
             "0.7.2",
             "9UdeY+fonl22IiNImux6Vr0wNUN3IHehfCy1TBnKOiA=",
-            true,
-            Relocation.of("toml4j", "com{}moandjiezana{}toml")
+            true
     );
     
     public static Set<Dependency> values() {
