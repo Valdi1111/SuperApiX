@@ -2,7 +2,7 @@ package org.valdi.SuperApiX;
 
 import org.valdi.SuperApiX.common.databases.data.ExceptionHandler;
 
-public abstract class AbstractPlugin implements ISuperPlugin {
+public abstract class AbstractPlugin implements ISuperPlugin { 
 	
 	public abstract void load();
 	
