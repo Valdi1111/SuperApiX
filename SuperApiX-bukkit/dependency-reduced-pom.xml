@@ -185,6 +185,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>spigotmc.org</groupId>
+      <artifactId>spigot-1.13.1</artifactId>
+      <version>1.13.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>me.lucko.configurate</groupId>
       <artifactId>configurate-core</artifactId>
       <version>3.5</version>
