@@ -1,6 +1,7 @@
 package org.valdi.SuperApiX.common.config;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,10 @@ public interface IFileStorage {
     public Path getFilePath();
 
 	public void fromParent();
+
+	public void fromParent(ClassLoader loader);
+
+	public void fromStream(InputStream is);
 
 	public void create();
 

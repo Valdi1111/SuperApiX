@@ -42,11 +42,21 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
     }
 
 	@Override
-	public void fromParent() {		
+	public void fromParent() {
+		fromParent(plugin.getClass().getClassLoader());
+	}
+
+	@Override
+	public void fromParent(ClassLoader loader) {
+    	configFile.getParentFile().mkdirs();
+    	InputStream is = loader.getResourceAsStream(configFile.getName());
+		fromStream(is);
+	}
+
+	@Override
+	public void fromStream(InputStream is) {		
 	    if (!configFile.exists()) {
 	        try {
-    	    	configFile.getParentFile().mkdirs();
-            	InputStream is = plugin.getClass().getClassLoader().getResourceAsStream(configFile.getName());
                 Files.copy(is, configFile.toPath());
 	        } catch (IOException e) {
 	        	plugin.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
