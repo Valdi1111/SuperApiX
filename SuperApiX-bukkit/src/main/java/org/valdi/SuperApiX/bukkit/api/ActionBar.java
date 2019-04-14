@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.bukkit.api;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.valdi.SuperApiX.bukkit.nms.IChatProvider;
+import org.valdi.SuperApiX.bukkit.nms.IActionBar;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class ActionBar {
@@ -27,7 +27,7 @@ public class ActionBar {
 		}
 
 		public boolean send(Player player) {
-	        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
+	        RegisteredServiceProvider<IActionBar> provider = Bukkit.getServicesManager().getRegistration(IActionBar.class);
 	        if(provider == null) {
 	            return false;
 	        }

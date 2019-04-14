@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.bukkit.api;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.valdi.SuperApiX.bukkit.nms.IChatProvider;
+import org.valdi.SuperApiX.bukkit.nms.ITitle;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class Title {
@@ -45,7 +45,7 @@ public class Title {
 		}
 
 		public boolean send(Player player) {
-	        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
+	        RegisteredServiceProvider<ITitle> provider = Bukkit.getServicesManager().getRegistration(ITitle.class);
 	        if(provider == null) {
 	            return false;
 	        }

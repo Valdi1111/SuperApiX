@@ -2,32 +2,94 @@ package org.valdi.SuperApiX.bukkit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigInteger;
 
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import net.minecraft.server.v1_13_R2.NBTCompressedStreamTools;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.NBTTagList;
+
 public class ItemSerializer {
+    /**
+     * Item to Base 64
+     * @param item
+     * @return
+     */
+    public static String toBase64(ItemStack item) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        DataOutputStream dataOutput = new DataOutputStream(outputStream);
+
+        NBTTagList nbtTagListItems = new NBTTagList();
+        NBTTagCompound nbtTagCompoundItem = new NBTTagCompound();
+
+        net.minecraft.server.v1_13_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+
+        nmsItem.save(nbtTagCompoundItem);
+
+        nbtTagListItems.add(nbtTagCompoundItem);
+
+        try {
+			NBTCompressedStreamTools.a(nbtTagCompoundItem, (DataOutput) dataOutput);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+        return new BigInteger(1, outputStream.toByteArray()).toString(32);
+    }
 
     /**
-     * Converts a list of ItemStacks to Base64 encoding.
-     * @param items A list of items to convert.
-     * @return A Base64 string representing the specified items.
+     * Item from Base64
+     * @param data
+     * @return
      */
-    public static String toBase64(List<ItemStack> items) {
-        if (items == null || items.size() < 1)
-            return "";
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+    public static ItemStack fromBase64(String data) {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(new BigInteger(data, 32).toByteArray());
 
-            dataOutput.writeInt(items.size());
-            for (ItemStack item : items) {
-                dataOutput.writeObject(item);
+        NBTTagCompound nbtTagCompoundRoot = null;
+		try {
+			nbtTagCompoundRoot = NBTCompressedStreamTools.a(new DataInputStream(inputStream));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+        net.minecraft.server.v1_13_R2.ItemStack nmsItem = net.minecraft.server.v1_13_R2.ItemStack.a(nbtTagCompoundRoot);
+        ItemStack item = CraftItemStack.asBukkitCopy(nmsItem);
+
+        return item;
+    }
+    
+    /**
+     * ItemStack List to Base64
+     */
+	public static String toBase64List(ItemStack[] items) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        BukkitObjectOutputStream dataOutput;
+        try {
+            dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            // Content Size
+            // Contents
+            dataOutput.writeInt(items.length);
+
+            int index = 0;
+            for (ItemStack is : items) {
+                if (is != null && is.getType() != Material.AIR) {
+                    dataOutput.writeObject(toBase64(is));
+                } else {
+                    dataOutput.writeObject(null);
+                }
+                dataOutput.writeInt(index);
+                index++;
             }
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
@@ -35,31 +97,33 @@ public class ItemSerializer {
             throw new IllegalStateException("Unable to save item stacks.", e);
         }
     }
-
+   
     /**
-     * Converts a Base64 string back into a list of ItemStacks.
-     * @param data The data to parse.
-     * @return A list of ItemStacks from the Base64 string.
-     * @throws IOException If the String is not Base64
+     * ItemStack List from Base64
      */
-    public static List<ItemStack> fromBase64(String data) throws IOException {
-        if (data == null || data.equals(""))
-            return null;
-
+    public static ItemStack[] fromBase64List(String items) {
         try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(items));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            List<ItemStack> items = new ArrayList<>();
 
             int size = dataInput.readInt();
+
+            ItemStack[] list = new ItemStack[size];
+            // Read the serialized inventory
             for (int i = 0; i < size; i++) {
-                items.add((ItemStack) dataInput.readObject());
+                Object utf = dataInput.readObject();
+                int slot = dataInput.readInt();
+                if (utf == null) { // yey²?
+
+                } else {
+                    list[slot] = fromBase64((String) utf);
+                }
             }
+
             dataInput.close();
-            return items;
-        } catch (ClassNotFoundException e) {
-            throw new IOException("Unable to decode class type.", e);
+            return list;
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load item stacks.", e);
         }
     }
-
 }

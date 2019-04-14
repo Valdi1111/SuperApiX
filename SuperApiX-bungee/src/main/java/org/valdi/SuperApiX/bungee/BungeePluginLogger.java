@@ -3,9 +3,9 @@ package org.valdi.SuperApiX.bungee;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.valdi.SuperApiX.common.logging.PluginLogger;
+import org.valdi.SuperApiX.common.logging.AbstractPluginLogger;
 
-public class BungeePluginLogger implements PluginLogger {
+public class BungeePluginLogger extends AbstractPluginLogger {
     private final Logger logger;
 
     public BungeePluginLogger(Logger logger) {
@@ -14,6 +14,10 @@ public class BungeePluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.info("[DEBUG] " + msg);
     }
 
@@ -34,6 +38,10 @@ public class BungeePluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg, Throwable thrown) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.log(Level.INFO, "[DEBUG] " + msg, thrown);
     }
 

@@ -12,120 +12,112 @@ import ninja.leaping.configurate.ConfigurationNode;
 
 public interface IFileStorage {
     
-    public File getFile();
+    File getFile();
     
-    public Path getFilePath();
+    Path getFilePath();
 
-	public void fromParent();
+	void fromParent();
 
-	public void fromParent(ClassLoader loader);
+	void fromParent(String path);
 
-	public void fromStream(InputStream is);
+	void fromStream(InputStream is);
 
-	public void create();
+	void create();
 
-	public void loadOnly();
+	void loadOnly();
 
-	public void save();
+	void save();
 
-	public void save(boolean async);
+	void save(boolean async);
 
-    public ConfigurationNode getRoot();
+    ConfigurationNode getRoot();
 
-    public ConfigurationNode getNode(Object[] objects);
+    ConfigurationNode getNode(Object[] objects);
 
-    public ConfigurationNode getFixedNode(String path);
+    ConfigurationNode getFixedNode(String path);
+    
+    // Get methods
 
-	public Object get(String path);
+	Object get(String path);
 
-	public Object get(String path, Object def);
+	Object get(String path, Object def);
 
-	public <T> T get(String path, TypeToken<T> type);
+	<T> T get(String path, TypeToken<T> type);
 
-	public <T> T get(String path, TypeToken<T> type, T def);
+	<T> T get(String path, TypeToken<T> type, T def);
 
-	public String getString(String path);
+	String getString(String path);
 
-	public String getString(String path, String def);
+	String getString(String path, String def);
 
-	public int getInt(String path);
+	int getInt(String path);
 
-	public int getInt(String path, int def);
+	int getInt(String path, int def);
 
-	public long getLong(String path);
+	long getLong(String path);
 
-	public long getLong(String path, long def);
+	long getLong(String path, long def);
 
-	public float getFloat(String path);
+	float getFloat(String path);
 
-	public float getFloat(String path, float def);
+	float getFloat(String path, float def);
 
-	public double getDouble(String path);
+	double getDouble(String path);
 
-	public double getDouble(String path, double def);
+	double getDouble(String path, double def);
 
-	public boolean getBoolean(String path);
+	boolean getBoolean(String path);
 
-	public boolean getBoolean(String path, boolean def);
-
-	public <T> List<T> getList(String path, TypeToken<T> type);
-
-	public <T> List<T> getList(String path, TypeToken<T> type, List<T> def);
-
-	public List<?> getList(String path);
-
-	public List<?> getList(String path, List<?> def);
-
-	public List<String> getStringList(String path);
-
-	public List<String> getStringList(String path, List<String> def);
+	boolean getBoolean(String path, boolean def);
 	
-	public List<Integer> getIntList(String path);
+	// Get list methods
+
+	<T> List<T> getList(String path, TypeToken<T> type);
+
+	<T> List<T> getList(String path, TypeToken<T> type, List<T> def);
+
+	List<?> getList(String path);
+
+	List<?> getList(String path, List<?> def);
+
+	List<String> getStringList(String path);
+
+	List<String> getStringList(String path, List<String> def);
 	
-	public List<Integer> getIntList(String path, List<Integer> def);
+	List<Integer> getIntList(String path);
 	
-	public List<Long> getLongList(String path);
+	List<Integer> getIntList(String path, List<Integer> def);
 	
-	public List<Long> getLongList(String path, List<Long> def);
+	List<Long> getLongList(String path);
 	
-	public List<Float> getFloatList(String path);
+	List<Long> getLongList(String path, List<Long> def);
 	
-	public List<Float> getFloatList(String path, List<Float> def);
+	List<Float> getFloatList(String path);
 	
-	public List<Double> getDoubleList(String path);
+	List<Float> getFloatList(String path, List<Float> def);
 	
-	public List<Double> getDoubleList(String path, List<Double> def);
+	List<Double> getDoubleList(String path);
 	
-	public List<Boolean> getBooleanList(String path);
+	List<Double> getDoubleList(String path, List<Double> def);
 	
-	public List<Boolean> getBooleanList(String path, List<Boolean> def);
+	List<Boolean> getBooleanList(String path);
+	
+	List<Boolean> getBooleanList(String path, List<Boolean> def);
+	
+	// Set methods
 
-	public void set(String path, Object value);
+	void set(String path, Object value);
 
-	public void setString(String path, String value);
+	<T> void set(String path, TypeToken<T> type, Object value);
 
-	public void setInt(String path, int value);
+	boolean contains(String path);
 
-	public void setLong(String path, long value);
+	boolean isSection(String path);
 
-	public void setFloat(String path, float value);
+	List<? extends ConfigurationNode> getKeys(String path);
 
-	public void setDouble(String path, double value);
+	Map<String, String> getMap(String path, Map<String, String> def);
 
-	public void setBoolean(String path, boolean value);
-
-	public void setStringList(String path, List<String> value);
-
-	public boolean contains(String path);
-
-	public boolean isSection(String path);
-
-	public List<String> getKeys(String path);
-
-	public List<String> getKeys(String path, List<String> def);
-
-	public Map<String, String> getMap(String path, Map<String, String> def);
-
-	public ConfigType getType();
+	ConfigType getType();
 
 }

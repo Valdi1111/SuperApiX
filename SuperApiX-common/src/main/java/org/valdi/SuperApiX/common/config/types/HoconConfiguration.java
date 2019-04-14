@@ -2,16 +2,15 @@ package org.valdi.SuperApiX.common.config.types;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.ISuperPlugin;
 import org.valdi.SuperApiX.common.config.ConfigType;
-import org.valdi.SuperApiX.common.config.IFileStorage;
+import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
 
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class HoconConfiguration extends AbstractConfigAdapter implements IFileStorage {
+public class HoconConfiguration extends AbstractConfigAdapter {
 	
-	public HoconConfiguration(ISuperPlugin plugin, File path, String fileName) {
-		super(plugin, path, fileName);
+	public HoconConfiguration(StoreLoader loader, File path, String fileName) {
+		super(loader, path, fileName);
 	}
 	
 	@Override

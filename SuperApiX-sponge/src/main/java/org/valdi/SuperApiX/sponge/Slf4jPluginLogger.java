@@ -1,9 +1,9 @@
 package org.valdi.SuperApiX.sponge;
 
 import org.slf4j.Logger;
-import org.valdi.SuperApiX.common.logging.PluginLogger;
+import org.valdi.SuperApiX.common.logging.AbstractPluginLogger;
 
-public class Slf4jPluginLogger implements PluginLogger {
+public class Slf4jPluginLogger extends AbstractPluginLogger {
     private final Logger logger;
 
     public Slf4jPluginLogger(Logger logger) {
@@ -12,6 +12,10 @@ public class Slf4jPluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.debug(msg);
     }
 
@@ -32,6 +36,10 @@ public class Slf4jPluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg, Throwable thrown) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.debug(msg, thrown);
     }
 

@@ -1,21 +1,25 @@
 package org.valdi.SuperApiX.common.logging;
 
 public interface PluginLogger {
+	
+	void setDebugStatus(boolean active);
+	
+	boolean isDebugEnabled();
 
-    public void debug(String msg);
+    void debug(String msg);
 
-    public void info(String msg);
+    void info(String msg);
     
-    public void warning(String msg);
+    void warning(String msg);
     
-    public void severe(String msg);
+    void severe(String msg);
 
-    public void debug(String msg, Throwable thrown);
+    void debug(String msg, Throwable thrown);
 
-    public void info(String msg, Throwable thrown);
+    void info(String msg, Throwable thrown);
 
-    public void warning(String msg, Throwable thrown);
+    void warning(String msg, Throwable thrown);
 
-    public void severe(String msg, Throwable thrown);
+    void severe(String msg, Throwable thrown);
 
 }

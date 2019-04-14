@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.valdi.SuperApiX.common.ISuperPlugin;
 import org.valdi.SuperApiX.common.config.IFileStorage;
+import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
 
 import com.google.common.reflect.TypeToken;
 
@@ -20,15 +20,15 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public abstract class AbstractConfigAdapter implements IFileStorage {
-    private final ISuperPlugin plugin;
+    private final StoreLoader loader;
     private final File configFile;
 
     private ConfigurationNode root;
     private ConfigurationLoader<? extends ConfigurationNode> manager;
     
-    protected AbstractConfigAdapter(ISuperPlugin plugin, File path, String fileName) {
+    protected AbstractConfigAdapter(StoreLoader loader, File path, String fileName) {
 		this.configFile = new File(path, fileName);
-        this.plugin = plugin;
+        this.loader = loader;
     }
     
     @Override
@@ -43,23 +43,23 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void fromParent() {
-		fromParent(plugin.getClass().getClassLoader());
+		fromParent(configFile.getName());
 	}
 
 	@Override
-	public void fromParent(ClassLoader loader) {
+	public void fromParent(String path) {
     	configFile.getParentFile().mkdirs();
-    	InputStream is = loader.getResourceAsStream(configFile.getName());
+    	InputStream is = loader.getResource(path);
 		fromStream(is);
 	}
 
 	@Override
-	public void fromStream(InputStream is) {		
+	public void fromStream(InputStream is) {
 	    if (!configFile.exists()) {
 	        try {
                 Files.copy(is, configFile.toPath());
-	        } catch (IOException e) {
-	        	plugin.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
+	        } catch (NullPointerException | IOException e) {
+	        	loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
 	        }
 	    }
@@ -74,7 +74,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
     	    	configFile.getParentFile().mkdirs();
 				configFile.createNewFile();
 			} catch (IOException e) {
-				plugin.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
+				loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
 			}
 	    }
@@ -91,7 +91,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         try {
             this.root = manager.load();
         } catch (IOException e) {
-        	plugin.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
+        	loader.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
         	e.printStackTrace();
         }
 	}
@@ -101,18 +101,19 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         try {
         	manager.save(this.root);
 		} catch (IOException e) {
-			plugin.getLogger().info("Error on config saving (" + configFile.getName() + ") > " + e.getMessage());
+			loader.getLogger().info("Error on config saving (" + configFile.getName() + ") > " + e.getMessage());
         	e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void save(boolean async) {
-		if(async) {
-			plugin.getBootstrap().getScheduler().executeAsync(() -> save());
-		} else {
+		if(!async) {
 			save();
+			return;
 		}
+		
+		loader.getScheduler().executeAsync(() -> save());
 	}
 
 	@Override
@@ -276,122 +277,62 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public List<String> getStringList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<String>) node.getValue();
+		return this.getList(path, TypeToken.of(String.class));
 	}
 
 	@Override
 	public List<String> getStringList(String path, List<String> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<String>) node.getValue(def);
+		return this.getList(path, TypeToken.of(String.class), def);
 	}
 
 	@Override
 	public List<Integer> getIntList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<Integer>) node.getValue();
+		return this.getList(path, TypeToken.of(Integer.class));
 	}
 
 	@Override
 	public List<Integer> getIntList(String path, List<Integer> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<Integer>) node.getValue(def);
+		return this.getList(path, TypeToken.of(Integer.class), def);
 	}
 
 	@Override
 	public List<Long> getLongList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<Long>) node.getValue();
+		return this.getList(path, TypeToken.of(Long.class));
 	}
 
 	@Override
 	public List<Long> getLongList(String path, List<Long> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<Long>) node.getValue(def);
+		return this.getList(path, TypeToken.of(Long.class), def);
 	}
 
 	@Override
 	public List<Float> getFloatList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<Float>) node.getValue();
+		return this.getList(path, TypeToken.of(Float.class));
 	}
 
 	@Override
 	public List<Float> getFloatList(String path, List<Float> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<Float>) node.getValue(def);
+		return this.getList(path, TypeToken.of(Float.class), def);
 	}
 
 	@Override
 	public List<Double> getDoubleList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<Double>) node.getValue();
+		return this.getList(path, TypeToken.of(Double.class));
 	}
 
 	@Override
 	public List<Double> getDoubleList(String path, List<Double> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<Double>) node.getValue(def);
+		return this.getList(path, TypeToken.of(Double.class), def);
 	}
 
 	@Override
 	public List<Boolean> getBooleanList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<Boolean>) node.getValue();
+		return this.getList(path, TypeToken.of(Boolean.class));
 	}
 
 	@Override
 	public List<Boolean> getBooleanList(String path, List<Boolean> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<Boolean>) node.getValue(def);
+		return this.getList(path, TypeToken.of(Boolean.class), def);
 	}
 
 	@Override
@@ -400,43 +341,22 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	}
 
 	@Override
-	public void setString(String path, String value) {
-        getFixedNode(path).setValue(value);
+	public <T> void set(String path, TypeToken<T> type, Object value) {
+        try {
+			getFixedNode(path).setValue(type, (T)value);
+		} catch (ObjectMappingException e) {
+			e.printStackTrace();
+		}
 	}
-
-	@Override
-	public void setInt(String path, int value) {
-        getFixedNode(path).setValue(value);
-	}
-
-	@Override
-	public void setLong(String path, long value) {
-        getFixedNode(path).setValue(value);
-	}
-
-	@Override
-	public void setFloat(String path, float value) {
-        getFixedNode(path).setValue(value);
-	}
-
-	@Override
-	public void setDouble(String path, double value) {
-        getFixedNode(path).setValue(value);
-	}
-
-	@Override
-	public void setBoolean(String path, boolean value) {
-        getFixedNode(path).setValue(value);
-	}
-
-	@Override
-	public void setStringList(String path, List<String> value) {
-        getFixedNode(path).setValue(value);
-	}
-
+	
 	@Override
 	public boolean contains(String path) {
-        return getFixedNode(path).getValue() != null;
+        ConfigurationNode node = getFixedNode(path);
+        if (node.isVirtual()) {
+            return false;
+        }
+        
+        return node.getValue() != null || node.hasListChildren() || node.hasMapChildren();
 	}
 
 	@Override
@@ -446,27 +366,17 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
             return false;
         }
 
-        return node.getChildrenMap() != null && !node.getChildrenMap().isEmpty() && node.getChildrenMap().keySet() != null && !node.getChildrenMap().keySet().isEmpty();
+        return node.hasMapChildren();
 	}
 
 	@Override
-	public List<String> getKeys(String path) {
+	public List<? extends ConfigurationNode> getKeys(String path) {
         ConfigurationNode node = getFixedNode(path);
         if (node.isVirtual()) {
             return null;
         }
 
-        return node.getChildrenMap().keySet().stream().map(Object::toString).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getKeys(String path, List<String> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-        return node.getChildrenMap().keySet().stream().map(Object::toString).collect(Collectors.toList());
+        return node.getChildrenList();
 	}
 
 	@Override @SuppressWarnings("unchecked")

@@ -13,19 +13,19 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 public class VectorSerializer implements TypeSerializer<Vector>, SerializersRegister {
 
 	@Override
-	public Vector deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
-		double x = value.getNode("x").getDouble();
-		double y = value.getNode("y").getDouble();
-		double z = value.getNode("z").getDouble();
+	public Vector deserialize(TypeToken<?> type, ConfigurationNode node) throws ObjectMappingException {
+		double x = node.getNode("x").getDouble();
+		double y = node.getNode("y").getDouble();
+		double z = node.getNode("z").getDouble();
 		
 		return new Vector(x, y, z);
 	}
 
 	@Override
-	public void serialize(TypeToken<?> type, Vector obj, ConfigurationNode value) throws ObjectMappingException {
-        value.getNode("x").setValue(obj.getX());
-        value.getNode("y").setValue(obj.getY());
-        value.getNode("z").setValue(obj.getZ());
+	public void serialize(TypeToken<?> type, Vector instance, ConfigurationNode node) throws ObjectMappingException {
+		node.getNode("x").setValue(instance.getX());
+		node.getNode("y").setValue(instance.getY());
+		node.getNode("z").setValue(instance.getZ());
 	}
 	
 	@Override

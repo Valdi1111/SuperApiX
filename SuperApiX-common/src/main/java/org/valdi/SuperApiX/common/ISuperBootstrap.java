@@ -36,6 +36,10 @@ public interface ISuperBootstrap {
      * @return a classloader
      */
     public PluginClassLoader getPluginClassLoader();
+    
+    public File getJarFile();
+
+	public ClassLoader getJarLoader();
 
     /**
      * Returns a countdown latch which {@link CountDownLatch#countDown() counts down}

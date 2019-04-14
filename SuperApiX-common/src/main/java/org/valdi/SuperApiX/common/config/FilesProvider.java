@@ -3,6 +3,7 @@ package org.valdi.SuperApiX.common.config;
 import java.io.File;
 
 import org.valdi.SuperApiX.common.ISuperPlugin;
+import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
 import org.valdi.SuperApiX.common.config.types.HoconConfiguration;
 import org.valdi.SuperApiX.common.config.types.JsonConfiguration;
 import org.valdi.SuperApiX.common.config.types.TomlConfiguration;
@@ -21,8 +22,8 @@ public class FilesProvider implements IFilesProvider {
 	}
 	
 	@Override
-	public IFileStorage createHoconFile(ISuperPlugin plugin, File path, String fileName) {
-		return new HoconConfiguration(plugin, path, fileName);
+	public IFileStorage createHoconFile(StoreLoader loader, File path, String fileName) {
+		return new HoconConfiguration(loader, path, fileName);
 	}
 	
 	@Override
@@ -31,8 +32,8 @@ public class FilesProvider implements IFilesProvider {
 	}
 	
 	@Override
-	public IFileStorage createJsonFile(ISuperPlugin plugin, File path, String fileName) {
-		return new JsonConfiguration(plugin, path, fileName);
+	public IFileStorage createJsonFile(StoreLoader loader, File path, String fileName) {
+		return new JsonConfiguration(loader, path, fileName);
 	}
 	
 	@Override
@@ -41,8 +42,8 @@ public class FilesProvider implements IFilesProvider {
 	}
 	
 	@Override
-	public IFileStorage createTomlFile(ISuperPlugin plugin, File path, String fileName) {
-		return new TomlConfiguration(plugin, path, fileName);
+	public IFileStorage createTomlFile(StoreLoader loader, File path, String fileName) {
+		return new TomlConfiguration(loader, path, fileName);
 	}
 	
 	@Override
@@ -51,8 +52,8 @@ public class FilesProvider implements IFilesProvider {
 	}
 	
 	@Override
-	public IFileStorage createYamlFile(ISuperPlugin plugin, File path, String fileName) {
-		return new YamlConfiguration(plugin, path, fileName);
+	public IFileStorage createYamlFile(StoreLoader loader, File path, String fileName) {
+		return new YamlConfiguration(loader, path, fileName);
 	}
 
 }

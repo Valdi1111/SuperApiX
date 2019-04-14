@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX-nukkit</artifactId>
-  	<version>1.0.3-BETA</version>
+  	<version>1.0.4-BETA</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX-nukkit</name>
@@ -25,7 +25,7 @@
     	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
-		  	<version>1.0.3-BETA</version>
+		  	<version>1.0.4-BETA</version>
     	</dependency>
 
         <!-- Nukkit -->

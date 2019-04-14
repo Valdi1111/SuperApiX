@@ -2,22 +2,12 @@ package org.valdi.SuperApiX.common;
 
 import java.util.concurrent.ThreadFactory;
 
-import org.valdi.SuperApiX.common.logging.PluginLogger;
-import org.valdi.SuperApiX.common.scheduler.SchedulerAdapter;
+import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
 
-public interface ISuperPlugin {
+public interface ISuperPlugin extends StoreLoader {
 	
-	public ISuperBootstrap getBootstrap();
+	ISuperBootstrap getBootstrap();
 
-    /**
-     * Gets the plugin logger
-     *
-     * @return the logger
-     */
-	public PluginLogger getLogger();
-	
-	public SchedulerAdapter getScheduler();
-
-	public ThreadFactory getThreadFactory();
+	ThreadFactory getThreadFactory();
 
 }

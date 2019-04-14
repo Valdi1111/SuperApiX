@@ -1,74 +1,35 @@
 package org.valdi.SuperApiX.bukkit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.valdi.SuperApiX.bukkit.nms.IChatProvider;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
+import org.valdi.SuperApiX.bukkit.api.ActionBar;
+import org.valdi.SuperApiX.bukkit.api.Title;
 
 @Deprecated
 public class ApiUtils {
 
 	@Deprecated
 	public static void sendActionBar(Player player, String message) {
-        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
-        if(provider == null) {
-            return;
-        }
-        
-        try {
-			provider.getProvider().sendActionBar(player, message);
-		} catch (VersionUnsupportedException e) {
-        	player.sendMessage(message);
-		}
+        ActionBar.builder().message(message).send(player);
 	}
 	
 	@Deprecated
 	public static void sendFullTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
-        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
-        if(provider == null) {
-            return;
-        }
-        
-        try {
-			provider.getProvider().sendFullTitle(player, fadeIn, stay, fadeOut, title, subtitle);
-		} catch (VersionUnsupportedException ignored) {}
+		Title.builder().fadeIn(fadeIn).stay(stay).fadeOut(fadeOut).title(title).subtitle(subtitle).send(player);
 	}
 	
 	@Deprecated
 	public static void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) {
-        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
-        if(provider == null) {
-            return;
-        }
-        
-        try {
-			provider.getProvider().sendTitle(player, fadeIn, stay, fadeOut, title);
-		} catch (VersionUnsupportedException ignored) {}
+		Title.builder().fadeIn(fadeIn).stay(stay).fadeOut(fadeOut).title(title).send(player);
 	}
 	
 	@Deprecated
 	public static void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) {
-        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
-        if(provider == null) {
-            return;
-        }
-        
-        try {
-			provider.getProvider().sendSubtitle(player, fadeIn, stay, fadeOut, subtitle);
-		} catch (VersionUnsupportedException ignored) {}
+		Title.builder().fadeIn(fadeIn).stay(stay).fadeOut(fadeOut).subtitle(subtitle).send(player);
 	}
 
 	@Deprecated	
 	public static void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
-        RegisteredServiceProvider<IChatProvider> provider = Bukkit.getServicesManager().getRegistration(IChatProvider.class);
-        if(provider == null) {
-            return;
-        }
-        
-        try {
-			provider.getProvider().sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
-		} catch (VersionUnsupportedException ignored) {}
+		Title.builder().fadeIn(fadeIn).stay(stay).fadeOut(fadeOut).title(title).subtitle(subtitle).send(player);
 	}
 
 }

@@ -1,6 +1,8 @@
 package org.valdi.SuperApiX.sponge;
 
+import org.valdi.SuperApiX.common.config.FilesProvider;
 import org.valdi.SuperApiX.common.config.IFilesProvider;
+import org.valdi.SuperApiX.common.databases.DatabasesProvider;
 import org.valdi.SuperApiX.common.databases.IDatabasesProvider;
 
 public class ServiceProviderManager {
@@ -10,21 +12,12 @@ public class ServiceProviderManager {
 		this.plugin = plugin;
 	}
 	
-	public void registerAll() {
-		// BossBar Utils
-		//plugin.getBootstrap().getServer().getServicesManager().register(IBossBarProvider.class, plugin.getBossBarSender(), plugin.getBootstrap(), ServicePriority.Normal);
-
-		// Chat & Tab Utils
-		//plugin.getBootstrap().getServer().getServicesManager().register(IChatProvider.class, plugin.getNmsProvider().getChatUtils(), plugin.getBootstrap(), ServicePriority.Normal);
-		
-		// WorldBorder Utils
-		//plugin.getBootstrap().getServer().getServicesManager().register(IWorldBorderProvider.class, plugin.getNmsProvider().getWorldBorderUtils(), plugin.getBootstrap(), ServicePriority.Normal);
-		
+	public void registerAll() {		
 		// Databases Utils
-		plugin.getBootstrap().getGame().getServiceManager().setProvider(plugin.getBootstrap(), IDatabasesProvider.class, plugin.getDatabasesProvider());
+		plugin.getBootstrap().getGame().getServiceManager().setProvider(plugin.getBootstrap(), IDatabasesProvider.class, new DatabasesProvider());
 		
 		// Files Utils
-		plugin.getBootstrap().getGame().getServiceManager().setProvider(plugin.getBootstrap(), IFilesProvider.class, plugin.getFilesProvider());
+		plugin.getBootstrap().getGame().getServiceManager().setProvider(plugin.getBootstrap(), IFilesProvider.class, new FilesProvider(plugin));
 	}
 
 }

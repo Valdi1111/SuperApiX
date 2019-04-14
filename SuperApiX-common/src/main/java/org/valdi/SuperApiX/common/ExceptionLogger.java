@@ -1,6 +1,5 @@
 package org.valdi.SuperApiX.common;
 
-import org.valdi.SuperApiX.common.logging.Debuggle;
 import org.valdi.SuperApiX.common.logging.PluginLogger;
 
 public class ExceptionLogger {
@@ -25,7 +24,7 @@ public class ExceptionLogger {
 	}
 	
 	public void logThrowableAsDebug() {
-        Debuggle.log(exception.toString());
+        logger.debug(exception.toString());
 	}
 
 }

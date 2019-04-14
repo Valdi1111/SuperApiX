@@ -1,10 +1,10 @@
 package org.valdi.SuperApiX.nukkit;
 
-import org.valdi.SuperApiX.common.logging.PluginLogger;
+import org.valdi.SuperApiX.common.logging.AbstractPluginLogger;
 
 import cn.nukkit.utils.Logger;
 
-public class NukkitPluginLogger implements PluginLogger {
+public class NukkitPluginLogger extends AbstractPluginLogger {
     private final Logger logger;
 
     public NukkitPluginLogger(Logger logger) {
@@ -13,6 +13,10 @@ public class NukkitPluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.debug(msg);
     }
 
@@ -33,6 +37,10 @@ public class NukkitPluginLogger implements PluginLogger {
 
     @Override
     public void debug(String msg, Throwable thrown) {
+    	if(!this.isDebugEnabled()) {
+    		return;
+    	}
+    	
         this.logger.debug(msg, thrown);
     }
 
