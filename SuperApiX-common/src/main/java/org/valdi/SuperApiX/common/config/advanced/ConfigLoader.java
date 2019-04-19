@@ -52,29 +52,6 @@ public class ConfigLoader<T> {
 		this.loader = loader;
 		this.data = data;
     }
-
-    /**
-     * Get a list of parameter types for the collection argument in this method
-     * @param writeMethod - write method
-     * @return a list of parameter types for the collection argument in this method
-     */
-    /*private List<Type> getCollectionParameterTypes(Method writeMethod) {
-        List<Type> result = new ArrayList<>();
-        // Get the return type
-        // This uses a trick to extract what the arguments are of the writeMethod of the field.
-        // In this way, we can deduce what type needs to be written at runtime.
-        Type[] genericParameterTypes = writeMethod.getGenericParameterTypes();
-        // There could be more than one argument, so step through them
-        for (Type genericParameterType : genericParameterTypes) {
-            // If the argument is a parameter, then do something - this should always be true if the parameter is a collection
-            if( genericParameterType instanceof ParameterizedType ) {
-                // Get the actual type arguments of the parameter
-                Type[] parameters = ((ParameterizedType)genericParameterType).getActualTypeArguments();
-                result.addAll(Arrays.asList(parameters));
-            }
-        }
-        return result;
-    }*/
     
     public void loadAnnotatedConfig() {
     	StoreTo to = data.getAnnotation(StoreTo.class);
@@ -185,13 +162,13 @@ public class ConfigLoader<T> {
 	            // Look in the YAML Config to see if this field exists (it should)
 	//            if (storage.contains(path)) {
 	                // Check for null values
-	                if (storage.get(path) == null) {                	
-	                    loader.getLogger().severe("Error in file: value not found for parameter!");
-	                    loader.getLogger().severe(" - file: " + storage.getFilePath().toString());
-	                    loader.getLogger().severe(" - path: " + path);
-	//                    method.invoke(instance, (Object) null);
-	                    continue;
-	                }
+                if (storage.get(path) == null) {                	
+                    loader.getLogger().severe("Error in file: value not found for parameter!");
+                    loader.getLogger().severe(" - file: " + storage.getFilePath().toString());
+                    loader.getLogger().severe(" - path: " + path);
+//                    method.invoke(instance, (Object) null);
+                    continue;
+                }
 	
 	                method.invoke(instance, storage.get(path, TypeToken.of(property.getReadMethod().getGenericReturnType())));
 	//            } else {
