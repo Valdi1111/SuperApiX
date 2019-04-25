@@ -6,6 +6,6 @@ import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public interface ISignEditor {
 
-    public void openSignEditor(Player player, Sign sign) throws VersionUnsupportedException;
+    void openSignEditor(Player player, Sign sign) throws VersionUnsupportedException;
 
 }

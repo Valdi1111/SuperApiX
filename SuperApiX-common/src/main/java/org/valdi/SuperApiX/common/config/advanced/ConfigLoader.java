@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.config.ConfigType;
 import org.valdi.SuperApiX.common.config.IFileStorage;
 import org.valdi.SuperApiX.common.config.IFilesProvider;
@@ -38,22 +39,21 @@ public class ConfigLoader<T> {
 	private T instance;
 
     /**
-     * Flag to indicate if this is a config or a pure object database (difference is in comments and annotations)
-     */
-    protected boolean configFlag;
-
-    /**
      * Constructor
-     * @param plugin - plugin
-     * @param type - class to store in the database
-     * @param databaseConnector - the database credentials, in this case, just the YAML functions
+     * @param loader - a loader instance (plugin)
+     * @param data - class to store
      */
     public ConfigLoader(StoreLoader loader, Class<T> data) {
 		this.loader = loader;
 		this.data = data;
     }
-    
-    public void loadAnnotatedConfig() {
+
+	/**
+	 * Load values from file. The config class must be annotated
+	 * with {@code StoreTo} class to create physical file and
+	 * with {@code StoredAt} class to copy it from jar if doesn't exists.
+	 */
+	public void loadAnnotatedConfig() {
     	StoreTo to = data.getAnnotation(StoreTo.class);
     	File toFolder = loader.getDataFolder();
     	if(!to.path().isEmpty()) {
@@ -62,8 +62,14 @@ public class ConfigLoader<T> {
     	
     	loadDynamicalAnnotatedConfig(toFolder, to.filename());
     }
-    
-    public void loadDynamicalAnnotatedConfig(File path, String name) {    	
+
+	/**
+	 * Load values from file. The config class must be annotated
+	 * with {@code StoredAt} class to copy it from jar if doesn't exists.
+	 * @param folder the physical file folder
+	 * @param name the physical file name (including file extension)
+	 */
+    public void loadDynamicalAnnotatedConfig(File folder, String name) {
     	Optional<IFilesProvider> provider = loader.getFilesProvider();
     	if(provider.isPresent()) {
     		ConfigType type = ConfigType.YAML;
@@ -72,11 +78,16 @@ public class ConfigLoader<T> {
         		type = fileType.value();
         	}
         	
-    		IFileStorage storage = provider.get().createFile(type, loader, path, name);
+    		IFileStorage storage = provider.get().createFile(type, loader, folder, name);
     		loadDynamicalAnnotatedConfig(storage);
     	}
     }
-    
+
+	/**
+	 * Load values from file. The config class must be annotated
+	 * with {@code StoredAt} class to copy it from jar if doesn't exists.
+	 * @param storage the physical file's IFileStorage
+	 */
     public void loadDynamicalAnnotatedConfig(IFileStorage storage) {
     	StoredAt from = data.getAnnotation(StoredAt.class);
     	String path = from.filename();
@@ -87,28 +98,28 @@ public class ConfigLoader<T> {
 		storage.fromParent(path);
 		loadConfig(storage);
     }
-    
-    private List<Field> getAllFields(List<Field> fields, Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
-        if (type.getSuperclass() != null) {
-            getAllFields(fields, type.getSuperclass());
-        }
+	/**
+	 * Get all private fields from class, including inherited from super classes
+	 * @param clazz the class to check
+	 * @return a list containing all the fields
+	 */
+	private List<Field> getAllFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<>();
+
+        while(clazz != null) {
+			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+			clazz = clazz.getSuperclass();
+		}
 
         return fields;
     }
 
-    /**
-     * Creates a list of <T>s filled with values from the provided YamlConfiguration
-     *
-     * @param config - YAML config file
-     *
-     * @return <T> filled with values
-     * @throws SecurityException
-     * @throws NoSuchMethodException
-     * @throws IllegalArgumentException
-     */
-    public void loadConfig(IFileStorage file) {
+	/**
+	 * Load class fields from file
+	 * @param file the config file
+	 */
+	public void loadConfig(IFileStorage file) {
     	this.storage = file;
     	
         // Create a new instance of the data of type T (which can be any class)
@@ -120,12 +131,12 @@ public class ConfigLoader<T> {
 		}
 
         // Run through all the fields in the object
-        for (Field field : getAllFields(new ArrayList<>(), data)) {
+        for (Field field : getAllFields(data)) {
         	try {
 	            // Check if there is a ConfigEntry annotation on the field
 	            ConfigEntry configEntry = field.getAnnotation(ConfigEntry.class);
 	            if(configEntry == null) {
-	            	continue;
+	            	continue; // Ignore unannotated fields
 	            }
 	            
 	            // Gets the getter and setters for this field using the JavaBeans system
@@ -140,7 +151,7 @@ public class ConfigLoader<T> {
 	             * Field annotation checks
 	             */	
 	            // If there is a config annotation then do something
-	            if (configEntry != null && !configEntry.path().isEmpty()) {
+	            if (!configEntry.path().isEmpty()) {
 	                path = configEntry.path();
 	            }
 	            // Some fields need custom handling to serialize or deserialize and the programmer will need to
@@ -155,14 +166,9 @@ public class ConfigLoader<T> {
 	                // We are done here. If a custom adapter was defined, the rest of this method does not need to be run
 	                continue;
 	            }
-	            
-	            /*
-	             * What follows is general deserialization code
-	             */
+
 	            // Look in the YAML Config to see if this field exists (it should)
-	//            if (storage.contains(path)) {
-	                // Check for null values
-                if (storage.get(path) == null) {                	
+                if (!storage.contains(path)) {
                     loader.getLogger().severe("Error in file: value not found for parameter!");
                     loader.getLogger().severe(" - file: " + storage.getFilePath().toString());
                     loader.getLogger().severe(" - path: " + path);
@@ -170,24 +176,17 @@ public class ConfigLoader<T> {
                     continue;
                 }
 	
-	                method.invoke(instance, storage.get(path, TypeToken.of(property.getReadMethod().getGenericReturnType())));
-	//            } else {
-	//                loader.getLogger().severe("Error in file: value not found for parameter!");
-	//                loader.getLogger().severe(" - file: " + storage.getFilePath().toString());
-	//                loader.getLogger().severe(" - path: " + path);
-	//            }
+				method.invoke(instance, storage.get(path, TypeToken.of(property.getReadMethod().getGenericReturnType())));
         	} catch(Exception e) {
         		loader.getLogger().severe("Error on config entry loading... ", e);
         	}
         }
     }
 
-    /**
-     * Inserts T into the corresponding database-table
-     *
-     * @param instance that should be inserted into the database
-     */
-    public void saveConfig() {
+	/**
+	 * Save changes to file
+	 */
+	public void saveConfig() {
     	if(storage.getRoot().hasMapChildren()) {
     		for(Object key : storage.getRoot().getChildrenMap().keySet()) {
         		storage.getRoot().removeChild(key);
@@ -199,7 +198,7 @@ public class ConfigLoader<T> {
 
         // See if there are any top-level comments
         // See if there are multiple comments
-        ConfigComment.Line comments = instance.getClass().getAnnotation(ConfigComment.Line.class);
+        ConfigComments comments = instance.getClass().getAnnotation(ConfigComments.class);
         if (comments != null) {
             for (ConfigComment comment : comments.value()) {
                 setComment(comment, yamlComments, "");
@@ -212,12 +211,12 @@ public class ConfigLoader<T> {
         }
 
         // Run through all the fields in the class that is being stored. EVERY field must have a get and set method
-        for (Field field : getAllFields(new ArrayList<>(), data)) {
+        for (Field field : getAllFields(data)) {
         	try {
 	            // Check if there is an annotation on the field
 	            ConfigEntry configEntry = field.getAnnotation(ConfigEntry.class);
 	            if(configEntry == null) {
-	            	continue;
+	            	continue; // Ignore unannotated fields
 	            }
 	            // Get the property descriptor for this field
 	            PropertyDescriptor property = new PropertyDescriptor(field.getName(), data);
@@ -230,7 +229,7 @@ public class ConfigLoader<T> {
 	
 	            // If there is a config path annotation then do something
 	            boolean experimental = false;
-	            if (configEntry != null && !configEntry.path().isEmpty()) {
+	            if (!configEntry.path().isEmpty()) {
 	                path = configEntry.path();
 	                experimental = configEntry.experimental();
 
@@ -246,7 +245,7 @@ public class ConfigLoader<T> {
 	                parent = path.substring(0, path.lastIndexOf('.')) + ".";
 	            }
 	            // See if there are multiple comments
-	            comments = field.getAnnotation(ConfigComment.Line.class);
+	            comments = field.getAnnotation(ConfigComments.class);
 	            if (comments != null) {
 	                for (ConfigComment bodyComment : comments.value()) {
 	                    setComment(bodyComment, yamlComments, parent);
@@ -287,16 +286,17 @@ public class ConfigLoader<T> {
 	                    property.getWriteMethod().invoke(instance, id);
 	                }
 	            }
-	            
-	            storage.set(path, TypeToken.of(property.getWriteMethod().getGenericParameterTypes()[0]), value);
+
+	            TypeToken token = TypeToken.of(property.getWriteMethod().getGenericParameterTypes()[0]);
+	            storage.set(path, token, value);
         	} catch(Exception e) {
         		loader.getLogger().severe("Error on config entry saving... ", e);
         	}
         }
         
         storage.save();
-        if (yamlComments != null && !yamlComments.isEmpty()) {
-            this.commentFile(storage.getFile(), yamlComments);
+        if (!yamlComments.isEmpty() && storage.getType() == ConfigType.YAML) {
+            this.commentYamlFile(storage.getFile(), yamlComments);
         }
     }
 
@@ -305,7 +305,7 @@ public class ConfigLoader<T> {
      * @param file - file
      * @param commentMap - map of comments to apply to file
      */
-    private void commentFile(File file, Map<String, String> commentMap) {
+    private void commentYamlFile(File file, Map<String, String> commentMap) {
         // Run through the file and add in the comments
         File commentedFile = new File(file.getPath() + ".tmp");
         List<String> newFile = new ArrayList<>();
@@ -362,8 +362,12 @@ public class ConfigLoader<T> {
         // Create comment
         yamlComments.put(random, "# " + comment);
     }
-    
-    public T getConfig() {
+
+	/**
+	 * Get the active instance of the config class
+	 * @return config class
+	 */
+	public T getConfig() {
     	return instance;
     }
 

@@ -12,6 +12,6 @@ public interface ITabList {
      * @param header  The header for the tablist.
      * @param footer  The footer for the tablist.
      */
-	public void sendTabTitle(Player player, String header, String footer) throws VersionUnsupportedException;
+	void sendTabTitle(Player player, String header, String footer) throws VersionUnsupportedException;
 
 }

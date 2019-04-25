@@ -11,16 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
-@Repeatable(ConfigComment.Line.class)
+@Repeatable(ConfigComments.class)
 @Target({ FIELD, METHOD, TYPE })
 public @interface ConfigComment {
 
     String value();
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ FIELD, METHOD, TYPE })
-    @interface Line {
-        ConfigComment[] value();
-    }
 
 }

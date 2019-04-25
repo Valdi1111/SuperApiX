@@ -7,10 +7,7 @@ import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHelper;
 
 public class Dependencies {
-	private static final Set<Dependency> legacyDependencies = new HashSet<Dependency>() {
-		/**
-		 * 
-		 */
+	/*private static final Set<Dependency> legacyDependencies = new HashSet<Dependency>() {
 		private static final long serialVersionUID = 1L;
 
 		{
@@ -40,215 +37,240 @@ public class Dependencies {
 			add(CONFIGURATE_TOML);
 			add(TOML4J);
 		}
-	};
+	};*/
 
-    public static final Dependency ASM = new Dependency(
-    		"ASM",
-            "org.ow2.asm",
-            "asm",
-            "6.2",
-            "kXvaiIvFQxhzJdX7wQNCB+7RUldO943xc0ygruQLf8g=",
-            false
-    );
-    public static final Dependency ASM_COMMONS = new Dependency(
-    		"ASM_COMMONS",
-            "org.ow2.asm",
-            "asm-commons",
-            "6.2",
-            "FVRZE9sGyYeqQE8CjjNQHZ8n+M7WEvc3J+NUesTeh4w=",
-            false
-    );
-    public static final Dependency JAR_RELOCATOR = new Dependency(
-    		"JAR_RELOCATOR",
-            "me.lucko",
-            "jar-relocator",
-            "1.3",
-            "mmz3ltQbS8xXGA2scM0ZH6raISlt4nukjCiU2l9Jxfs=",
-            false
-    );
-    public static final Dependency TEXT = new Dependency(
-    		"TEXT",
-            "net{}kyori",
-            "text",
-            "1.11-1.4.0",
-            "drQpwf+oI1+DPrn0iCvEtoID+xXR3dpZK5ySaBrUiok=",
-            true
-    );
-    public static final Dependency CAFFEINE = new Dependency(
-    		"CAFFEINE",
-            "com{}github{}ben-manes{}caffeine",
-            "caffeine",
-            "2.6.2",
-            "53pEV3NfB1FY29Ahx2YXl91IVpX8Ttkt/d401HFNl1A=",
-            true
-    );
-    public static final Dependency OKIO = new Dependency(
-    		"OKIO",
-            "com{}squareup{}" + RelocationHelper.OKIO_STRING,
-            RelocationHelper.OKIO_STRING,
-            "1.14.1",
-            "InCF6E8zEsc1QxiVJF3nwKe29qUK30KayCVqFQoR7ck=",
-            true
-    );
-    public static final Dependency OKHTTP = new Dependency(
-    		"OKHTTP",
-            "com{}squareup{}" + RelocationHelper.OKHTTP3_STRING,
-            "okhttp",
-            "3.10.0",
-            "Sso+VSr7HOtH+JVmhfYpWiduSfoD+QZvi2voO+xW+2Y=",
-            true
-    );
-    public static final Dependency MARIADB_DRIVER = new Dependency(
-    		"MARIADB_DRIVER",
-            "org{}mariadb{}jdbc",
-            "mariadb-java-client",
-            "2.2.5",
-            "kFfgzoMFrFKirAFh/DgobV7vAu9NhdnhZLHD4/PCddI=",
-            true
-    );
-    public static final Dependency MYSQL_DRIVER = new Dependency(
-    		"MYSQL_DRIVER",
-            "mysql",
-            "mysql-connector-java",
-            "5.1.46",
-            "MSIIl2HmQD8C6Kge1KLWWi4QKXNGUboA8uqS2SD/ex4=",
-            true
-    );
-    public static final Dependency POSTGRESQL_DRIVER = new Dependency(
-    		"POSTGRESQL_DRIVER",
-            "org{}postgresql",
-            "postgresql",
-            "9.4.1212",
-            "DLKhWL4xrPIY4KThjI89usaKO8NIBkaHc/xECUsMNl0=",
-            true
-    );
-    public static final Dependency H2_DRIVER = new Dependency(
-    		"H2_DRIVER",
-            "com.h2database",
-            "h2",
-            "1.4.197",
-            "N/UhbhSvJ3KTDf+bhzQ1PwqA6Juj8z4GVEHeZTfF6EI=",
-            true
+	public static final Dependency ASM = Dependency
+			.builder("ASM")
+			.setGroupId("org.ow2.asm")
+			.setArtifactId("asm")
+			.setVersion("6.2")
+			.setChecksum("kXvaiIvFQxhzJdX7wQNCB+7RUldO943xc0ygruQLf8g=")
+			.setAutoLoad(false)
+			.build();
+
+	public static final Dependency ASM_COMMONS = Dependency
+			.builder("ASM_COMMONS")
+			.setGroupId("org.ow2.asm")
+			.setArtifactId("asm-commons")
+			.setVersion("6.2")
+			.setChecksum("FVRZE9sGyYeqQE8CjjNQHZ8n+M7WEvc3J+NUesTeh4w=")
+			.setAutoLoad(false)
+			.build();
+
+	public static final Dependency JAR_RELOCATOR = Dependency
+			.builder("JAR_RELOCATOR")
+			.setGroupId("me.lucko")
+			.setArtifactId("jar-relocator")
+			.setVersion("1.3")
+			.setChecksum("mmz3ltQbS8xXGA2scM0ZH6raISlt4nukjCiU2l9Jxfs=")
+			.setAutoLoad(false)
+			.build();
+
+	public static final Dependency TEXT = Dependency
+			.builder("TEXT")
+			.setGroupId("net{}kyori")
+			.setArtifactId("text")
+			.setVersion("1.11-1.4.0")
+			.setChecksum("drQpwf+oI1+DPrn0iCvEtoID+xXR3dpZK5ySaBrUiok=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CAFFEINE = Dependency
+			.builder("CAFFEINE")
+			.setGroupId("com{}github{}ben-manes{}caffeine")
+			.setArtifactId("caffeine")
+			.setVersion("2.6.2")
+			.setChecksum("53pEV3NfB1FY29Ahx2YXl91IVpX8Ttkt/d401HFNl1A=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency OKIO = Dependency
+			.builder("OKIO")
+			.setGroupId("com{}squareup{}" + RelocationHelper.OKIO_STRING)
+			.setArtifactId(RelocationHelper.OKIO_STRING)
+			.setVersion("1.14.1")
+			.setChecksum("InCF6E8zEsc1QxiVJF3nwKe29qUK30KayCVqFQoR7ck=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency OKHTTP = Dependency
+			.builder("OKHTTP")
+			.setGroupId("com{}squareup{}" + RelocationHelper.OKHTTP3_STRING)
+			.setArtifactId("okhttp")
+			.setVersion("3.10.0")
+			.setChecksum("Sso+VSr7HOtH+JVmhfYpWiduSfoD+QZvi2voO+xW+2Y=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency MARIADB_DRIVER = Dependency
+			.builder("MARIADB_DRIVER")
+			.setGroupId("org{}mariadb{}jdbc")
+			.setArtifactId("mariadb-java-client")
+			.setVersion("2.2.5")
+			.setChecksum("kFfgzoMFrFKirAFh/DgobV7vAu9NhdnhZLHD4/PCddI=")
+			.setAutoLoad(true)
+			.build();
+
+    public static final Dependency MYSQL_DRIVER = Dependency
+			.builder("MYSQL_DRIVER")
+			.setGroupId("mysql")
+			.setArtifactId("mysql-connector-java")
+			.setVersion("5.1.46")
+			.setChecksum("MSIIl2HmQD8C6Kge1KLWWi4QKXNGUboA8uqS2SD/ex4=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency POSTGRESQL_DRIVER = Dependency
+			.builder("POSTGRESQL_DRIVER")
+			.setGroupId("org{}postgresql")
+			.setArtifactId("postgresql")
+			.setVersion("9.4.1212")
+			.setChecksum("DLKhWL4xrPIY4KThjI89usaKO8NIBkaHc/xECUsMNl0=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency H2_DRIVER = Dependency
+			.builder("H2_DRIVER")
+			.setGroupId("com.h2database")
+			.setArtifactId("h2")
+			.setVersion("1.4.197")
+			.setChecksum("N/UhbhSvJ3KTDf+bhzQ1PwqA6Juj8z4GVEHeZTfF6EI=")
+			.setAutoLoad(true)
+			.build();
             // we don't apply relocations to h2 - it gets loaded via
             // an isolated classloader
-    );
-    public static final Dependency SQLITE_DRIVER = new Dependency(
-    		"SQLITE_DRIVER",
-            "org.xerial",
-            "sqlite-jdbc",
-            "3.21.0",
-            "bglRaH4Y+vQFZV7TfOdsVLO3rJpauJ+IwjuRULAb45Y=",
-            false
+
+    public static final Dependency SQLITE_DRIVER = Dependency
+			.builder("SQLITE_DRIVER")
+			.setGroupId("org.xerial")
+			.setArtifactId("sqlite-jdbc")
+			.setVersion("3.21.0")
+			.setChecksum("bglRaH4Y+vQFZV7TfOdsVLO3rJpauJ+IwjuRULAb45Y=")
+			.setAutoLoad(false)
+			.build();
             // we don't apply relocations to sqlite - it gets loaded via
             // an isolated classloader
-    );
-    public static final Dependency HIKARI = new Dependency(
-    		"HIKARI",
-            "com{}zaxxer",
-            "HikariCP",
-            "3.2.0",
-            "sAjeaLvYWBH0tujwhg0JZsastPLnX6vUbsIJRWnL7+s=",
-            true
-    );
-    public static final Dependency SLF4J_SIMPLE = new Dependency(
-    		"SLF4J_SIMPLE",
-            "org.slf4j",
-            "slf4j-simple",
-            "1.7.25",
-            "CWbob/+lvlLT2ee4ndZ02YoD7tCkVPuvfBvZSTvZ2HQ=",
-            true
-    );
-    public static final Dependency SLF4J_API = new Dependency(
-    		"SLF4J_API",
-            "org.slf4j",
-            "slf4j-api",
-            "1.7.25",
-            "GMSgCV1cHaa4F1kudnuyPSndL1YK1033X/OWHb3iW3k=",
-            true
-    );
-    public static final Dependency MONGODB_DRIVER = new Dependency(
-    		"MONGODB_DRIVER",
-            "org.mongodb",
-            "mongo-java-driver",
-            "3.7.1",
-            "yllBCqAZwWCNUoMPR0JWilqhVA46+9F47wIcnYOcoy4=",
-            true
-    );
-    public static final Dependency JEDIS = new Dependency(
-    		"JEDIS",
-            "redis.clients",
-            "jedis",
-            "2.9.0",
-            "HqqWy45QVeTVF0Z/DzsrPLvGKn2dHotqI8YX7GDThvo=",
-            true
-    );
-    public static final Dependency COMMONS_POOL_2 = new Dependency(
-    		"COMMONS_POOL_2",
-            "org.apache.commons",
-            "commons-pool2",
-            "2.5.0",
-            "IRhwQ8eZcdnISLlxhA3oQdoOXE3zDJI6lpFBMfue+Wk=",
-            true
-    );
-    public static final Dependency CONFIGURATE_CORE = new Dependency(
-    		"CONFIGURATE_CORE",
-            "me{}lucko{}configurate",
-            "configurate-core",
-            "3.5",
-            "J+1WnX1g5gr4ne8qA7DuBadLDOsZnOZjwHbdRmVgF6c=",
-            true
-    );
-    public static final Dependency CONFIGURATE_GSON = new Dependency(
-    		"CONFIGURATE_GSON",
-            "me{}lucko{}configurate",
-            "configurate-gson",
-            "3.5",
-            "Q3wp3xpqy41bJW3yUhbHOzm+NUkT4bUUBI2/AQLaa3c=",
-            true
-    );
-    public static final Dependency CONFIGURATE_YAML = new Dependency(
-    		"CONFIGURATE_YAML",
-            "me{}lucko{}configurate",
-            "configurate-yaml",
-            "3.5",
-            "Dxr1o3EPbpOOmwraqu+cors8O/nKwJnhS5EiPkTb3fc=",
-            true
-    );
-    public static final Dependency CONFIGURATE_HOCON = new Dependency(
-    		"CONFIGURATE_HOCON",
-            "me{}lucko{}configurate",
-            "configurate-hocon",
-            "3.5",
-            "sOym1KPmQylGSfk90ZFqobuvoZfEWb7XMmMBwbHuxFw=",
-            true
-    );
-    public static final Dependency HOCON_CONFIG = new Dependency(
-    		"HOCON_CONFIG",
-            "com{}typesafe",
-            "config",
-            "1.3.3",
-            "tfHWBx8VSNBb6C9Z+QOcfTeheHvY48Z34x7ida9KRiE=",
-            true
-    );
-    public static final Dependency CONFIGURATE_TOML = new Dependency(
-    		"CONFIGURATE_TOML",
-            "me{}lucko{}configurate",
-            "configurate-toml",
-            "3.5",
-            "U8p0XSTaNT/uebvLpO/vb6AhVGQDYiZsauSGB9zolPU=",
-            true
-    );
-    public static final Dependency TOML4J = new Dependency(
-    		"TOML4J",
-            "com{}moandjiezana{}toml",
-            "toml4j",
-            "0.7.2",
-            "9UdeY+fonl22IiNImux6Vr0wNUN3IHehfCy1TBnKOiA=",
-            true
-    );
-    
-    public static Set<Dependency> values() {
+
+    public static final Dependency HIKARI = Dependency
+			.builder("HIKARI")
+			.setGroupId("com{}zaxxer")
+			.setArtifactId("HikariCP")
+			.setVersion("3.2.0")
+			.setChecksum("sAjeaLvYWBH0tujwhg0JZsastPLnX6vUbsIJRWnL7+s=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency SLF4J_SIMPLE = Dependency
+			.builder("SLF4J_SIMPLE")
+			.setGroupId("org.slf4j")
+			.setArtifactId("slf4j-simple")
+			.setVersion("1.7.25")
+			.setChecksum("CWbob/+lvlLT2ee4ndZ02YoD7tCkVPuvfBvZSTvZ2HQ=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency SLF4J_API = Dependency
+			.builder("SLF4J_API")
+			.setGroupId("org.slf4j")
+			.setArtifactId("slf4j-api")
+			.setVersion("1.7.25")
+			.setChecksum("GMSgCV1cHaa4F1kudnuyPSndL1YK1033X/OWHb3iW3k=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency MONGODB_DRIVER = Dependency
+			.builder("MONGODB_DRIVER")
+			.setGroupId("org.mongodb")
+			.setArtifactId("mongo-java-driver")
+			.setVersion("3.7.1")
+			.setChecksum("yllBCqAZwWCNUoMPR0JWilqhVA46+9F47wIcnYOcoy4=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency JEDIS = Dependency
+			.builder("JEDIS")
+			.setGroupId("redis.clients")
+			.setArtifactId("jedis")
+			.setVersion("2.9.0")
+			.setChecksum("HqqWy45QVeTVF0Z/DzsrPLvGKn2dHotqI8YX7GDThvo=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency COMMONS_POOL_2 = Dependency
+			.builder("COMMONS_POOL_2")
+			.setGroupId("org.apache.commons")
+			.setArtifactId("commons-pool2")
+			.setVersion("2.5.0")
+			.setChecksum("IRhwQ8eZcdnISLlxhA3oQdoOXE3zDJI6lpFBMfue+Wk=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CONFIGURATE_CORE = Dependency
+			.builder("CONFIGURATE_CORE")
+			.setGroupId("me{}lucko{}configurate")
+			.setArtifactId("configurate-core")
+			.setVersion("3.5")
+			.setChecksum("J+1WnX1g5gr4ne8qA7DuBadLDOsZnOZjwHbdRmVgF6c=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CONFIGURATE_GSON = Dependency
+			.builder("CONFIGURATE_GSON")
+			.setGroupId("me{}lucko{}configurate")
+			.setArtifactId("configurate-gson")
+			.setVersion("3.5")
+			.setChecksum("Q3wp3xpqy41bJW3yUhbHOzm+NUkT4bUUBI2/AQLaa3c=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CONFIGURATE_YAML = Dependency
+			.builder("CONFIGURATE_YAML")
+			.setGroupId("me{}lucko{}configurate")
+			.setArtifactId("configurate-yaml")
+			.setVersion("3.5")
+			.setChecksum("Dxr1o3EPbpOOmwraqu+cors8O/nKwJnhS5EiPkTb3fc=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CONFIGURATE_HOCON = Dependency
+			.builder("CONFIGURATE_HOCON")
+			.setGroupId("me{}lucko{}configurate")
+			.setArtifactId("configurate-hocon")
+			.setVersion("3.5")
+			.setChecksum("sOym1KPmQylGSfk90ZFqobuvoZfEWb7XMmMBwbHuxFw=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency HOCON_CONFIG = Dependency
+			.builder("HOCON_CONFIG")
+			.setGroupId("com{}typesafe")
+			.setArtifactId("config")
+			.setVersion("1.3.3")
+			.setChecksum("tfHWBx8VSNBb6C9Z+QOcfTeheHvY48Z34x7ida9KRiE=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency CONFIGURATE_TOML = Dependency
+			.builder("CONFIGURATE_TOML")
+			.setGroupId("me{}lucko{}configurate")
+			.setArtifactId("configurate-toml")
+			.setVersion("3.5")
+			.setChecksum("U8p0XSTaNT/uebvLpO/vb6AhVGQDYiZsauSGB9zolPU=")
+			.setAutoLoad(true)
+			.build();
+
+	public static final Dependency TOML4J = Dependency
+			.builder("TOML4J")
+			.setGroupId("com{}moandjiezana{}toml")
+			.setArtifactId("toml4j")
+			.setVersion("0.7.2")
+			.setChecksum("9UdeY+fonl22IiNImux6Vr0wNUN3IHehfCy1TBnKOiA=")
+			.setAutoLoad(true)
+			.build();
+
+
+	/*public static Set<Dependency> values() {
     	return legacyDependencies;
-    }
+    }*/
 
 }

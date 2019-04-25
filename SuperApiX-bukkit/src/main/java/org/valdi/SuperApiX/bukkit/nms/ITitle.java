@@ -19,7 +19,7 @@ public interface ITitle {
      * @deprecated Use {@link sendTitle} instead
      */
 	@Deprecated
-	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) throws VersionUnsupportedException;
+	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) throws VersionUnsupportedException;
 
     /**
      * Sends the specified player a subtitle with the specified params.
@@ -32,7 +32,7 @@ public interface ITitle {
      * @deprecated Use {@link sendTitle} instead
      */
 	@Deprecated
-	public void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) throws VersionUnsupportedException;
+	void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) throws VersionUnsupportedException;
 
     /**
      * Sends the specified player a title with a subtitle with the specified params.
@@ -44,6 +44,6 @@ public interface ITitle {
      * @param title    The message for the title.
      * @param subtitle The message for the subtitle.
      */
-	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException;
+	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException;
 
 }

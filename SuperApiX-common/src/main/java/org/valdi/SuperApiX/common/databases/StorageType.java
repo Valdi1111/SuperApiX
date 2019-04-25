@@ -27,21 +27,34 @@ public enum StorageType {
         this.identifiers = ImmutableList.copyOf(identifiers);
     }
 
+    /**
+     * Get a StorageType from his identifier
+     * @param name the identifier
+     * @return the corresponding StorageType
+     */
     public static StorageType parse(String name) {
-        for (StorageType t : values()) {
-            for (String id : t.getIdentifiers()) {
+        for (StorageType type : values()) {
+            for (String id : type.getIdentifiers()) {
                 if (id.equalsIgnoreCase(name)) {
-                    return t;
+                    return type;
                 }
             }
         }
         return null;
     }
 
+    /**
+     * Get the name/id for this StorageType
+     * @return name
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Get the identifiers for this StorageType
+     * @return identifiers
+     */
     public List<String> getIdentifiers() {
         return this.identifiers;
     }

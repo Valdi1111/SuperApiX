@@ -8,13 +8,9 @@ public enum ConfigType {
 
     // Config file based
     YAML("YAML", "yaml", "yml"),
-    JSON("JSON", "json", "flatfile"),
+    JSON("JSON", "json", "gson", "flatfile"),
     HOCON("HOCON", "hocon"),
     TOML("TOML", "toml"),
-    /*YAML_COMBINED("YAML Combined", "yaml-combined"),
-    JSON_COMBINED("JSON Combined", "json-combined"),
-    HOCON_COMBINED("HOCON Combined", "hocon-combined"),
-    TOML_COMBINED("TOML Combined", "toml-combined"),*/
 
     // Custom
     CUSTOM("Custom", "custom");
@@ -27,21 +23,34 @@ public enum ConfigType {
         this.identifiers = ImmutableList.copyOf(identifiers);
     }
 
+    /**
+     * Get a ConfigType from his identifier
+     * @param name the identifier
+     * @return the corresponding ConfigType
+     */
     public static ConfigType parse(String name) {
-        for (ConfigType t : values()) {
-            for (String id : t.getIdentifiers()) {
+        for (ConfigType type : values()) {
+            for (String id : type.getIdentifiers()) {
                 if (id.equalsIgnoreCase(name)) {
-                    return t;
+                    return type;
                 }
             }
         }
         return null;
     }
 
+    /**
+     * Get the name/id for this ConfigType
+     * @return name
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Get the identifiers for this ConfigType
+     * @return identifiers
+     */
     public List<String> getIdentifiers() {
         return this.identifiers;
     }

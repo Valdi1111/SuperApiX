@@ -34,7 +34,7 @@ public class DependencyManager {
     private final ISuperPlugin plugin;
     private final MessageDigest digest;
     private final DependencyRegistry registry;
-    private final Map<Dependency, Path> loaded = new HashMap<Dependency, Path>();
+    private final Map<Dependency, Path> loaded = new HashMap<>();
     private final Map<ImmutableSet<Dependency>, IsolatedClassLoader> loaders = new HashMap<>();
     private RelocationHandler relocationHandler = null;
 
@@ -117,7 +117,7 @@ public class DependencyManager {
                 Path file = downloadDependency(saveDirectory, dependency);
                 sources.add(new Source(dependency, file));
             } catch (Throwable e) {
-                this.plugin.getLogger().severe("Exception whilst downloading dependency " + dependency.getName());
+                this.plugin.getLogger().severe("Exception whilst downloading dependency " + dependency.getId());
                 e.printStackTrace();
             }
         }
@@ -153,7 +153,7 @@ public class DependencyManager {
 
                 remappedJars.add(new Source(source.getDependency(), output));
             } catch (Throwable e) {
-                this.plugin.getLogger().severe("Unable to remap the source file '" + source.getDependency().getName() + "'.");
+                this.plugin.getLogger().severe("Unable to remap the source file '" + source.getDependency().getId() + "'.");
                 e.printStackTrace();
             }
         }
@@ -176,7 +176,7 @@ public class DependencyManager {
     }
 
     private Path downloadDependency(Path saveDirectory, Dependency dependency) throws Exception {
-        String fileName = dependency.getName().toLowerCase() + "-" + dependency.getVersion() + ".jar";
+        String fileName = dependency.getId().toLowerCase() + "-" + dependency.getVersion() + ".jar";
         Path file = saveDirectory.resolve(fileName);
 
         // if the file already exists, don't attempt to re-download it.
