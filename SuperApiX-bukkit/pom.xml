@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>spigotmc.org</groupId>
 			<artifactId>spigot-1.14</artifactId>
-			<version>1.14-pre5</version>
+			<version>1.14</version>
 			<scope>provided</scope>
 		</dependency>
 	   	

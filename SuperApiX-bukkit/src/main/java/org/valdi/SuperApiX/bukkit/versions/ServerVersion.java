@@ -56,6 +56,8 @@ public class ServerVersion {
     public static final ServerVersion V1_13 = new ServerVersion("V1_13", "1.13");
     public static final ServerVersion V1_13_1 = new ServerVersion("V1_13_1", "1.13.1");
     public static final ServerVersion V1_13_2 = new ServerVersion("V1_13_2", "1.13.2");
+
+    public static final ServerVersion V1_14 = new ServerVersion("V1_14", "1.14");
 	
 	public static Optional<ServerVersion> getById(String id) {
 		return values().stream().filter(s -> s.getId().equals(id)).findFirst();

@@ -1,8 +1,8 @@
 package org.valdi.SuperApiX.bukkit.nms.nbt;
 
-import java.util.Set;
-
 import org.valdi.SuperApiX.bukkit.nms.nbt.utils.MinecraftVersion;
+
+import java.util.Set;
 
 
 public class NBTCompound {
@@ -146,6 +146,7 @@ public class NBTCompound {
     }
 
     public NBTCompound addCompound(String name) {
+        if(getType(name) == NBTType.NBTTagCompound)return getCompound(name);
         NBTReflectionUtil.addNBTTagCompound(this, name);
         return getCompound(name);
     }
@@ -161,8 +162,10 @@ public class NBTCompound {
     }
 
     public NBTType getType(String name) {
-        if (MinecraftVersion.getVersion() == MinecraftVersion.MC1_7_R4) return NBTType.NBTTagEnd;
-        return NBTType.valueOf((byte) NBTReflectionUtil.getData(this, ReflectionMethod.COMPOUND_GET_TYPE, name));
+        if (MinecraftVersion.getVersion() == MinecraftVersion.MC1_7_R4) return null;
+        Object o = NBTReflectionUtil.getData(this, ReflectionMethod.COMPOUND_GET_TYPE, name);
+        if(o == null)return null;
+        return NBTType.valueOf((byte) o);
     }
 
     @Override
@@ -189,7 +192,9 @@ public class NBTCompound {
     }
     
     public String asNBTString(){
-        return NBTReflectionUtil.gettoCompount(getCompound(), this).toString();
+        Object comp = NBTReflectionUtil.gettoCompount(getCompound(), this);
+        if(comp == null)return "{}";
+        return comp.toString();
     }
 
 }
