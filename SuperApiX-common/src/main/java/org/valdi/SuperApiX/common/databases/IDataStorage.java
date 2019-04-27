@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.valdi.SuperApiX.common.ISuperPlugin;
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.databases.data.CallbackQuery;
 import org.valdi.SuperApiX.common.databases.data.CallbackStatement;
 import org.valdi.SuperApiX.common.databases.data.CallbackUpdate;
@@ -14,10 +14,19 @@ import org.valdi.SuperApiX.common.databases.data.ExceptionHandler;
 import org.valdi.SuperApiX.common.databases.data.SafeStatementRunnable;
 
 public interface IDataStorage {
-	
-	public Connection getConnection() throws DatabaseException;
 
-	public void close() throws DatabaseException;
+	/**
+	 * Get the database connection
+	 * @return the database connection
+	 * @throws DatabaseException if a database access error occurs
+	 */
+	Connection getConnection() throws DatabaseException;
+
+	/**
+	 * Close the database connection
+	 * @throws DatabaseException if the connection throws an Exception
+	 */
+	void close() throws DatabaseException;
 
     /**
      * Creates a <code>PreparedStatement</code> object for sending
@@ -42,20 +51,22 @@ public interface IDataStorage {
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
      * The holdability of the created result sets can be determined by
-     * calling {@link #getHoldability}.
+     * calling {@link Connection#getHoldability}.
      *
      * @param sql an SQL statement that may contain one or more '?' IN
      * parameter placeholders
      * @return a new default <code>PreparedStatement</code> object containing the
-     * pre-compiled SQL statementì
-	 * @throws DataManipulationException if a database access error occurs
-     * or this method is called on a closed connection
-	 * @throws DatabaseException if the connection is inaccessible
+     * pre-compiled SQL statement
+	 * @throws DataManipulationException some unhandled errors
+	 * @throws DatabaseException if a database access error occurs
+	 * or this method is called on a closed connection
      */
-	public default CallableStatement prepareCallable(String sql) throws DataManipulationException, DatabaseException {
+	default CallableStatement prepareCallable(String sql) throws DataManipulationException, DatabaseException {
 		try {
 			return getConnection().prepareCall(sql);
 		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		} catch (Exception e) {
 			throw new DataManipulationException(e);
 		}
 	}
@@ -80,21 +91,23 @@ public interface IDataStorage {
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
      * The holdability of the created result sets can be determined by
-     * calling {@link #getHoldability}.
+     * calling {@link Connection#getHoldability}.
      *
      * @param sql an SQL statement that may contain one or more '?'
      * parameter placeholders. Typically this statement is specified using JDBC
      * call escape syntax.
      * @return a new default <code>CallableStatement</code> object containing the
      * pre-compiled SQL statement
-	 * @throws DataManipulationException if a database access error occurs
-     * or this method is called on a closed connection
-	 * @throws DatabaseException if the connection is inaccessible
+	 * @throws DataManipulationException some unhandled errors
+	 * @throws DatabaseException if a database access error occurs
+	 * or this method is called on a closed connection
      */
-	public default PreparedStatement prepareStatement(String sql) throws DataManipulationException, DatabaseException {
+	default PreparedStatement prepareStatement(String sql) throws DataManipulationException, DatabaseException {
 		try {
 			return getConnection().prepareStatement(sql);
-		} catch (SQLException e) {
+		} catch(SQLException e) {
+			throw new DatabaseException(e);
+		} catch(Exception e) {
 			throw new DataManipulationException(e);
 		}
 	}
@@ -117,9 +130,10 @@ public interface IDataStorage {
 	 * @param explenation
 	 * @param handler
 	 * @param callback
+	 * @param async
 	 */
-	public default void executeStatement(ISuperPlugin plugin, PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackStatement callback, boolean async) {
-		SafeStatementRunnable safeStatement = new SafeStatementRunnable(plugin, explenation, handler) {
+	default void executeStatement(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackStatement callback, boolean async) {
+		new SafeStatementRunnable(getStoreLoader(), explenation, handler) {
 
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
@@ -131,17 +145,13 @@ public interface IDataStorage {
 					
 					statement.close();
 				} catch (SQLException e) {
+					throw new DatabaseException(e);
+				} catch (Exception e) {
 					throw new DataManipulationException(e);
 				}
 			}
 			
-		};
-
-		if(async) {
-			plugin.getScheduler().executeAsync(safeStatement);
-		} else {
-			safeStatement.run();
-		}
+		}.execute(async);
 	}
 	
 	/**
@@ -152,9 +162,10 @@ public interface IDataStorage {
 	 * @param explenation
 	 * @param handler
 	 * @param callback
+	 * @param async
 	 */
-	public default void executeQuery(ISuperPlugin plugin, PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackQuery callback, boolean async) {
-		SafeStatementRunnable safeStatement = new SafeStatementRunnable(plugin, explenation, handler) {
+	default void executeQuery(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackQuery callback, boolean async) {
+		new SafeStatementRunnable(getStoreLoader(), explenation, handler) {
 
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
@@ -166,17 +177,13 @@ public interface IDataStorage {
 					
 					statement.close();
 				} catch (SQLException e) {
+					throw new DatabaseException(e);
+				} catch (Exception e) {
 					throw new DataManipulationException(e);
 				}
 			}
 			
-		};
-
-		if(async) {
-			plugin.getScheduler().executeAsync(safeStatement);
-		} else {
-			safeStatement.run();
-		}
+		}.execute(async);
 	}
 	
 	/**
@@ -189,9 +196,10 @@ public interface IDataStorage {
 	 * @param explenation
 	 * @param handler
 	 * @param callback
+	 * @param async
 	 */
-	public default void executeUpdate(ISuperPlugin plugin, PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackUpdate callback, boolean async) {
-		SafeStatementRunnable safeStatement = new SafeStatementRunnable(plugin, explenation, handler) {
+	default void executeUpdate(PreparedStatement statement, String explenation, ExceptionHandler handler, CallbackUpdate callback, boolean async) {
+		new SafeStatementRunnable(getStoreLoader(), explenation, handler) {
 
 			@Override
 			public void executeStatement() throws DataManipulationException, DatabaseException {
@@ -203,19 +211,25 @@ public interface IDataStorage {
 					
 					statement.close();
 				} catch (SQLException e) {
+					throw new DatabaseException(e);
+				} catch (Exception e) {
 					throw new DataManipulationException(e);
 				}
 			}
 			
-		};
-
-		if(async) {
-			plugin.getScheduler().executeAsync(safeStatement);
-		} else {
-			safeStatement.run();
-		}
+		}.execute(async);
 	}
 
-	public StorageType getType();
+	/**
+	 * Get the StorageType for this database
+	 * @return the storage type
+	 */
+	StorageType getType();
+
+	/**
+	 * Get the store loader associated with this database
+	 * @return the storage loader
+	 */
+	StoreLoader getStoreLoader();
 
 }

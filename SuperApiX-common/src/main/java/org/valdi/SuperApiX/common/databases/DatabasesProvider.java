@@ -2,6 +2,7 @@ package org.valdi.SuperApiX.common.databases;
 
 import java.io.File;
 
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.databases.types.H2Database;
 import org.valdi.SuperApiX.common.databases.types.MariadbDatabase;
 import org.valdi.SuperApiX.common.databases.types.MongodbDatabase;
@@ -12,66 +13,48 @@ import org.valdi.SuperApiX.common.databases.types.SqLiteDatabase;
 public class DatabasesProvider implements IDatabasesProvider {
 
 	@Override
-	public IDataStorage createSqLiteDatabase(File file) throws DatabaseException {
-		if(file == null) {
-			throw new IllegalArgumentException("Database file cannot be null!");
-		}
-		
-		return new SqLiteDatabase(file);
-	}
-
-	@Override
-	public IDataStorage createSqLiteDatabase(File path, String name) throws DatabaseException {
+	public IDataStorage createSqLiteDatabase(StoreLoader loader, File path, String name) throws DatabaseException {
 		if(path == null || name == null) {
 			throw new IllegalArgumentException("Database path & name cannot be null!");
 		}
 		
-		return createSqLiteDatabase(new File(path, name));
+		return new SqLiteDatabase(loader, new File(path, name));
 	}
 
 	@Override
-	public IDataStorage createH2Database(File file) throws DatabaseException {
-		if(file == null) {
-			throw new IllegalArgumentException("Database file cannot be null!");
-		}
-		
-		return new H2Database(file);
-	}
-
-	@Override
-	public IDataStorage createH2Database(File path, String name) throws DatabaseException {
+	public IDataStorage createH2Database(StoreLoader loader, File path, String name) throws DatabaseException {
 		if(path == null || name == null) {
 			throw new IllegalArgumentException("Database path & name cannot be null!");
 		}
 		
-		return createH2Database(new File(path, name));
+		return new H2Database(loader, new File(path, name));
 	}
 
 	@Override
-	public IDataStorage createMySqlDatabase(String address, int port, String database, String options, 
+	public IDataStorage createMySqlDatabase(StoreLoader loader, String address, int port, String database, String options,
 			String username, String password, int poolSize, String poolName) throws DatabaseException {
-		return new MySqlDatabase(fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""), 
+		return new MySqlDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
 				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
 	}
 
 	@Override
-	public IDataStorage createMariadbDatabase(String address, int port, String database, String options, 
+	public IDataStorage createMariadbDatabase(StoreLoader loader, String address, int port, String database, String options,
 			String username, String password, int poolSize, String poolName) throws DatabaseException {
-		return new MariadbDatabase(fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""), 
+		return new MariadbDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
 				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
 	}
 
 	@Override
-	public IDataStorage createPostgreSqlDatabase(String address, int port, String database, String options, 
+	public IDataStorage createPostgreSqlDatabase(StoreLoader loader, String address, int port, String database, String options,
 			String username, String password, int poolSize, String poolName) throws DatabaseException {
-		return new PostgreSqlDatabase(fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""), 
+		return new PostgreSqlDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
 				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
 	}
 
 	@Override
-	public IDataStorage createMongodbDatabase(String address, int port, String database, String options, 
+	public IDataStorage createMongodbDatabase(StoreLoader loader, String address, int port, String database, String options,
 			String username, String password) throws DatabaseException {
-		return new MongodbDatabase(fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""), 
+		return new MongodbDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
 				ifNull(username, "root"), ifNull(password, "password"));
 	}
 	
@@ -84,28 +67,31 @@ public class DatabasesProvider implements IDatabasesProvider {
 	}
 	
 	private static String ifNull(String string, String value) {
-		if(string == null) {
+		if(string == null || string.isEmpty()) {
 			return value;
 		}
 		
 		return string;
 	}
-	
-	private static LocalBuilder localBuilder = new LocalBuilder();
+
 	
 	public static LocalBuilder localBuilder() {
-		return localBuilder;
+		return new LocalBuilder();
 	}
 	
-	private static RemoteBuilder remoteBuilder = new RemoteBuilder();
-	
 	public static RemoteBuilder remoteBuilder() {
-		return remoteBuilder;
+		return new RemoteBuilder();
 	}
 	
 	public static class LocalBuilder {
+		private StoreLoader loader;
 		private File file;
 		private StorageType type;
+
+		public LocalBuilder setStoreLoader(StoreLoader loader) {
+			this.loader = loader;
+			return this;
+		}
 		
 		public LocalBuilder setFile(File path, String name) {
 			this.file = new File(path, name);
@@ -127,16 +113,16 @@ public class DatabasesProvider implements IDatabasesProvider {
 		}
 		
 		public IDataStorage build() throws DatabaseException {
-			if(file == null || type == null) {
+			if(loader == null || file == null || type == null) {
 				throw new IllegalArgumentException("Database file & type cannot be null!");
 			}
 			
 			switch(type) {
 				case H2: {
-					return new H2Database(file);
+					return new H2Database(loader, file);
 				}
 				case SQLITE: {
-					return new SqLiteDatabase(file);
+					return new SqLiteDatabase(loader, file);
 				}
 				default: {
 					return null;
@@ -146,6 +132,7 @@ public class DatabasesProvider implements IDatabasesProvider {
 	}
 	
 	public static class RemoteBuilder {
+		private StoreLoader loader;
 		private String address = "127.0.0.1";
 		private int port = 3306;
 		private String database = "database";
@@ -156,6 +143,11 @@ public class DatabasesProvider implements IDatabasesProvider {
 		
 		private int poolSize = 150;
 		private String poolName = "SuperApiX";
+
+		public RemoteBuilder setStoreLoader(StoreLoader loader) {
+			this.loader = loader;
+			return this;
+		}
 		
 		public RemoteBuilder setAddress(String address) {
 			this.address = fixedAddress(address);
@@ -199,7 +191,7 @@ public class DatabasesProvider implements IDatabasesProvider {
 		
 		public RemoteBuilder setType(StorageType type) {
 			if(type == StorageType.H2 || type == StorageType.SQLITE) {
-				throw new IllegalArgumentException("StorageType must be MYSQL, HIKARI, POSTGRESQL, MONGODB or MARIADB for RemoteBuilder!");
+				throw new IllegalArgumentException("StorageType must be MYSQL, MARIADB, POSTGRESQL or MONGODB for RemoteBuilder!");
 			}
 			
 			this.type = type;
@@ -207,22 +199,22 @@ public class DatabasesProvider implements IDatabasesProvider {
 		}
 		
 		public IDataStorage build() throws DatabaseException {
-			if(type == null) {
+			if(loader == null || type == null) {
 				throw new IllegalArgumentException("Database type cannot be null!");
 			}
 			
 			switch(type) {
 				case MYSQL: {
-					return new MySqlDatabase(address, port, database, options, username, password, poolSize, poolName);
+					return new MySqlDatabase(loader, address, port, database, options, username, password, poolSize, poolName);
 				}
 				case MARIADB: {
-					return new MariadbDatabase(address, port, database, options, username, password, poolSize, poolName);
+					return new MariadbDatabase(loader, address, port, database, options, username, password, poolSize, poolName);
 				}
 				case POSTGRESQL: {
-					return new PostgreSqlDatabase(address, port, database, options, username, password, poolSize, poolName);
+					return new PostgreSqlDatabase(loader, address, port, database, options, username, password, poolSize, poolName);
 				}
 				case MONGODB: {
-					return new MongodbDatabase(address, port, database, options, username, password);
+					return new MongodbDatabase(loader, address, port, database, options, username, password);
 				}
 				default: {
 					return null;

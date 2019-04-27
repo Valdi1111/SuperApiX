@@ -3,6 +3,7 @@ package org.valdi.SuperApiX.common.databases.types;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.databases.DatabaseException;
 import org.valdi.SuperApiX.common.databases.IDataStorage;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -12,9 +13,12 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public class PostgreSqlDatabase implements IDataStorage {
 	private final HikariDataSource hikari;
+	private final StoreLoader loader;
 	
-	public PostgreSqlDatabase(String address, int port, String database, String options, 
-			String username, String password, int poolSize, String poolName) throws DatabaseException {
+	public PostgreSqlDatabase(StoreLoader loader, String address, int port, String database, String options,
+							  String username, String password, int poolSize, String poolName) throws DatabaseException {
+		this.loader = loader;
+
         String url = "jdbc:postgresql://" + address + ":" + port + "/" + database + options;
         
         HikariConfig config = new HikariConfig();
@@ -29,7 +33,7 @@ public class PostgreSqlDatabase implements IDataStorage {
         
         config.setConnectionTimeout(1000);
         config.setMaximumPoolSize(poolSize);
-        //config.setThreadFactory(plugin.getThreadFactory());
+        config.setThreadFactory(loader.getThreadFactory());
         config.setPoolName(poolName);
         config.setValidationTimeout(1000);
         
@@ -63,6 +67,11 @@ public class PostgreSqlDatabase implements IDataStorage {
 	@Override
 	public StorageType getType() {
 		return StorageType.POSTGRESQL;
+	}
+
+	@Override
+	public StoreLoader getStoreLoader() {
+		return loader;
 	}
 
 }

@@ -5,13 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import org.valdi.SuperApiX.common.config.IFileStorage;
-import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
+import org.valdi.SuperApiX.common.StoreLoader;
 
 import com.google.common.reflect.TypeToken;
 
@@ -38,6 +37,9 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
     
     @Override
     public Path getFilePath() {
+    	if(getFile() == null) {
+    		return null;
+		}
     	return this.getFile().toPath();
     }
 
@@ -50,7 +52,8 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	public void fromParent(String path) {
     	configFile.getParentFile().mkdirs();
     	InputStream is = loader.getResource(path);
-		fromStream(is);
+
+		this.fromStream(is);
 	}
 
 	@Override
@@ -61,6 +64,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	        } catch (NullPointerException | IOException e) {
 	        	loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
+				return;
 	        }
 	    }
 
@@ -76,30 +80,65 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 			} catch (IOException e) {
 				loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
+				return;
 			}
 	    }
 	
 	    this.loadOnly();
 	}
-	
-	protected void setManager(ConfigurationLoader<? extends ConfigurationNode> manager) {
-        this.manager = manager;
+
+	@Override
+	public void loadStream(InputStream is) {
+		File tempFile;
+		try {
+			tempFile = File.createTempFile("stream2file-" + UUID.randomUUID().toString(), ".tmp");
+			tempFile.deleteOnExit();
+			Files.copy(is, tempFile.toPath());
+		} catch (IOException e) {
+			loader.getLogger().info("Error on temp file creating (" + configFile.getName() + ") > " + e.getMessage());
+			e.printStackTrace();
+			return;
+		}
+
+		this.setManagerFromFile(tempFile);
+		this.load();
 	}
 
 	@Override
 	public void loadOnly() {
-        try {
-            this.root = manager.load();
-        } catch (IOException e) {
-        	loader.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
-        	e.printStackTrace();
-        }
+		this.setManagerFromFile(this.getFile());
+		this.load();
 	}
+
+	private void load() {
+		try {
+			this.root = manager.load();
+		} catch (IOException e) {
+			loader.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Overwrite existing manager
+	 * @param manager the new configuration manager
+	 */
+	protected void setManager(ConfigurationLoader<? extends ConfigurationNode> manager) {
+		this.manager = manager;
+	}
+
+	/**
+	 * Setup default Configuration Manager depending on ConfigType
+	 * @param file the file to set in the manager
+	 */
+	protected abstract void setManagerFromFile(File file);
 
 	@Override
 	public void save() {
         try {
         	manager.save(this.root);
+		} catch (NullPointerException e) { // Null manager, loadOnly() hasn't been called
+			loader.getLogger().severe("You must load a file before saving! (" + configFile.getName() + ") > " + e.getMessage());
 		} catch (IOException e) {
 			loader.getLogger().info("Error on config saving (" + configFile.getName() + ") > " + e.getMessage());
         	e.printStackTrace();
@@ -228,34 +267,6 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	}
 
 	@Override
-	public <T> List<T> getList(String path, TypeToken<T> type) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-        try {
-			return node.getList(type);
-		} catch (ObjectMappingException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public <T> List<T> getList(String path, TypeToken<T> type, List<T> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-        try {
-			return node.getList(type, def);
-		} catch (ObjectMappingException e) {
-			return def;
-		}
-	}
-
-	@Override
 	public List<?> getList(String path) {
         ConfigurationNode node = getFixedNode(path);
         if (node.isVirtual()) {
@@ -273,6 +284,34 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         }
 
 		return (List<?>) node.getValue(def);
+	}
+
+	@Override
+	public <T> List<T> getList(String path, TypeToken<T> type) {
+		ConfigurationNode node = getFixedNode(path);
+		if (node.isVirtual()) {
+			return null;
+		}
+
+		try {
+			return node.getList(type);
+		} catch (ObjectMappingException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public <T> List<T> getList(String path, TypeToken<T> type, List<T> def) {
+		ConfigurationNode node = getFixedNode(path);
+		if (node.isVirtual()) {
+			return def;
+		}
+
+		try {
+			return node.getList(type, def);
+		} catch (ObjectMappingException e) {
+			return def;
+		}
 	}
 
 	@Override
@@ -341,14 +380,14 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	}
 
 	@Override
-	public <T> void set(String path, TypeToken<T> type, Object value) {
+	public <T> void set(String path, TypeToken<T> type, T value) {
         try {
 			getFixedNode(path).setValue(type, (T)value);
 		} catch (ObjectMappingException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public boolean contains(String path) {
         ConfigurationNode node = getFixedNode(path);
@@ -379,15 +418,14 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         return node.getChildrenList();
 	}
 
-	@Override @SuppressWarnings("unchecked")
-	public Map<String, String> getMap(String path, Map<String, String> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
+	@Override
+	public Map<Object, ? extends ConfigurationNode> getValues(String path) {
+		ConfigurationNode node = getFixedNode(path);
+		if (node.isVirtual()) {
+			return null;
+		}
 
-        Map<String, Object> m = (Map<String, Object>) node.getValue(Collections.emptyMap());
-        return m.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
+		return node.getChildrenMap();
 	}
 
 }

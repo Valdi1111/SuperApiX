@@ -3,6 +3,7 @@ package org.valdi.SuperApiX.common.databases.types;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.databases.DatabaseException;
 import org.valdi.SuperApiX.common.databases.IDataStorage;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -12,9 +13,12 @@ public class MongodbDatabase implements IDataStorage {
     private final String url;
     private final String username;
     private final String password;
+	private final StoreLoader loader;
 	
-	public MongodbDatabase(String address, int port, String database, String options, 
-			String username, String password) throws DatabaseException {
+	public MongodbDatabase(StoreLoader loader, String address, int port, String database, String options,
+						   String username, String password) throws DatabaseException {
+		this.loader = loader;
+
 		this.url = "jdbc:mongo://" + address + ":" + port + "/" + database + options;
 		
 		this.username = username;
@@ -49,6 +53,11 @@ public class MongodbDatabase implements IDataStorage {
 	@Override
 	public StorageType getType() {
 		return StorageType.MONGODB;
+	}
+
+	@Override
+	public StoreLoader getStoreLoader() {
+		return loader;
 	}
 
 }

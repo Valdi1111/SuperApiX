@@ -48,7 +48,12 @@ public @interface BukkitPlugin {
         /**
          * This target version specifies that the plugin was made with 1.13+ versions in mind.
          */
-        v1_13( "1.13", DEFAULT );
+        v1_13( "1.13", DEFAULT ),
+
+        /**
+         * This target version specifies that the plugin was made with 1.14+ versions in mind.
+         */
+        v1_14( "1.14", v1_13, DEFAULT );
 
 
         private final String version;

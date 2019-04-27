@@ -2,42 +2,54 @@ package org.valdi.SuperApiX.common.config;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
+import org.valdi.SuperApiX.common.StoreLoader;
 
 public interface IFilesProvider {
 
-	IFileStorage createHoconFile(File path, String fileName);
-
+	/**
+	 * Create Hocon file configuration
+	 * @param loader the store loader
+	 * @param path the file path
+	 * @param fileName the file name
+	 * @return a file storage instance for this file config
+	 */
 	IFileStorage createHoconFile(StoreLoader loader, File path, String fileName);
 
-	IFileStorage createJsonFile(File path, String fileName);
-
+	/**
+	 * Create Json file configuration
+	 * @param loader the store loader
+	 * @param path the file path
+	 * @param fileName the file name
+	 * @return a file storage instance for this file config
+	 */
 	IFileStorage createJsonFile(StoreLoader loader, File path, String fileName);
 
-	IFileStorage createTomlFile(File path, String fileName);
-
+	/**
+	 * Create Toml file configuration
+	 * @param loader the store loader
+	 * @param path the file path
+	 * @param fileName the file name
+	 * @return a file storage instance for this file config
+	 */
 	IFileStorage createTomlFile(StoreLoader loader, File path, String fileName);
 
-	IFileStorage createYamlFile(File path, String fileName);
-
+	/**
+	 * Create Yaml file configuration
+	 * @param loader the store loader
+	 * @param path the file path
+	 * @param fileName the file name
+	 * @return a file storage instance for this file config
+	 */
 	IFileStorage createYamlFile(StoreLoader loader, File path, String fileName);
 
-	default IFileStorage createFile(ConfigType type, File path, String fileName) {
-		switch(type) {
-		case HOCON:
-			return this.createHoconFile(path, fileName);
-		case JSON:
-			return this.createJsonFile(path, fileName);
-		case TOML:
-			return this.createTomlFile(path, fileName);
-		case YAML:
-			return this.createYamlFile(path, fileName);
-		case CUSTOM:
-			break;
-		}
-		return null;
-	}
-
+	/**
+	 * Create a file configuration of the given type
+	 * @param type the config type
+	 * @param loader the store loader
+	 * @param path the file path
+	 * @param fileName the file name
+	 * @return a file storage instance for this file config
+	 */
 	default IFileStorage createFile(ConfigType type, StoreLoader loader, File path, String fileName) {
 		switch(type) {
 		case HOCON:

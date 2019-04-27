@@ -42,7 +42,6 @@ public class WorldManager extends AbstractNmsProvider implements IWorldManager {
 		super(plugin);
 	}
 
-    @SuppressWarnings({ "resource", "deprecation" })
 	@Override
     public World createWorld(WorldBuilder builder) {
         Validate.notNull(builder, "Builder may not be null");

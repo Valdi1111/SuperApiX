@@ -2,21 +2,22 @@ package org.valdi.SuperApiX.common.config.types;
 
 import java.io.File;
 
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.valdi.SuperApiX.common.config.ConfigType;
-import org.valdi.SuperApiX.common.config.advanced.StoreLoader;
-
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import org.valdi.SuperApiX.common.StoreLoader;
 
 public class HoconConfiguration extends AbstractConfigAdapter {
 	
 	public HoconConfiguration(StoreLoader loader, File path, String fileName) {
 		super(loader, path, fileName);
 	}
-	
+
 	@Override
-	public void loadOnly() {
-		this.setManager(HoconConfigurationLoader.builder().setFile(this.getFile()).build());
-		super.loadOnly();
+	protected void setManagerFromFile(File file) {
+		setManager(YAMLConfigurationLoader.builder()
+				.setIndent(2)
+				.setFile(file)
+				.build());
 	}
 
 	@Override

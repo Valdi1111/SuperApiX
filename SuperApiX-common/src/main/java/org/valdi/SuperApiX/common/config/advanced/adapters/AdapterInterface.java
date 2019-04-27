@@ -3,25 +3,24 @@ package org.valdi.SuperApiX.common.config.advanced.adapters;
 import ninja.leaping.configurate.ConfigurationNode;
 
 /**
- * Convert from to S or to V
+ * Serialize S to ConfigurationNode
  * @author david
  *
- * @param <S>
- * @param <V>
+ * @param <S> the type to serialize
  */
 public interface AdapterInterface<S> {
 
     /**
      * Serialize object
-     * @param object - object to serialize
-     * @return serialized object
+     * @param node - the node to read from
+     * @return instance of the serialized object
      */
     S deserialize(ConfigurationNode node);
 
     /**
      * Deserialize object
-     * @param object - object to deserialize
-     * @return deserialized object
+     * @param node - the node to write to
+     * @param instance - object to deserialize
      */
     void serialize(ConfigurationNode node, S instance);
 }

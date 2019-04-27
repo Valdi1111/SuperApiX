@@ -1,10 +1,10 @@
 package org.valdi.SuperApiX.common.databases.types;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.valdi.SuperApiX.common.StoreLoader;
 import org.valdi.SuperApiX.common.databases.DatabaseException;
 import org.valdi.SuperApiX.common.databases.IDataStorage;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -12,15 +12,17 @@ import org.valdi.SuperApiX.common.databases.StorageType;
 public class SqLiteDatabase implements IDataStorage {
     private Connection connection;
 	private final File file;
+	private final StoreLoader loader;
 	
-	public SqLiteDatabase(File file) throws DatabaseException {
+	public SqLiteDatabase(StoreLoader loader, File file) throws DatabaseException {
+		this.loader = loader;
 		this.file = file;
 		
 		if(!file.exists()) {
 			try {
 				file.getParentFile().mkdirs();
 				file.createNewFile();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new DatabaseException(e);
 			}
 		}
@@ -54,6 +56,11 @@ public class SqLiteDatabase implements IDataStorage {
 	@Override
 	public StorageType getType() {
 		return StorageType.SQLITE;
+	}
+
+	@Override
+	public StoreLoader getStoreLoader() {
+		return loader;
 	}
 
 }
