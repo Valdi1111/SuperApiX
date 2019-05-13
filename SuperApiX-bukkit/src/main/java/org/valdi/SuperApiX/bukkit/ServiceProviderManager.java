@@ -1,6 +1,7 @@
 package org.valdi.SuperApiX.bukkit;
 
 import org.bukkit.plugin.ServicePriority;
+import org.valdi.SuperApiX.bukkit.advancements.AdvancementProvider;
 import org.valdi.SuperApiX.bukkit.bossbar.BossBarManager;
 import org.valdi.SuperApiX.bukkit.bossbar.IBossBarProvider;
 import org.valdi.SuperApiX.bukkit.nms.IActionBar;
@@ -42,6 +43,11 @@ public class ServiceProviderManager {
 		plugin.getNmsProvider().getSignEditor().ifPresent(p -> boot.getServer().getServicesManager().register(ISignEditor.class, p, boot, ServicePriority.Normal));
 		plugin.getNmsProvider().getWorldBorder().ifPresent(p -> boot.getServer().getServicesManager().register(IWorldBorder.class, p, boot, ServicePriority.Normal));
 		plugin.getNmsProvider().getWorldManager().ifPresent(p -> boot.getServer().getServicesManager().register(IWorldManager.class, p, boot, ServicePriority.Normal));
+
+		AdvancementProvider advProvider = plugin.getAdvProvider();
+		if(advProvider != null) {
+			boot.getServer().getServicesManager().register(AdvancementProvider.class, advProvider, boot, ServicePriority.Normal);
+		}
 	}
 
 }

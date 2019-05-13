@@ -5,19 +5,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.IActionBar;
-import org.valdi.SuperApiX.bukkit.nms.IPlayerUtils;
-import org.valdi.SuperApiX.bukkit.nms.ISignEditor;
-import org.valdi.SuperApiX.bukkit.nms.ITabList;
-import org.valdi.SuperApiX.bukkit.nms.ITitle;
-import org.valdi.SuperApiX.bukkit.nms.IWorldBorder;
-import org.valdi.SuperApiX.bukkit.nms.IWorldManager;
+import org.valdi.SuperApiX.bukkit.nms.*;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionManager.NmsVersion;
 
 public class NmsProvider {
 	private final SuperApiBukkit plugin;
 	
 	private List<NmsComponent<?>> components;
+
+	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms.[version].[classname]";
+	public static final String ADVANCEMENTS_PACKAGE = "org.valdi.SuperApiX.bukkit.nms.[version].advancements.[classname]";
 	
 	public NmsProvider(final SuperApiBukkit plugin) {
 		this.plugin = plugin;
@@ -26,7 +23,9 @@ public class NmsProvider {
 		this.components.add(new NmsComponent<>(NmsName.ACTIONBAR, "ActionBar", "IActionBar"));
 		this.components.add(new NmsComponent<>(NmsName.TITLE, "Title", "ITitle"));
 		this.components.add(new NmsComponent<>(NmsName.TABLIST, "TabList", "ITabList"));
+		this.components.add(new NmsComponent<>(NmsName.ADVANCEMENT_UTILS, "AdvancementUtils", "IAdvancementUtils"));
 		this.components.add(new NmsComponent<>(NmsName.PLAYER_UTILS, "PlayerUtils", "IPlayerUtils"));
+		this.components.add(new NmsComponent<>(NmsName.GENERAL_UTILS, "GeneralUtils", "IGeneralUtils"));
 		this.components.add(new NmsComponent<>(NmsName.SIGN_EDITOR, "SignEditor", "ISignEditor"));
 		this.components.add(new NmsComponent<>(NmsName.WORLD_BORDER, "WorldBorder", "IWorldBorder"));
 		this.components.add(new NmsComponent<>(NmsName.WORLD_MANAGER, "WorldManager", "IWorldManager"));
@@ -64,9 +63,17 @@ public class NmsProvider {
 	public Optional<ITabList> getTabList() {
 		return this.getComponent(NmsName.TABLIST);
 	}
+
+	public Optional<IAdvancementUtils> getAdvancementUtils() {
+		return this.getComponent(NmsName.ADVANCEMENT_UTILS);
+	}
 	
 	public Optional<IPlayerUtils> getPlayerUtils() {
 		return this.getComponent(NmsName.PLAYER_UTILS);
+	}
+
+	public Optional<IGeneralUtils> getGeneralUtils() {
+		return this.getComponent(NmsName.GENERAL_UTILS);
 	}
 	
 	public Optional<ISignEditor> getSignEditor() {
@@ -94,5 +101,4 @@ public class NmsProvider {
 	public NmsVersion getVersion() {
 		return plugin.getVersionManager().getNmsVersion();
 	}
-
 }

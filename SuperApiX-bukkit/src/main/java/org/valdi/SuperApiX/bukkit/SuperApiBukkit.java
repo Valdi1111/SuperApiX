@@ -12,12 +12,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.valdi.SuperApiX.bukkit.advancements.AdvancementProvider;
 import org.valdi.SuperApiX.bukkit.bossbar.IBossBarProvider;
 import org.valdi.SuperApiX.bukkit.config.serializers.LocationSerializer;
 import org.valdi.SuperApiX.bukkit.config.serializers.VectorSerializer;
 import org.valdi.SuperApiX.bukkit.config.serializers.WorldUuidSerializer;
 import org.valdi.SuperApiX.bukkit.nms.core.NmsProvider;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionManager;
+import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.common.config.ConfigType;
 import org.valdi.SuperApiX.common.config.serializers.SetSerializer;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -33,6 +35,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin {
 	private VersionManager version;
 	
 	private NmsProvider nmsProvider;
+	private AdvancementProvider advProvider;
     
     public SuperApiBukkit(BukkitBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -70,7 +73,16 @@ public class SuperApiBukkit extends AbstractBukkitPlugin {
 		version = new VersionManager(this);
 
 		nmsProvider = new NmsProvider(this);
-		
+		try {
+			advProvider = new AdvancementProvider(this);
+		} catch (VersionUnsupportedException e) {
+			e.printStackTrace();
+		}
+
+		if(advProvider != null) {
+			advProvider.onEnable();
+		}
+
 		provider.registerAll();
 	}
 	
@@ -84,6 +96,10 @@ public class SuperApiBukkit extends AbstractBukkitPlugin {
 	@Override
 	public void disable() {
 		super.disable();
+
+		if(advProvider != null) {
+			advProvider.onDisable();
+		}
 		
 		Bukkit.getServicesManager().unregisterAll(bootstrap);
 		HandlerList.unregisterAll(bootstrap);
@@ -116,6 +132,10 @@ public class SuperApiBukkit extends AbstractBukkitPlugin {
 	
 	public NmsProvider getNmsProvider() {
 		return this.nmsProvider;
+	}
+
+	public AdvancementProvider getAdvProvider() {
+    	return this.advProvider;
 	}
 	
 	public Optional<IBossBarProvider> getBossBarSender() {
