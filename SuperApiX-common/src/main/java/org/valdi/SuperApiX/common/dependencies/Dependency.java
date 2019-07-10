@@ -1,14 +1,10 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.security.MessageDigest;
 import java.util.*;
 
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.ByteStreams;
 
 public class Dependency {
     private final String id;

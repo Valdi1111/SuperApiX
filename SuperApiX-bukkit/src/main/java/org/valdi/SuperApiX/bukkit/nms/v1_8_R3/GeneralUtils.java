@@ -2,10 +2,12 @@ package org.valdi.SuperApiX.bukkit.nms.v1_8_R3;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.MinecraftKey;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.SuperKey;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.IGeneralUtils;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.IGeneralUtils;
 
 import java.lang.reflect.Field;
 
@@ -72,6 +74,15 @@ public class GeneralUtils extends AbstractNmsProvider implements IGeneralUtils<M
             return new SuperKey(a, b);
         }
 
+    }
+
+    @Override
+    public int getTicks() {
+        return getServer().getServer().currentTick;
+    }
+
+    private CraftServer getServer() {
+        return (CraftServer) Bukkit.getServer();
     }
 
 }

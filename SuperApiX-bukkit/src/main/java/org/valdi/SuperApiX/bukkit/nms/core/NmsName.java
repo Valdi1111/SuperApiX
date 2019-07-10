@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.bukkit.nms.core;
 import org.valdi.SuperApiX.bukkit.advancements.managers.IAdvancement;
 import org.valdi.SuperApiX.bukkit.advancements.managers.IAdvancementManager;
 import org.valdi.SuperApiX.bukkit.advancements.managers.IAdvancementPacketHandler;
-import org.valdi.SuperApiX.bukkit.nms.*;
+import org.valdi.SuperApiX.bukkit.nms.base.*;
 
 public class NmsName<T> {	
 	public static final NmsName<IActionBar> ACTIONBAR = new NmsName<>("actionbar");
@@ -11,6 +11,7 @@ public class NmsName<T> {
 	public static final NmsName<ITabList> TABLIST = new NmsName<>("tablist");
 	public static final NmsName<IAdvancementUtils> ADVANCEMENT_UTILS = new NmsName<>("advancement_utils");
 	public static final NmsName<IPlayerUtils> PLAYER_UTILS = new NmsName<>("player_utils");
+	public static final NmsName<IItemUtils> ITEM_UTILS = new NmsName<>("item_utils");
 	public static final NmsName<IGeneralUtils> GENERAL_UTILS = new NmsName<>("general_utils");
 	public static final NmsName<ISignEditor> SIGN_EDITOR = new NmsName<>("sign_editor");
 	public static final NmsName<IWorldBorder> WORLD_BORDER = new NmsName<>("world_border");

@@ -61,6 +61,4 @@ public class Iterators {
         return lists;
     }
 
-    private Iterators() {}
-
 }

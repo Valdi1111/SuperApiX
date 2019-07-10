@@ -31,6 +31,4 @@ public class MoreFiles {
         return path;
     }
 
-    private MoreFiles() {}
-
 }

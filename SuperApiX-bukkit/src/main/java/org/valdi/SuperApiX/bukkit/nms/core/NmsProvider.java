@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.*;
+import org.valdi.SuperApiX.bukkit.nms.base.*;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionManager.NmsVersion;
 
 public class NmsProvider {
@@ -25,6 +25,7 @@ public class NmsProvider {
 		this.components.add(new NmsComponent<>(NmsName.TABLIST, "TabList", "ITabList"));
 		this.components.add(new NmsComponent<>(NmsName.ADVANCEMENT_UTILS, "AdvancementUtils", "IAdvancementUtils"));
 		this.components.add(new NmsComponent<>(NmsName.PLAYER_UTILS, "PlayerUtils", "IPlayerUtils"));
+		this.components.add(new NmsComponent<>(NmsName.ITEM_UTILS, "ItemUtils", "IItemUtils"));
 		this.components.add(new NmsComponent<>(NmsName.GENERAL_UTILS, "GeneralUtils", "IGeneralUtils"));
 		this.components.add(new NmsComponent<>(NmsName.SIGN_EDITOR, "SignEditor", "ISignEditor"));
 		this.components.add(new NmsComponent<>(NmsName.WORLD_BORDER, "WorldBorder", "IWorldBorder"));
@@ -70,6 +71,10 @@ public class NmsProvider {
 	
 	public Optional<IPlayerUtils> getPlayerUtils() {
 		return this.getComponent(NmsName.PLAYER_UTILS);
+	}
+
+	public Optional<IItemUtils> getItemUtils() {
+		return this.getComponent(NmsName.ITEM_UTILS);
 	}
 
 	public Optional<IGeneralUtils> getGeneralUtils() {

@@ -16,7 +16,7 @@ import org.valdi.SuperApiX.bukkit.SuperKey;
 import org.valdi.SuperApiX.bukkit.advancements.managers.IAdvancementPacketHandler;
 import org.valdi.SuperApiX.bukkit.events.advancements.AdvancementScreenCloseEvent;
 import org.valdi.SuperApiX.bukkit.events.advancements.AdvancementTabChangeEvent;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

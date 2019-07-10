@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.common.databases.types;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.databases.DatabaseException;
 import org.valdi.SuperApiX.common.databases.IDataStorage;
 import org.valdi.SuperApiX.common.databases.StorageType;

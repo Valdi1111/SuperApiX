@@ -2,10 +2,13 @@ package org.valdi.SuperApiX.bukkit.nms.v1_13_R1;
 
 import net.minecraft.server.v1_13_R1.IChatBaseComponent;
 import net.minecraft.server.v1_13_R1.MinecraftKey;
+import net.minecraft.server.v1_13_R1.MinecraftServer;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_13_R1.CraftServer;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.SuperKey;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.IGeneralUtils;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.IGeneralUtils;
 
 public class GeneralUtils extends AbstractNmsProvider implements IGeneralUtils<MinecraftKey, IChatBaseComponent> {
 
@@ -26,5 +29,14 @@ public class GeneralUtils extends AbstractNmsProvider implements IGeneralUtils<M
     @Override
     public IChatBaseComponent getBaseComponentFromJson(String json) {
         return IChatBaseComponent.ChatSerializer.a(json);
+    }
+
+    @Override
+    public int getTicks() {
+        return getServer().getServer().aj();
+    }
+
+    private CraftServer getServer() {
+        return (CraftServer) Bukkit.getServer();
     }
 }

@@ -1,6 +1,7 @@
 package org.valdi.SuperApiX.bukkit.advancements;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
+import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public enum AdvancementFrame {
     TASK("task"),
@@ -18,7 +19,14 @@ public enum AdvancementFrame {
     }
 
     public Object getNMS() {
-        return SuperApiBukkit.getInstance().getNmsProvider().getAdvancementUtils().map(u -> u.getFrameType(this)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsProvider().getAdvancementUtils().map(u -> {
+            try {
+                return u.getFrameType(this);
+            } catch (VersionUnsupportedException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).orElse(null);
     }
 
 }

@@ -4,8 +4,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.ActionBarMessageEvent;
-import org.valdi.SuperApiX.bukkit.nms.AbstractActionBar;
-import org.valdi.SuperApiX.bukkit.nms.IActionBar;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractActionBar;
+import org.valdi.SuperApiX.bukkit.nms.base.IActionBar;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 

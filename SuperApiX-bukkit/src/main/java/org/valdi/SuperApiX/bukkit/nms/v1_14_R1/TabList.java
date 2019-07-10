@@ -9,8 +9,8 @@ import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.TabTitleSendEvent;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.ITabList;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.ITabList;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 

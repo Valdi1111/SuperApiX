@@ -9,21 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.valdi.SuperApiX.common.config.types.nodes.ConfigNode;
+import org.valdi.SuperApiX.common.config.types.nodes.IConfigNode;
 import org.valdi.SuperApiX.common.config.IFileStorage;
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public abstract class AbstractConfigAdapter implements IFileStorage {
     private final StoreLoader loader;
     private final File configFile;
 
-    private ConfigurationNode root;
-    private ConfigurationLoader<? extends ConfigurationNode> manager;
+	private ConfigurationLoader<? extends ConfigurationNode> manager;
+    private ConfigNode root;
     
     protected AbstractConfigAdapter(StoreLoader loader, File path, String fileName) {
 		this.configFile = new File(path, fileName);
@@ -112,7 +113,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	private void load() {
 		try {
-			this.root = manager.load();
+			this.root = new ConfigNode(manager.load());
 		} catch (IOException e) {
 			loader.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
 			e.printStackTrace();
@@ -136,7 +137,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	@Override
 	public void save() {
         try {
-        	manager.save(this.root);
+        	manager.save(this.root.getNativeNode());
 		} catch (NullPointerException e) { // Null manager, loadOnly() hasn't been called
 			loader.getLogger().severe("You must load a file before saving! (" + configFile.getName() + ") > " + e.getMessage());
 		} catch (IOException e) {
@@ -152,280 +153,246 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 			return;
 		}
 		
-		loader.getScheduler().executeAsync(() -> save());
+		loader.getScheduler().runTaskAsynchronously((Runnable) this::save);
 	}
 
 	@Override
-    public ConfigurationNode getRoot() {
-        if (this.root == null) {
-            throw new RuntimeException("Config is not loaded.");
-        }
-        
-        return this.root;
-    }
-
-	@Override
-    public ConfigurationNode getNode(Object[] objects) {
-        return this.getRoot().getNode(objects);
+	public ConfigNode getParent() {
+		return null;
 	}
 
 	@Override
-    public ConfigurationNode getFixedNode(String path) {
-		if(path.equals("")) {
-			return this.getRoot();
-		}
-		
-        return this.getNode(path.split("\\."));
-    }
+	public ConfigurationNode getNativeNode() {
+		return root.getNativeNode();
+	}
+
+	@Override
+	public ConfigurationNode getNativeNode(Object[] objects) {
+		return root.getNativeNode(objects);
+	}
+
+	@Override
+	public ConfigurationNode getFixedNode(String path) {
+		return root.getFixedNode(path);
+	}
+
+	@Override
+	public ConfigNode getNode(String path) {
+		return root.getNode(path);
+	}
+
+	@Override
+	public ConfigNode getRoot() {
+		return root;
+	}
 
 	@Override
 	public Object get(String path) {
-        return getFixedNode(path).getValue();
+        return root.get(path);
 	}
 
 	@Override
 	public Object get(String path, Object def) {
-        return getFixedNode(path).getValue(def);
+		return root.get(path, def);
 	}
 
 	@Override
 	public <T> T get(String path, TypeToken<T> type) {
-        try {
-			return getFixedNode(path).getValue(type);
-		} catch (ObjectMappingException e) {
-			return null;
-		}
+		return root.get(path, type);
 	}
 
 	@Override
 	public <T> T get(String path, TypeToken<T> type, T def) {
-        try {
-			return getFixedNode(path).getValue(type, def);
-		} catch (ObjectMappingException e) {
-			return def;
-		}
+		return root.get(path, type, def);
 	}
 
 	@Override
 	public String getString(String path) {
-        return getFixedNode(path).getString();
+		return root.getString(path);
 	}
 
 	@Override
 	public String getString(String path, String def) {
-        return getFixedNode(path).getString(def);
+		return root.getString(path, def);
 	}
 
 	@Override
 	public int getInt(String path) {
-        return getFixedNode(path).getInt();
+		return root.getInt(path);
 	}
 
 	@Override
 	public int getInt(String path, int def) {
-        return getFixedNode(path).getInt(def);
+		return root.getInt(path, def);
 	}
 
 	@Override
 	public long getLong(String path) {
-        return getFixedNode(path).getLong();
+		return root.getLong(path);
 	}
 
 	@Override
 	public long getLong(String path, long def) {
-        return getFixedNode(path).getLong(def);
+		return root.getLong(path, def);
 	}
 
 	@Override
 	public float getFloat(String path) {
-		return getFixedNode(path).getFloat();
+		return root.getFloat(path);
 	}
 
 	@Override
 	public float getFloat(String path, float def) {
-		return getFixedNode(path).getFloat(def);
+		return root.getFloat(path, def);
 	}
 
 	@Override
 	public double getDouble(String path) {
-		return getFixedNode(path).getDouble();
+		return root.getDouble(path);
 	}
 
 	@Override
 	public double getDouble(String path, double def) {
-		return getFixedNode(path).getDouble(def);
+		return root.getDouble(path, def);
 	}
 
 	@Override
 	public boolean getBoolean(String path) {
-        return getFixedNode(path).getBoolean();
+		return root.getBoolean(path);
 	}
 
 	@Override
 	public boolean getBoolean(String path, boolean def) {
-        return getFixedNode(path).getBoolean(def);
+		return root.getBoolean(path, def);
 	}
 
 	@Override
 	public List<?> getList(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-		return (List<?>) node.getValue();
+		return root.getList(path);
 	}
 
 	@Override
 	public List<?> getList(String path, List<?> def) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return def;
-        }
-
-		return (List<?>) node.getValue(def);
+		return root.getList(path, def);
 	}
 
 	@Override
 	public <T> List<T> getList(String path, TypeToken<T> type) {
-		ConfigurationNode node = getFixedNode(path);
-		if (node.isVirtual()) {
-			return null;
-		}
-
-		try {
-			return node.getList(type);
-		} catch (ObjectMappingException e) {
-			return null;
-		}
+		return root.getList(path, type);
 	}
 
 	@Override
 	public <T> List<T> getList(String path, TypeToken<T> type, List<T> def) {
-		ConfigurationNode node = getFixedNode(path);
-		if (node.isVirtual()) {
-			return def;
-		}
-
-		try {
-			return node.getList(type, def);
-		} catch (ObjectMappingException e) {
-			return def;
-		}
+		return root.getList(path, type, def);
 	}
 
 	@Override
 	public List<String> getStringList(String path) {
-		return this.getList(path, TypeToken.of(String.class));
+		return root.getStringList(path);
 	}
 
 	@Override
 	public List<String> getStringList(String path, List<String> def) {
-		return this.getList(path, TypeToken.of(String.class), def);
+		return root.getStringList(path, def);
 	}
 
 	@Override
 	public List<Integer> getIntList(String path) {
-		return this.getList(path, TypeToken.of(Integer.class));
+		return root.getIntList(path);
 	}
 
 	@Override
 	public List<Integer> getIntList(String path, List<Integer> def) {
-		return this.getList(path, TypeToken.of(Integer.class), def);
+		return root.getIntList(path, def);
 	}
 
 	@Override
 	public List<Long> getLongList(String path) {
-		return this.getList(path, TypeToken.of(Long.class));
+		return root.getLongList(path);
 	}
 
 	@Override
 	public List<Long> getLongList(String path, List<Long> def) {
-		return this.getList(path, TypeToken.of(Long.class), def);
+		return root.getLongList(path, def);
 	}
 
 	@Override
 	public List<Float> getFloatList(String path) {
-		return this.getList(path, TypeToken.of(Float.class));
+		return root.getFloatList(path);
 	}
 
 	@Override
 	public List<Float> getFloatList(String path, List<Float> def) {
-		return this.getList(path, TypeToken.of(Float.class), def);
+		return root.getFloatList(path, def);
 	}
 
 	@Override
 	public List<Double> getDoubleList(String path) {
-		return this.getList(path, TypeToken.of(Double.class));
+		return root.getDoubleList(path);
 	}
 
 	@Override
 	public List<Double> getDoubleList(String path, List<Double> def) {
-		return this.getList(path, TypeToken.of(Double.class), def);
+		return root.getDoubleList(path, def);
 	}
 
 	@Override
 	public List<Boolean> getBooleanList(String path) {
-		return this.getList(path, TypeToken.of(Boolean.class));
+		return root.getBooleanList(path);
 	}
 
 	@Override
 	public List<Boolean> getBooleanList(String path, List<Boolean> def) {
-		return this.getList(path, TypeToken.of(Boolean.class), def);
+		return root.getBooleanList(path, def);
 	}
 
 	@Override
 	public void set(String path, Object value) {
-        getFixedNode(path).setValue(value);
+		root.set(path, value);
 	}
 
 	@Override
 	public <T> void set(String path, TypeToken<T> type, T value) {
-        try {
-			getFixedNode(path).setValue(type, (T)value);
-		} catch (ObjectMappingException e) {
-			e.printStackTrace();
-		}
+		root.set(path, type, value);
+	}
+
+	@Override
+	public String getKey() {
+		return root.getKey();
 	}
 
 	@Override
 	public boolean contains(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return false;
-        }
-        
-        return node.getValue() != null || node.hasListChildren() || node.hasMapChildren();
+        return root.contains(path);
 	}
 
 	@Override
 	public boolean isSection(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return false;
-        }
-
-        return node.hasMapChildren();
+        return root.isSection(path);
 	}
 
 	@Override
-	public List<? extends ConfigurationNode> getKeys(String path) {
-        ConfigurationNode node = getFixedNode(path);
-        if (node.isVirtual()) {
-            return null;
-        }
-
-        return node.getChildrenList();
+	public List<String> getKeys(String path) {
+        return root.getKeys(path);
 	}
 
 	@Override
-	public Map<Object, ? extends ConfigurationNode> getValues(String path) {
-		ConfigurationNode node = getFixedNode(path);
-		if (node.isVirtual()) {
-			return null;
-		}
-
-		return node.getChildrenMap();
+	public Map<String, ? extends ConfigNode> getValues(String path) {
+		return root.getValues(path);
 	}
 
+	@Override
+	public void removeChild(String path, String child) {
+		root.removeChild(path, child);
+	}
+
+	@Override
+	public void clear(String path) {
+		root.clear(path);
+	}
+
+	@Override
+	public IConfigNode mergeValuesFrom(IConfigNode other) {
+		return root.mergeValuesFrom(other);
+	}
 }

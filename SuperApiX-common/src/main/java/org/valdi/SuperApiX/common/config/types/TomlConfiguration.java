@@ -2,8 +2,7 @@ package org.valdi.SuperApiX.common.config.types;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.config.ConfigType;
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 import ninja.leaping.configurate.toml.TOMLConfigurationLoader;
 

@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX-bukkit</artifactId>
-  	<version>3.2-BETA</version>
+  	<version>3.5</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX-bukkit</name>
@@ -125,16 +125,24 @@
 
 		<dependency>
 			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.14</artifactId>
-			<version>1.14</version>
+			<artifactId>spigot-1.14.2</artifactId>
+			<version>1.14.2</version>
 			<scope>provided</scope>
 		</dependency>
 	   	
 	   	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
-  			<version>3.1-BETA</version>
+  			<version>3.5</version>
 	   	</dependency>
+
+		<!-- Vault -->
+		<dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
+		</dependency>
 
         <!-- configurate -->
         <dependency>
@@ -184,6 +192,11 @@
 	      	<id>spigot-repo</id>
 	      	<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 	    </repository>
+
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
         
 		<repository>
 			<id>confuser-repo</id>
@@ -194,11 +207,24 @@
   	<build>
 	    <defaultGoal>clean package install</defaultGoal>
 		<finalName>${project.artifactId} v${project.version}</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>*.yml</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>locales</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources/locales</directory>
+				<includes>
+					<include>*.yml</include>
+				</includes>
+			</resource>
+		</resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

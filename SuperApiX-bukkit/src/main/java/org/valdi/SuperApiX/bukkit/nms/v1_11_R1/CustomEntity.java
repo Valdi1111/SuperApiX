@@ -1,7 +1,7 @@
 package org.valdi.SuperApiX.bukkit.nms.v1_11_R1;
 
 import org.bukkit.entity.EntityType;
-import org.valdi.SuperApiX.bukkit.nms.AbstractCustomEntity;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractCustomEntity;
 
 import net.minecraft.server.v1_11_R1.Entity;
 import net.minecraft.server.v1_11_R1.EntityTypes;

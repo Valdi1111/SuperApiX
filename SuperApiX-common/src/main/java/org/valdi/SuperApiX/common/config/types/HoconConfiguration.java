@@ -3,8 +3,7 @@ package org.valdi.SuperApiX.common.config.types;
 import java.io.File;
 
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.valdi.SuperApiX.common.config.ConfigType;
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 public class HoconConfiguration extends AbstractConfigAdapter {
 	

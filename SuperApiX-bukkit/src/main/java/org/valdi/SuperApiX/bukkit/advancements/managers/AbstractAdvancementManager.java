@@ -78,7 +78,7 @@ public abstract class AbstractAdvancementManager<T extends AbstractAdvancement> 
             SuperKey rootAdvancement = plugin.getAdvProvider().getActiveTab(player);
             plugin.getAdvProvider().clearActiveTab(player);
             addPlayer(player);
-            SuperApiBukkit.getInstance().getScheduler().syncLater(() -> plugin.getAdvProvider().setActiveTab(player, rootAdvancement), 250L, TimeUnit.MILLISECONDS);
+            SuperApiBukkit.getInstance().getScheduler().runTaskLater(() -> plugin.getAdvProvider().setActiveTab(player, rootAdvancement), 250L, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -88,7 +88,7 @@ public abstract class AbstractAdvancementManager<T extends AbstractAdvancement> 
             SuperKey rootAdvancement = plugin.getAdvProvider().getActiveTab(player);
             plugin.getAdvProvider().clearActiveTab(player);
             addPlayer(player, tab);
-            SuperApiBukkit.getInstance().getScheduler().syncLater(() -> plugin.getAdvProvider().setActiveTab(player, rootAdvancement), 250L, TimeUnit.MILLISECONDS);
+            SuperApiBukkit.getInstance().getScheduler().runTaskLater(() -> plugin.getAdvProvider().setActiveTab(player, rootAdvancement), 250L, TimeUnit.MILLISECONDS);
         }
     }
 

@@ -1,7 +1,7 @@
 package org.valdi.SuperApiX.common;
 
 /**
- * Represents a type of platform which EliteVanish can run on.
+ * Represents a type of platform which SuperApiX can run on.
  */
 public enum PlatformType {
 
@@ -12,7 +12,7 @@ public enum PlatformType {
 
     private final String friendlyName;
 
-    private PlatformType(String friendlyName) {
+    PlatformType(String friendlyName) {
         this.friendlyName = friendlyName;
     }
 

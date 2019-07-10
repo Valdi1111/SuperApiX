@@ -8,6 +8,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.server.v1_13_R2.NetworkManager;
 import net.minecraft.server.v1_13_R2.Packet;
@@ -17,14 +18,13 @@ import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.SuperKey;
-import org.valdi.SuperApiX.bukkit.advancements.AdvancementProvider;
 import org.valdi.SuperApiX.bukkit.advancements.managers.IAdvancementPacketHandler;
 import org.valdi.SuperApiX.bukkit.events.advancements.AdvancementScreenCloseEvent;
 import org.valdi.SuperApiX.bukkit.events.advancements.AdvancementTabChangeEvent;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
 
-public class AdvancementPacketHandler extends AbstractNmsProvider implements IAdvancementPacketHandler {
-    private static HashMap<String, ChannelHandler> handlers = new HashMap<>();
+public class AdvancementPacketHandler extends AbstractNmsProvider implements IAdvancementPacketHandler<PacketPlayInAdvancements> {
+    private static HashMap<UUID, ChannelHandler> handlers = new HashMap<>();
     private static Field channelField;
 
     public AdvancementPacketHandler(SuperApiBukkit plugin) {
@@ -40,7 +40,7 @@ public class AdvancementPacketHandler extends AbstractNmsProvider implements IAd
     }
 
     @Override
-    public ChannelHandler listen(final Player player, final InAdvancementsHandler handler) {
+    public ChannelHandler listen(final Player player, final InAdvancementsHandler<PacketPlayInAdvancements> handler) {
         Channel ch = getNettyChannel(player);
         ChannelPipeline pipe = ch.pipeline();
 
@@ -77,8 +77,9 @@ public class AdvancementPacketHandler extends AbstractNmsProvider implements IAd
     }
 
     @Override
-    public boolean close(Player player, ChannelHandler handler) {
+    public boolean close(Player player) {
         try {
+            ChannelHandler handler = this.getHandlers().get(player);
             ChannelPipeline pipe = getNettyChannel(player).pipeline();
             pipe.remove(handler);
             return true;
@@ -88,26 +89,26 @@ public class AdvancementPacketHandler extends AbstractNmsProvider implements IAd
     }
 
     @Override
-    public HashMap<String, ChannelHandler> getHandlers() {
+    public HashMap<UUID, ChannelHandler> getHandlers() {
         return handlers;
     }
 
     @Override
     public void initPlayer(Player player) {
-        handlers.put(player.getName(), listen(player, (p, packet) -> {
+        handlers.put(player.getUniqueId(), listen(player, (p, packet) -> {
             if(packet.c() == PacketPlayInAdvancements.Status.OPENED_TAB) {
                 SuperKey name = SuperKey.fromMinecraftKey(packet.d());
                 AdvancementTabChangeEvent event = new AdvancementTabChangeEvent(p, name);
                 Bukkit.getPluginManager().callEvent(event);
 
                 if(event.isCancelled()) {
-                    AdvancementProvider.clearActiveTab(p);
+                    getPlugin().getAdvProvider().clearActiveTab(p);
                     return false;
                 } else {
                     if(!event.getTabAdvancement().equals(name)) {
-                        AdvancementProvider.setActiveTab(p, event.getTabAdvancement());
+                        getPlugin().getAdvProvider().setActiveTab(p, event.getTabAdvancement());
                     } else {
-                        AdvancementProvider.setActiveTab(p, name, false);
+                        getPlugin().getAdvProvider().setActiveTab(p, name, false);
                     }
                 }
             } else {

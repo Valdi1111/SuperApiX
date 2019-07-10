@@ -27,10 +27,6 @@ public class NmsComponent<T> {
 
 	public void setupProvider(final SuperApiBukkit plugin, final NmsVersion version) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		/*String rawClass = packageName;
-		rawClass = rawClass.replace("[version]", version.getRaw());
-		rawClass = rawClass.replace("[classname]", className);
-		this.instance = (T) Class.forName(rawClass).getConstructor(SuperApiBukkit.class).newInstance(plugin);*/
 		this.setupProvider(plugin, version, new Class[] { SuperApiBukkit.class }, new Object[] { plugin });
 	}
 

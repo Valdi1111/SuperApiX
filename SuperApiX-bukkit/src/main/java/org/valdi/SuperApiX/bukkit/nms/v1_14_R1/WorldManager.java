@@ -12,8 +12,8 @@ import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.IWorldManager;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.IWorldManager;
 import org.valdi.SuperApiX.bukkit.nms.WorldBuilder;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public class WorldManager extends AbstractNmsProvider implements IWorldManager {
         boolean used = false;
         block0: do {
             for (WorldServer server : this.getConsole().getWorlds()) {
-                used = server.dimension.getDimensionID() == dimension;
+                used = server.getWorldProvider().getDimensionManager().getDimensionID() == dimension;
                 if (!used) {
                     continue;
                 }
@@ -63,11 +63,11 @@ public class WorldManager extends AbstractNmsProvider implements IWorldManager {
                 continue block0;
             }
         } while(used);
-        boolean hardcore = false;
 
+        boolean hardcore = false;
         WorldNBTStorage sdm = new WorldNBTStorage(folder.getParentFile(), folder.getName(), this.getConsole(), this.getConsole().dataConverterManager);
         WorldData worlddata = sdm.getWorldData();
-        WorldSettings worldSettings = null;
+        WorldSettings worldSettings;
         if (worlddata == null) {
             worldSettings = new WorldSettings(builder.getSeed(), EnumGamemode.getById(builder.getGamemode().getValue()), generateStructures, hardcore, type);
             JsonElement parsedSettings = new JsonParser().parse(builder.getGeneratorSettings());
@@ -75,17 +75,16 @@ public class WorldManager extends AbstractNmsProvider implements IWorldManager {
                 worldSettings.setGeneratorSettings(parsedSettings.getAsJsonObject());
             }
             worlddata = new WorldData(worldSettings, name);
+        } else {
+            worlddata.setName(name);
+            worldSettings = new WorldSettings(worlddata);
         }
-        worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-
         DimensionManager actualDimension = DimensionManager.a(builder.getEnvironment().getId());
-        DimensionManager internalDimension = new DimensionManager(dimension, name, name, (w, manager) -> actualDimension.getWorldProvider(w), actualDimension.hasSkyLight());
+        DimensionManager internalDimension = DimensionManager.register(name.toLowerCase(Locale.ENGLISH), new DimensionManager(dimension, actualDimension.getSuffix(), actualDimension.folder, (w, manager) -> {
+            return (WorldProvider)actualDimension.providerFactory.apply(w, manager);
+        }, actualDimension.hasSkyLight(), actualDimension));
         WorldServer internal = new WorldServer(this.getConsole(), this.getConsole().executorService, sdm, worlddata, internalDimension, this.getConsole().getMethodProfiler(), this.getConsole().worldLoadListenerFactory.create(11), builder.getEnvironment(), generator);
 
-        /*if (!(worlds.containsKey(name.toLowerCase(Locale.ENGLISH)))) {
-            return null;
-        }*/
-        
         if(this.getCraftServer().getWorld(name.toLowerCase(Locale.ENGLISH)) == null) {
         	return null;
         }
@@ -94,7 +93,7 @@ public class WorldManager extends AbstractNmsProvider implements IWorldManager {
         internal.worldData.setDifficulty(EnumDifficulty.EASY);
         internal.setSpawnFlags(true, true);
 
-        this.getConsole().worldServer.put(internal.dimension, internal);
+        this.getConsole().worldServer.put(internal.getWorldProvider().getDimensionManager(), internal);
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(internal.getWorld()));
 
         this.getConsole().loadSpawn(internal.getChunkProvider().playerChunkMap.worldLoadListener, internal);

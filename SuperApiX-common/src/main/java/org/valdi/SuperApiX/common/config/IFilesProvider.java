@@ -2,7 +2,8 @@ package org.valdi.SuperApiX.common.config;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.config.types.ConfigType;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 public interface IFilesProvider {
 

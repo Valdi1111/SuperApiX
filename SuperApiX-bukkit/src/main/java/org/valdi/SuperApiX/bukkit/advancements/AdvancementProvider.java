@@ -143,7 +143,7 @@ public class AdvancementProvider implements Listener {
     }
 
     public void onEnable() {
-        plugin.getScheduler().syncLater(() -> {
+        plugin.getScheduler().runTaskLater(() -> {
             Bukkit.getOnlinePlayers().forEach(p -> {
                 //fileAdvancementManager.addPlayer(player);
                 packetHandler.initPlayer(p);
@@ -172,7 +172,7 @@ public class AdvancementProvider implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        plugin.getScheduler().syncLater(() -> {
+        plugin.getScheduler().runTaskLater(() -> {
             //fileAdvancementManager.addPlayer(e.getPlayer());
             initiatedPlayers.add(e.getPlayer());
         }, 250L, TimeUnit.MILLISECONDS);

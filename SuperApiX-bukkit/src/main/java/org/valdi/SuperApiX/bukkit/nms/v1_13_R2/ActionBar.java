@@ -7,9 +7,9 @@ import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.SuperKey;
 import org.valdi.SuperApiX.bukkit.advancements.AdvancementFrame;
 import org.valdi.SuperApiX.bukkit.events.ActionBarMessageEvent;
-import org.valdi.SuperApiX.bukkit.nms.AbstractActionBar;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.IAdvancementUtils;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractActionBar;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.IAdvancementUtils;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
