@@ -2,8 +2,8 @@ package org.valdi.SuperApiX.bukkit.nms.v1_7_R4;
 
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.AbstractActionBar;
-import org.valdi.SuperApiX.bukkit.nms.IActionBar;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractActionBar;
+import org.valdi.SuperApiX.bukkit.nms.base.IActionBar;
 import org.valdi.SuperApiX.bukkit.nms.NmsExceptions;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 

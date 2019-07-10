@@ -1,7 +1,7 @@
 package org.valdi.SuperApiX.bukkit.versions;
 
 import org.bukkit.Server;
-import org.valdi.SuperApiX.bukkit.AbstractBukkitBootstrap;
+import org.valdi.SuperApiX.bukkit.plugin.AbstractBukkitBootstrap;
 
 /**
  * Checks and ensures the current server software is compatible with BentoBox.

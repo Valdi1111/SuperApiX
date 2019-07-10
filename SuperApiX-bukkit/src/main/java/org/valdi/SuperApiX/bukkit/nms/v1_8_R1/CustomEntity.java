@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.EntityType;
-import org.valdi.SuperApiX.bukkit.nms.AbstractCustomEntity;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractCustomEntity;
 
 import net.minecraft.server.v1_8_R1.Entity;
 import net.minecraft.server.v1_8_R1.EntityTypes;

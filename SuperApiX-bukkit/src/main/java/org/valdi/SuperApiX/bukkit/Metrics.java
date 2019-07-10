@@ -263,7 +263,7 @@ public class Metrics {
         data.put("plugins", pluginData);
 
         // Create a new thread for the connection to the bStats server
-        new Thread(new Runnable() {
+        new Thread("Metrics-DataSender") {
             @Override
             public void run() {
                 try {
@@ -276,7 +276,7 @@ public class Metrics {
                     }
                 }
             }
-        }).start();
+        }.start();
     }
 
     /**

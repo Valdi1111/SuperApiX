@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.bukkit.api;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.valdi.SuperApiX.bukkit.nms.ITitle;
+import org.valdi.SuperApiX.bukkit.nms.base.ITitle;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class Title {

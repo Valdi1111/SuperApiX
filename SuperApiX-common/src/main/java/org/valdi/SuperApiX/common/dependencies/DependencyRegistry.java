@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.valdi.SuperApiX.common.config.ConfigType;
+import org.valdi.SuperApiX.common.config.types.ConfigType;
 import org.valdi.SuperApiX.common.databases.StorageType;
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
@@ -34,20 +34,15 @@ public class DependencyRegistry {
             .put(ConfigType.CUSTOM, ImmutableList.of())
             .build();
 
-    public Set<Dependency> resolveStorageDependencies(Set<StorageType> storageTypes, Set<ConfigType> configTypes) {
+    public Set<Dependency> resolveStorageDependencies() {
         Set<Dependency> dependencies = new LinkedHashSet<>();
-        for (StorageType storageType : storageTypes) {
+        for (StorageType storageType : StorageType.values()) {
             dependencies.addAll(STORAGE_DEPENDENCIES.get(storageType));
         }
 
-        for (ConfigType configType : configTypes) {
+        for (ConfigType configType : ConfigType.values()) {
             dependencies.addAll(CONFIG_DEPENDENCIES.get(configType));
         }
-
-        //if (this.plugin.getConfiguration().get(ConfigKeys.REDIS_ENABLED)) {
-            dependencies.add(Dependencies.COMMONS_POOL_2);
-            dependencies.add(Dependencies.JEDIS);
-        //}
 
         // don't load slf4j if it's already present
         if (slf4jPresent()) {
@@ -58,7 +53,7 @@ public class DependencyRegistry {
         return dependencies;
     }
 
-    // support for LuckPerms legacy (bukkit 1.7.10)
+    // support for legacy (bukkit 1.7.10)
     public List<Relocation> getLegacyRelocations(Dependency dependency) {
         if (RelocationHandler.DEPENDENCIES.contains(dependency)) {
             return ImmutableList.of();

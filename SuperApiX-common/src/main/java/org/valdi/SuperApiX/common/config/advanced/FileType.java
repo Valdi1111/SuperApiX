@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.valdi.SuperApiX.common.config.ConfigType;
+import org.valdi.SuperApiX.common.config.types.ConfigType;
 
 /**
  * Defines where this data object will be stored.

@@ -5,8 +5,8 @@ import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.AbstractWorldBorder;
-import org.valdi.SuperApiX.bukkit.nms.IWorldBorder;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractWorldBorder;
+import org.valdi.SuperApiX.bukkit.nms.base.IWorldBorder;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 import net.minecraft.server.v1_9_R1.PacketPlayOutWorldBorder;

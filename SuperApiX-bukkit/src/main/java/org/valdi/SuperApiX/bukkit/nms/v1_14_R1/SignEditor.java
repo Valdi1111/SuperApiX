@@ -12,8 +12,8 @@ import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.ISignEditor;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.ISignEditor;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class SignEditor extends AbstractNmsProvider implements ISignEditor {

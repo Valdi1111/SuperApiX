@@ -1,6 +1,6 @@
 package org.valdi.SuperApiX.common.logging;
 
-public abstract class AbstractPluginLogger implements PluginLogger {
+public abstract class AbstractPluginLogger implements SuperLogger {
 	private boolean debug = false;
 
 	@Override

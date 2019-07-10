@@ -3,7 +3,7 @@ package org.valdi.SuperApiX.bukkit.nms.v1_13_R2;
 import java.util.Map;
 
 import org.bukkit.entity.EntityType;
-import org.valdi.SuperApiX.bukkit.nms.AbstractCustomEntity;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractCustomEntity;
 
 import com.mojang.datafixers.types.Type;
 

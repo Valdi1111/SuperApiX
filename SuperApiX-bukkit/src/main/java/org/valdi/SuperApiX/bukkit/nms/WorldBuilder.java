@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
+import org.valdi.SuperApiX.bukkit.nms.base.IWorldManager;
 
 public class WorldBuilder {
     private final String name;

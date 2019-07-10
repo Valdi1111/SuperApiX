@@ -6,8 +6,8 @@ import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.AbstractNmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.ISignEditor;
+import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
+import org.valdi.SuperApiX.bukkit.nms.base.ISignEditor;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 import net.minecraft.server.v1_11_R1.BlockPosition;

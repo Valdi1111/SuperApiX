@@ -2,7 +2,7 @@ package org.valdi.SuperApiX.common.databases;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.databases.types.H2Database;
 import org.valdi.SuperApiX.common.databases.types.MariadbDatabase;
 import org.valdi.SuperApiX.common.databases.types.MongodbDatabase;
@@ -13,47 +13,49 @@ import org.valdi.SuperApiX.common.databases.types.SqLiteDatabase;
 public class DatabasesProvider implements IDatabasesProvider {
 
 	@Override
-	public IDataStorage createSqLiteDatabase(StoreLoader loader, File path, String name) throws DatabaseException {
+	public IDataStorage createSqLiteDatabase(StoreLoader loader, File path, String name, int poolSize, String poolName) throws DatabaseException {
 		if(path == null || name == null) {
 			throw new IllegalArgumentException("Database path & name cannot be null!");
 		}
 		
-		return new SqLiteDatabase(loader, new File(path, name));
+		return new SqLiteDatabase(loader, new File(path, name), poolSize, ifNull(poolName, loader.getName() + "-Hikari"));
 	}
 
 	@Override
-	public IDataStorage createH2Database(StoreLoader loader, File path, String name) throws DatabaseException {
+	public IDataStorage createH2Database(StoreLoader loader, File path, String name, String options,
+										 String username, String password, int poolSize, String poolName) throws DatabaseException {
 		if(path == null || name == null) {
 			throw new IllegalArgumentException("Database path & name cannot be null!");
 		}
 		
-		return new H2Database(loader, new File(path, name));
+		return new H2Database(loader, new File(path, name), ifNull(options, ""), ifNull(username, "root"),
+				ifNull(password, "password"), poolSize, ifNull(poolName, loader.getName() + "-Hikari"));
 	}
 
 	@Override
 	public IDataStorage createMySqlDatabase(StoreLoader loader, String address, int port, String database, String options,
-			String username, String password, int poolSize, String poolName) throws DatabaseException {
+											String username, String password, int poolSize, String poolName) throws DatabaseException {
 		return new MySqlDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
-				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
+				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, loader.getName() + "-Hikari"));
 	}
 
 	@Override
 	public IDataStorage createMariadbDatabase(StoreLoader loader, String address, int port, String database, String options,
-			String username, String password, int poolSize, String poolName) throws DatabaseException {
+											  String username, String password, int poolSize, String poolName) throws DatabaseException {
 		return new MariadbDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
-				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
+				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, loader.getName() + "-Hikari"));
 	}
 
 	@Override
 	public IDataStorage createPostgreSqlDatabase(StoreLoader loader, String address, int port, String database, String options,
-			String username, String password, int poolSize, String poolName) throws DatabaseException {
+												 String username, String password, int poolSize, String poolName) throws DatabaseException {
 		return new PostgreSqlDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
-				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, "SuperApiX"));
+				ifNull(username, "root"), ifNull(password, "password"), poolSize, ifNull(poolName, loader.getName() + "-Hikari"));
 	}
 
 	@Override
 	public IDataStorage createMongodbDatabase(StoreLoader loader, String address, int port, String database, String options,
-			String username, String password) throws DatabaseException {
+											  String username, String password) throws DatabaseException {
 		return new MongodbDatabase(loader, fixedAddress(address), port, ifNull(database, "database"), ifNull(options, ""),
 				ifNull(username, "root"), ifNull(password, "password"));
 	}
@@ -73,66 +75,14 @@ public class DatabasesProvider implements IDatabasesProvider {
 		
 		return string;
 	}
-
 	
-	public static LocalBuilder localBuilder() {
-		return new LocalBuilder();
+	public static Builder builder() {
+		return new Builder();
 	}
 	
-	public static RemoteBuilder remoteBuilder() {
-		return new RemoteBuilder();
-	}
-	
-	public static class LocalBuilder {
+	public static class Builder {
 		private StoreLoader loader;
 		private File file;
-		private StorageType type;
-
-		public LocalBuilder setStoreLoader(StoreLoader loader) {
-			this.loader = loader;
-			return this;
-		}
-		
-		public LocalBuilder setFile(File path, String name) {
-			this.file = new File(path, name);
-			return this;
-		}
-		
-		public LocalBuilder setFile(File file) {
-			this.file = file;
-			return this;
-		}
-		
-		public LocalBuilder setType(StorageType type) {
-			if(type != StorageType.H2 && type != StorageType.SQLITE) {
-				throw new IllegalArgumentException("StorageType must be H2 or SQLITE for LocalBuilder!");
-			}
-			
-			this.type = type;
-			return this;
-		}
-		
-		public IDataStorage build() throws DatabaseException {
-			if(loader == null || file == null || type == null) {
-				throw new IllegalArgumentException("Database file & type cannot be null!");
-			}
-			
-			switch(type) {
-				case H2: {
-					return new H2Database(loader, file);
-				}
-				case SQLITE: {
-					return new SqLiteDatabase(loader, file);
-				}
-				default: {
-					return null;
-				}
-			}
-		}
-	}
-	
-	public static class RemoteBuilder {
-		private StoreLoader loader;
 		private String address = "127.0.0.1";
 		private int port = 3306;
 		private String database = "database";
@@ -141,59 +91,68 @@ public class DatabasesProvider implements IDatabasesProvider {
 		private String password = "password";
 		private StorageType type;
 		
-		private int poolSize = 150;
-		private String poolName = "SuperApiX";
+		private int poolSize = 15;
+		private String poolName;
 
-		public RemoteBuilder setStoreLoader(StoreLoader loader) {
+		public Builder setStoreLoader(StoreLoader loader) {
 			this.loader = loader;
 			return this;
 		}
+
+		public Builder setFile(File path, String name) {
+			if(name == null) {
+				throw new IllegalArgumentException("Filename cannot be null!");
+			}
+			this.file = new File(path, name);
+			return this;
+		}
+
+		public Builder setFile(File file) {
+			this.file = file;
+			return this;
+		}
 		
-		public RemoteBuilder setAddress(String address) {
+		public Builder setAddress(String address) {
 			this.address = fixedAddress(address);
 			return this;
 		}
 		
-		public RemoteBuilder setPort(int port) {
+		public Builder setPort(int port) {
 			this.port = port;
 			return this;
 		}
 		
-		public RemoteBuilder setDatabase(String database) {
+		public Builder setDatabase(String database) {
 			this.database = ifNull(database, "database");
 			return this;
 		}
 		
-		public RemoteBuilder setOptions(String options) {
+		public Builder setOptions(String options) {
 			this.options = ifNull(options, "");
 			return this;
 		}
 		
-		public RemoteBuilder setUsername(String username) {
+		public Builder setUsername(String username) {
 			this.username = ifNull(username, "root");
 			return this;
 		}
 		
-		public RemoteBuilder setPassword(String password) {
+		public Builder setPassword(String password) {
 			this.password = ifNull(password, "password");
 			return this;
 		}
 		
-		public RemoteBuilder setPoolSize(int poolSize) {
+		public Builder setPoolSize(int poolSize) {
 			this.poolSize = poolSize;
 			return this;
 		}
 		
-		public RemoteBuilder setPoolName(String poolName) {
-			this.poolName = ifNull(poolName, "SuperApiX");
+		public Builder setPoolName(String poolName) {
+			this.poolName = poolName;
 			return this;
 		}
 		
-		public RemoteBuilder setType(StorageType type) {
-			if(type == StorageType.H2 || type == StorageType.SQLITE) {
-				throw new IllegalArgumentException("StorageType must be MYSQL, MARIADB, POSTGRESQL or MONGODB for RemoteBuilder!");
-			}
-			
+		public Builder setType(StorageType type) {
 			this.type = type;
 			return this;
 		}
@@ -202,8 +161,22 @@ public class DatabasesProvider implements IDatabasesProvider {
 			if(loader == null || type == null) {
 				throw new IllegalArgumentException("Database type cannot be null!");
 			}
+
+			this.poolName = ifNull(poolName, loader.getName() + "-Hikari");
 			
 			switch(type) {
+				case SQLITE: {
+					if(file == null) {
+						throw new IllegalArgumentException("Database file cannot be null!");
+					}
+					return new SqLiteDatabase(loader, file, poolSize, poolName);
+				}
+				case H2: {
+					if(file == null) {
+						throw new IllegalArgumentException("Database file cannot be null!");
+					}
+					return new H2Database(loader, file, options, username, password, poolSize, poolName);
+				}
 				case MYSQL: {
 					return new MySqlDatabase(loader, address, port, database, options, username, password, poolSize, poolName);
 				}

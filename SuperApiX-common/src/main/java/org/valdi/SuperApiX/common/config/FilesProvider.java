@@ -2,7 +2,7 @@ package org.valdi.SuperApiX.common.config;
 
 import java.io.File;
 
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.config.types.HoconConfiguration;
 import org.valdi.SuperApiX.common.config.types.JsonConfiguration;
 import org.valdi.SuperApiX.common.config.types.TomlConfiguration;

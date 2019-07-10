@@ -5,6 +5,6 @@ public interface SerializersRegister {
 	/**
 	 * Register the serializer
 	 */
-	public void register();
+	void register();
 
 }

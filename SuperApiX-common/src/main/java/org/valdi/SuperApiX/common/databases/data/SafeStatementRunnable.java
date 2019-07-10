@@ -1,6 +1,6 @@
 package org.valdi.SuperApiX.common.databases.data;
 
-import org.valdi.SuperApiX.common.StoreLoader;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.databases.DatabaseException;
 
 public abstract class SafeStatementRunnable implements Runnable {
@@ -44,7 +44,7 @@ public abstract class SafeStatementRunnable implements Runnable {
 	 */
 	public void execute(boolean async) {
 		if(async) {
-			loader.getScheduler().executeAsync(this);
+			loader.getScheduler().runTaskAsynchronously(this);
 			return;
 		}
 

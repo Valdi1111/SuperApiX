@@ -1,43 +1,8 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHelper;
 
 public class Dependencies {
-	/*private static final Set<Dependency> legacyDependencies = new HashSet<Dependency>() {
-		private static final long serialVersionUID = 1L;
-
-		{
-			add(ASM);
-			add(ASM_COMMONS);
-			add(JAR_RELOCATOR);
-			add(TEXT);
-			add(CAFFEINE);
-			add(OKIO);
-			add(OKHTTP);
-			add(MARIADB_DRIVER);
-			add(MYSQL_DRIVER);
-			add(POSTGRESQL_DRIVER);
-			add(H2_DRIVER);
-			add(SQLITE_DRIVER);
-			add(HIKARI);
-			add(SLF4J_SIMPLE);
-			add(SLF4J_API);
-			add(MONGODB_DRIVER);
-			add(JEDIS);
-			add(COMMONS_POOL_2);
-			add(CONFIGURATE_CORE);
-			add(CONFIGURATE_GSON);
-			add(CONFIGURATE_YAML);
-			add(CONFIGURATE_HOCON);
-			add(HOCON_CONFIG);
-			add(CONFIGURATE_TOML);
-			add(TOML4J);
-		}
-	};*/
 
 	public static final Dependency ASM = Dependency
 			.builder("ASM")
@@ -144,8 +109,8 @@ public class Dependencies {
 			.builder("SQLITE_DRIVER")
 			.setGroupId("org.xerial")
 			.setArtifactId("sqlite-jdbc")
-			.setVersion("3.21.0")
-			.setChecksum("bglRaH4Y+vQFZV7TfOdsVLO3rJpauJ+IwjuRULAb45Y=")
+			.setVersion("3.27.2.1")
+			.setChecksum("SxCoOLnNH9btS1lJZsfHsNFcLUxcmrqYzSjshgLraS0")
 			.setAutoLoad(false)
 			.build();
             // we don't apply relocations to sqlite - it gets loaded via
@@ -187,7 +152,7 @@ public class Dependencies {
 			.setAutoLoad(true)
 			.build();
 
-	public static final Dependency JEDIS = Dependency
+	/*public static final Dependency JEDIS = Dependency
 			.builder("JEDIS")
 			.setGroupId("redis.clients")
 			.setArtifactId("jedis")
@@ -203,7 +168,7 @@ public class Dependencies {
 			.setVersion("2.5.0")
 			.setChecksum("IRhwQ8eZcdnISLlxhA3oQdoOXE3zDJI6lpFBMfue+Wk=")
 			.setAutoLoad(true)
-			.build();
+			.build();*/
 
 	public static final Dependency CONFIGURATE_CORE = Dependency
 			.builder("CONFIGURATE_CORE")
@@ -267,10 +232,5 @@ public class Dependencies {
 			.setChecksum("9UdeY+fonl22IiNImux6Vr0wNUN3IHehfCy1TBnKOiA=")
 			.setAutoLoad(true)
 			.build();
-
-
-	/*public static Set<Dependency> values() {
-    	return legacyDependencies;
-    }*/
 
 }
