@@ -11,11 +11,7 @@ import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.scheduler.SuperScheduler;
 
 public abstract class AbstractPlugin<T extends ISuperBootstrap> implements ISuperPlugin<T> {
-
-    // init during load
-    private DependencyManager dependencyManager;
-
-	private ScheduledExecutorService executorService;
+	private ScheduledExecutorService executors;
 
 	/**
 	 * The bootstrap instance
@@ -24,28 +20,21 @@ public abstract class AbstractPlugin<T extends ISuperBootstrap> implements ISupe
 
 	public AbstractPlugin(final T bootstrap) {
 		this.bootstrap = bootstrap;
+
+		this.executors = Executors.newScheduledThreadPool(15, new ThreadFactoryBuilder().setNameFormat(getName() + " Thread - %d").build());
 	}
 
 	@Override
-	public void load() {
-        this.dependencyManager = new DependencyManager(this);
-		this.executorService = Executors.newScheduledThreadPool(15, new ThreadFactoryBuilder().setNameFormat(getName() + " Thread - %d").build());
-	}
+	public void load() {}
 
 	@Override
-	public void enable() {
-
-	}
+	public void enable() {}
 
 	@Override
-	public void disable() {
-		
-	}
+	public void disable() {}
 
 	@Override
-	public void reload() {
-		
-	}
+	public void reload() {}
 
 	@Override
 	public T getBootstrap() {
@@ -65,11 +54,6 @@ public abstract class AbstractPlugin<T extends ISuperBootstrap> implements ISupe
 	@Override
 	public List<String> getAuthors() {
 		return getBootstrap().getAuthors();
-	}
-
-	@Override
-	public DependencyManager getDependencyManager() {
-		return this.dependencyManager;
 	}
 
 	@Override
@@ -104,12 +88,17 @@ public abstract class AbstractPlugin<T extends ISuperBootstrap> implements ISupe
 
 	@Override
 	public ThreadFactory getThreadFactory() {
-		ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) this.executorService;
+		ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) this.getExecutorService();
 		return threadPoolExecutor.getThreadFactory();
 	}
 
 	@Override
 	public ScheduledExecutorService getExecutorService() {
-		return executorService;
+		return executors;
+	}
+
+	@Override
+	public DependencyManager getDependencyManager() {
+		return getBootstrap().getDependencyManager();
 	}
 }

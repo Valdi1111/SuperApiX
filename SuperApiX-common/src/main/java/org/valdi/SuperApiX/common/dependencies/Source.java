@@ -1,12 +1,12 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import java.nio.file.Path;
+import java.io.File;
 
 public class Source {
     private final Dependency dependency;
-    private final Path file;
+    private final File file;
 
-    public Source(Dependency dependency, Path file) {
+    public Source(Dependency dependency, File file) {
         this.dependency = dependency;
         this.file = file;
     }
@@ -15,7 +15,7 @@ public class Source {
     	return this.dependency;
     }
     
-    public Path getFile() {
+    public File getFile() {
     	return this.file;
     }
     

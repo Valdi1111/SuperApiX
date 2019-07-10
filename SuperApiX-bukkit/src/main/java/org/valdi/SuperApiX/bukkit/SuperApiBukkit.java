@@ -23,7 +23,6 @@ import org.valdi.SuperApiX.bukkit.users.VaultHandler;
 import org.valdi.SuperApiX.common.config.advanced.ConfigLoader;
 import org.valdi.SuperApiX.common.config.serializers.SetSerializer;
 import org.valdi.SuperApiX.common.databases.*;
-import org.valdi.SuperApiX.common.dependencies.Dependencies;
 
 public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	private static SuperApiBukkit instance;
@@ -53,10 +52,6 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	@Override
 	public void load() {
 		super.load();
-		
-        // load dependencies
-		getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
-        getDependencyManager().loadStorageDependencies();
 
         // Register common serializers
     	new SetSerializer().register();
@@ -86,7 +81,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		}
 
 		// Save settings - ensures admins always have the latest config file
-		settings.saveConfig();
+		settings.save();
 
 		// Initializing debug (if enabled)
 		if(this.getSettings().isDebug()) {
@@ -122,20 +117,6 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 
 		vault = new VaultHandler();
 		vault.canLoad(this);
-
-		/*new SuperRunnable(this) {
-			private int i = 0;
-
-			@Override
-			public void run() {
-				if(i == 10) {
-					this.cancel();
-				}
-
-				i++;
-				getLogger().info("Messaggio ogni 1 secondo.");
-			}
-		}.runTaskTimerAsynchronously(5L, 1L, TimeUnit.SECONDS);*/
 
 		// Save players data every X minutes
 		bootstrap.getScheduler().runTaskTimer(() -> {
@@ -264,7 +245,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		getLogger().info("Loading Settings from config.yml...");
 		// Load settings from config.yml. This will check if there are any issues with it too.
 		settings = new ConfigLoader<>(this, Settings.class);
-		settings.loadAnnotatedConfig();
+		settings.loadAnnotated();
 
 		if (settings == null) {
 			// Settings did not load correctly. Disable plugin.

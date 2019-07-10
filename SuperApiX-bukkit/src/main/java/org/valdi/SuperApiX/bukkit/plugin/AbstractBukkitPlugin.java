@@ -26,37 +26,12 @@ public abstract class AbstractBukkitPlugin<T extends ISuperBukkitBootstrap> exte
 	public AbstractBukkitPlugin(final T bootstrap) {
 		super(bootstrap);
 
+		// Load managers
 		this.localesManager = new LocalesManager(this);
 		this.commandsManager = new CommandsManager(this);
 
 		// Load notifier
-		notifier = new Notifier();
-	}
-	
-	@Override
-	public Optional<IDatabasesProvider> getDatabasesProvider() {
-        RegisteredServiceProvider<IDatabasesProvider> provider = Bukkit.getServicesManager().getRegistration(IDatabasesProvider.class);
-        if(provider == null) {
-        	this.getLogger().debug("Cannot get file provider...");
-        	return Optional.empty();
-        }
-        
-        return Optional.ofNullable(provider.getProvider());
-	}
-
-	@Override
-	public Optional<IFilesProvider> getFilesProvider() {
-        RegisteredServiceProvider<IFilesProvider> provider = Bukkit.getServicesManager().getRegistration(IFilesProvider.class);
-        if(provider == null) {
-        	this.getLogger().debug("Cannot get file provider...");
-        	return Optional.empty();
-        }
-        
-        return Optional.ofNullable(provider.getProvider());
-	}
-
-	public Server getServer() {
-		return this.getBootstrap().getServer();
+		this.notifier = new Notifier();
 	}
 
 	@Override
@@ -77,6 +52,32 @@ public abstract class AbstractBukkitPlugin<T extends ISuperBukkitBootstrap> exte
 	@Override
 	public Notifier getNotifier() {
 		return notifier;
+	}
+
+	@Override
+	public Optional<IDatabasesProvider> getDatabasesProvider() {
+		RegisteredServiceProvider<IDatabasesProvider> provider = Bukkit.getServicesManager().getRegistration(IDatabasesProvider.class);
+		if(provider == null) {
+			this.getLogger().debug("Cannot get file provider...");
+			return Optional.empty();
+		}
+
+		return Optional.ofNullable(provider.getProvider());
+	}
+
+	@Override
+	public Optional<IFilesProvider> getFilesProvider() {
+		RegisteredServiceProvider<IFilesProvider> provider = Bukkit.getServicesManager().getRegistration(IFilesProvider.class);
+		if(provider == null) {
+			this.getLogger().debug("Cannot get file provider...");
+			return Optional.empty();
+		}
+
+		return Optional.ofNullable(provider.getProvider());
+	}
+
+	public Server getServer() {
+		return this.getBootstrap().getServer();
 	}
 
 }

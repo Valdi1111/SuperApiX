@@ -2,7 +2,6 @@ package org.valdi.SuperApiX.bukkit.plugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
@@ -14,6 +13,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.valdi.SuperApiX.bukkit.logging.BukkitPluginLogger;
 import org.valdi.SuperApiX.bukkit.versions.*;
 import org.valdi.SuperApiX.common.PlatformType;
+import org.valdi.SuperApiX.common.dependencies.DependencyManager;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
 import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
 import org.valdi.SuperApiX.common.logging.SuperLogger;
@@ -33,7 +33,7 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
     /**
      * A scheduler adapter for the platform
      */
-    private SimpleScheduler schedulerAdapter;
+    private SimpleScheduler scheduler;
 
     /**
      * The plugin classloader
@@ -64,35 +64,22 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
         this.compatibleVersions = new HashMap<>();
     }
 
-    // provide adapters
+    @Override
+    public T getPlugin() {
+        return plugin;
+    }
+
+    // provide information about the plugin
 
     @Override
-    public SuperLogger getPluginLogger() {
-        return this.logger;
+    public String getVersion() {
+        return getDescription().getVersion();
     }
 
     @Override
-    public SimpleScheduler getScheduler() {
-        if (this.schedulerAdapter == null) {
-            throw new IllegalStateException("Scheduler has not been initialised yet");
-        }
-        return this.schedulerAdapter;
+    public List<String> getAuthors() {
+        return getDescription().getAuthors();
     }
-
-    @Override
-    public PluginClassLoader getPluginClassLoader() {
-        return this.classLoader;
-    }
-	
-    @Override
-	public File getJarFile() {
-		return super.getFile();
-	}
-	
-    @Override
-	public ClassLoader getJarLoader() {
-		return super.getClassLoader();
-	}
 
     // lifecycle
 
@@ -102,7 +89,7 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 	 */
     @Override
     public void onLoad() {
-        this.schedulerAdapter = new SimpleScheduler(plugin);
+        this.scheduler = new SimpleScheduler(plugin);
         if (checkIncompatibleVersion()) {
             return;
         }
@@ -133,12 +120,13 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
                 @Override
                 public void run() {
                     ++alteredTicks;
-                    schedulerAdapter.tick(alteredTicks);
+                    scheduler.tick(alteredTicks);
 
                     //getLogger().info("Ticking scheduler... Ticks: " + alteredTicks);
                 }
             }, 0L, 1L);
 
+            SimpleScheduler.startAcceptingTasks();
             this.getPlugin().enable();
         } finally {
             this.enableLatch.countDown();
@@ -161,17 +149,47 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
         } catch (Exception e) {
             e.printStackTrace();
         }
-        schedulerAdapter.shutdown();
+        scheduler.shutdown();
+    }
+
+    // provide adapters
+
+    @Override
+    public SuperLogger getPluginLogger() {
+        return this.logger;
     }
 
     @Override
-    public T getPlugin() {
-        return plugin;
+    public SimpleScheduler getScheduler() {
+        if (this.scheduler == null) {
+            throw new IllegalStateException("Scheduler has not been initialised yet");
+        }
+        return this.scheduler;
     }
 
     @Override
-    public CountDownLatch getEnableLatch() {
-        return this.enableLatch;
+    public File getJarFile() {
+        return super.getFile();
+    }
+
+    @Override
+    public ClassLoader getJarLoader() {
+        return super.getClassLoader();
+    }
+
+    @Override
+    public PluginClassLoader getPluginClassLoader() {
+        return this.classLoader;
+    }
+
+    @Override
+    public InputStream getResourceStream(String path) {
+        return super.getResource(path);
+    }
+
+    @Override
+    public DependencyManager getDependencyManager() {
+        return DependencyManager.getInstance();
     }
 
     @Override
@@ -179,16 +197,9 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
         return this.loadLatch;
     }
 
-    // provide information about the plugin
-
     @Override
-    public String getVersion() {
-        return getDescription().getVersion();
-    }
-
-    @Override
-    public List<String> getAuthors() {
-        return getDescription().getAuthors();
+    public CountDownLatch getEnableLatch() {
+        return this.enableLatch;
     }
 
     @Override
@@ -215,17 +226,12 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 
     @Override
     public String getServerName() {
-        return getServer().getServerName();
-    }
-
-    @Override
-    public Path getDataDirectory() {
-        return getDataFolder().toPath().toAbsolutePath();
-    }
-
-    @Override
-    public InputStream getResourceStream(String path) {
-        return super.getResource(path);
+        try {
+            return getServer().getServerName();
+        } catch(Exception e) {
+            logger.severe("Cannot retrieve sever name from getServer#getServerName method!");
+            return null;
+        }
     }
 
     @Override
@@ -235,7 +241,6 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 
     @Override
     public Optional<UUID> lookupUuid(String username) {
-        // noinspection deprecation
         return Optional.ofNullable(getServer().getOfflinePlayer(username)).map(OfflinePlayer::getUniqueId);
     }
 
@@ -296,11 +301,11 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 			return Compatibility.INCOMPATIBLE;
 		}
 		
-		return compatibleSoftwares.containsKey(software) ? compatibleSoftwares.get(software) : Compatibility.COMPATIBLE;
+		return compatibleSoftwares.getOrDefault(software, Compatibility.COMPATIBLE);
 	}
 	
 	protected void registerSoftwareCompatibility(Compatibility compatibility, ServerSoftware... softwares) {
-		Arrays.asList(softwares).stream().forEach(s -> compatibleSoftwares.put(s, compatibility));
+		Arrays.stream(softwares).forEach(s -> compatibleSoftwares.put(s, compatibility));
 	}
 	
 	public Compatibility getVersionCompatibility(ServerVersion version) {
@@ -308,11 +313,11 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 			return Compatibility.INCOMPATIBLE;
 		}
 
-		return compatibleVersions.containsKey(version) ? compatibleVersions.get(version) : Compatibility.COMPATIBLE;
+		return compatibleVersions.getOrDefault(version, Compatibility.COMPATIBLE);
 	}
 	
 	protected void registerVersionCompatibility(Compatibility compatibility, ServerVersion... versions) {
-		Arrays.asList(versions).stream().forEach(v -> compatibleVersions.put(v, compatibility));
+		Arrays.stream(versions).forEach(v -> compatibleVersions.put(v, compatibility));
 	}
 
 }

@@ -8,6 +8,8 @@ import org.valdi.SuperApiX.common.annotation.plugin.LoadOrder;
 import org.valdi.SuperApiX.common.annotation.plugin.LoadOrder.Phase;
 import org.valdi.SuperApiX.common.annotation.plugin.BukkitPlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
+import org.valdi.SuperApiX.common.dependencies.Dependencies;
+import org.valdi.SuperApiX.common.dependencies.DependencyManager;
 
 @BukkitPlugin(name = PluginDetails.NAME, version = PluginDetails.VERSION)
 @Description(PluginDetails.DESCRIPTION)
@@ -22,10 +24,21 @@ public class BukkitBootstrap extends AbstractBukkitBootstrap<SuperApiBukkit> {
     public BukkitBootstrap() {
         super();
 
+        DependencyManager.init(this);
+
+        // load dependencies
+        getDependencyManager().loadStorageDependencies();
+        getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
+
         this.plugin = new SuperApiBukkit(this);
     }
 
     // lifecycle
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+    }
 
     @Override
     public void onEnable() {
@@ -36,7 +49,7 @@ public class BukkitBootstrap extends AbstractBukkitBootstrap<SuperApiBukkit> {
         }
     	
         // Metrics
-        metrics = new Metrics(this);
+        this.metrics = new Metrics(this);
         getLogger().info("Metrics loaded."); 	
     }
 
@@ -47,8 +60,8 @@ public class BukkitBootstrap extends AbstractBukkitBootstrap<SuperApiBukkit> {
         if(!isCompatible()) {
             return;
         }
-        
-    	metrics = null;
+
+        this.metrics = null;
     }
     
     public Metrics getMetrics() {

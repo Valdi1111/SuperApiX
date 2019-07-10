@@ -1,9 +1,6 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.valdi.SuperApiX.common.config.types.ConfigType;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -34,7 +31,7 @@ public class DependencyRegistry {
             .put(ConfigType.CUSTOM, ImmutableList.of())
             .build();
 
-    public Set<Dependency> resolveStorageDependencies() {
+    public Dependency[] resolveStorageDependencies() {
         Set<Dependency> dependencies = new LinkedHashSet<>();
         for (StorageType storageType : StorageType.values()) {
             dependencies.addAll(STORAGE_DEPENDENCIES.get(storageType));
@@ -50,12 +47,12 @@ public class DependencyRegistry {
             dependencies.remove(Dependencies.SLF4J_SIMPLE);
         }
 
-        return dependencies;
+        return dependencies.toArray(new Dependency[0]);
     }
 
     // support for legacy (bukkit 1.7.10)
     public List<Relocation> getLegacyRelocations(Dependency dependency) {
-        if (RelocationHandler.DEPENDENCIES.contains(dependency)) {
+        if (Arrays.asList(RelocationHandler.DEPENDENCIES).contains(dependency)) {
             return ImmutableList.of();
         }
 

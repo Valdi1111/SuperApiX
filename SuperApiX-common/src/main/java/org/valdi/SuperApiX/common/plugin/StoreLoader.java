@@ -15,73 +15,85 @@ import org.valdi.SuperApiX.common.scheduler.SuperScheduler;
 
 public interface StoreLoader {
 
+	/**
+	 * Gets the plugin's name.
+	 * @return the name
+	 */
 	String getName();
 
+	/**
+	 * Gets the plugin's version.
+	 * @return the version
+	 */
 	String getVersion();
 
-	List getAuthors();
+	/**
+	 * Gets the plugin's authors.
+	 * @return the authors
+	 */
+	List<String> getAuthors();
 
     /**
-     * Gets the plugin's logger
+     * Gets the plugin's logger.
      * @return the logger
      */
 	SuperLogger getLogger();
 
 	/**
-	 * Get the plugin's data folder
+	 * Get an active instance of the SuperScheduler.
+	 * @return the scheduler adapter
+	 */
+	SuperScheduler getScheduler();
+
+	/**
+	 * Get the plugin's data folder.
 	 * @return the folder
 	 */
 	File getDataFolder();
 
 	/**
-	 * Get a resource from inside the plugin's jar at the given path
+	 * Get the plugin jar file.
+	 * @return the jar file
+	 */
+	File getJarFile();
+
+	/**
+	 * Get the plugin's jar ClassLoader.
+	 * @return the loader
+	 */
+	ClassLoader getJarLoader();
+
+	/**
+	 * Get a resource from inside the plugin's jar at the given path.
 	 * @param path the resource path
 	 * @return an InputStream for the resource
 	 */
 	InputStream getResource(String path);
 
 	/**
-	 * Get the plugin's jar ClassLoader
-	 * @return the loader
-	 */
-	ClassLoader getJarLoader();
-
-	/**
-	 * Get the plugin jar file
-	 * @return the jar file
-	 */
-	File getJarFile();
-
-	/**
-	 * Get an active instance of the IDatabasesProvider
-	 * @return the databases provider
-	 */
-	Optional<IDatabasesProvider> getDatabasesProvider();
-
-	/**
-	 * Get an active instance of the IFilesProvider
-	 * @return the files provider
-	 */
-	Optional<IFilesProvider> getFilesProvider();
-
-	/**
-	 * Get an active instance of the SuperScheduler
-	 * @return the scheduler adapter
-	 */
-	SuperScheduler getScheduler();
-
-	/**
-	 * Get an active instance of the DependencyManager
-	 * @return the dependency manager
-	 */
-	DependencyManager getDependencyManager();
-
-	/**
-	 * Get a thread factory associated to this StoreLoader
+	 * Get a thread factory associated to this StoreLoader.
 	 * @return the thread factory
 	 */
 	ThreadFactory getThreadFactory();
 
 	ScheduledExecutorService getExecutorService();
+
+	/**
+	 * Get an active instance of the DependencyManager.
+	 * @return the dependency manager
+	 */
+	DependencyManager getDependencyManager();
+
+	/**
+	 * Get an active instance of the IDatabasesProvider.
+	 * @return the databases provider
+	 */
+	Optional<IDatabasesProvider> getDatabasesProvider();
+
+	/**
+	 * Get an active instance of the IFilesProvider.
+	 * @return the files provider
+	 */
+	Optional<IFilesProvider> getFilesProvider();
 
 }

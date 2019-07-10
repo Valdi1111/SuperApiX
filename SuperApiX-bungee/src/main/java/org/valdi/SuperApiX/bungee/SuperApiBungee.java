@@ -2,7 +2,6 @@ package org.valdi.SuperApiX.bungee;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.valdi.SuperApiX.bungee.plugin.AbstractBungeePlugin;
-import org.valdi.SuperApiX.common.dependencies.Dependencies;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -18,10 +17,6 @@ public class SuperApiBungee extends AbstractBungeePlugin<BungeeBootstrap> {
 	@Override
 	public void load() {
 		super.load();
-        
-        // load dependencies
-		getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
-        getDependencyManager().loadStorageDependencies();
 	}
 
 	@Override

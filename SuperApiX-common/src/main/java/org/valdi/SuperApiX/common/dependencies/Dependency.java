@@ -69,7 +69,7 @@ public class Dependency {
         private String artifactId;
         private String version;
 
-        private String url = "https://repo1.maven.org/maven2/%s/%s/%s/%s-%s.jar";
+        private String url = MAVEN_CENTRAL_FORMAT;
         private String checksum = null;
 
         private boolean autoLoad = true;
@@ -115,7 +115,7 @@ public class Dependency {
         }
 
         public Dependency build() {
-            return new Dependency(id, String.format(MAVEN_CENTRAL_FORMAT,
+            return new Dependency(id, String.format(url,
                     rewriteEscaping(groupId).replace(".", "/"),
                     rewriteEscaping(artifactId),
                     version,

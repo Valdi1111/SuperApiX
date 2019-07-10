@@ -3,12 +3,11 @@ package org.valdi.SuperApiX.common.dependencies;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteStreams;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -17,32 +16,42 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
+import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.plugin.ISuperBootstrap;
-import org.valdi.SuperApiX.common.plugin.ISuperPlugin;
 import org.valdi.SuperApiX.common.dependencies.classloader.IsolatedClassLoader;
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
-import org.valdi.SuperApiX.common.utils.MoreFiles;
 
 /**
  * Responsible for loading runtime dependencies.
  */
 public class DependencyManager {
-    private final ISuperBootstrap plugin;
+    private final ISuperBootstrap bootstrap;
     private final MessageDigest digest;
     private final DependencyRegistry registry;
-    private final Map<Dependency, Path> loaded = new HashMap<>();
+    private final Map<Dependency, File> loaded = new HashMap<>();
     private final Map<ImmutableSet<Dependency>, IsolatedClassLoader> loaders = new HashMap<>();
-    private RelocationHandler relocationHandler = null;
+    private RelocationHandler relocator = null;
 
-    public DependencyManager(ISuperPlugin plugin) {
-        this(plugin.getBootstrap());
+    private static DependencyManager instance;
+
+    public static DependencyManager getInstance() {
+        return instance;
     }
 
-    public DependencyManager(ISuperBootstrap plugin) {
-        this.plugin = plugin;
+    public static DependencyManager init(ISuperBootstrap bootstrap) {
+        if(instance != null) {
+            throw new RuntimeException("DependencyManager cannot be redefined!");
+        }
+
+        instance = new DependencyManager(bootstrap);
+        return getInstance();
+    }
+
+    private DependencyManager(ISuperBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
         try {
             this.digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -52,23 +61,13 @@ public class DependencyManager {
     }
 
     private synchronized RelocationHandler getRelocationHandler() {
-        if (this.relocationHandler == null) {
-            this.relocationHandler = new RelocationHandler(this);
+        if (this.relocator == null) {
+            this.relocator = new RelocationHandler(this);
         }
-        return this.relocationHandler;
+        return this.relocator;
     }
 
-    private Path getSaveDirectory() {
-        Path saveDirectory = this.plugin.getDataDirectory().resolve("lib");
-        try {
-            MoreFiles.createDirectoriesIfNotExists(saveDirectory);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create lib directory", e);
-        }
-        return saveDirectory;
-    }
-
-    public IsolatedClassLoader obtainClassLoaderWith(Set<Dependency> dependencies) {
+    public IsolatedClassLoader obtainClassLoaderWith(Dependency... dependencies) {
         ImmutableSet<Dependency> set = ImmutableSet.copyOf(dependencies);
 
         for (Dependency dependency : dependencies) {
@@ -87,7 +86,7 @@ public class DependencyManager {
                     .map(this.loaded::get)
                     .map(file -> {
                         try {
-                            return file.toUri().toURL();
+                            return file.toURI().toURL();
                         } catch (MalformedURLException e) {
                             throw new RuntimeException(e);
                         }
@@ -100,28 +99,54 @@ public class DependencyManager {
         }
     }
 
+    private File getSaveDirectory(File saveFolder, boolean createSub) {
+        if(saveFolder == null) {
+            saveFolder = bootstrap.getDataFolder();
+            createSub = true;
+        }
+
+        if(createSub) {
+            saveFolder = new File(saveFolder, "libs");
+        }
+
+        if(!saveFolder.exists()) {
+            saveFolder.mkdirs();
+        }
+        return saveFolder;
+    }
+
     public void loadStorageDependencies() {
-        Set<Dependency> dependencies = this.registry.resolveStorageDependencies();
-        loadDependencies(dependencies.toArray(new Dependency[0]));
+        this.loadDependencies(registry.resolveStorageDependencies());
     }
 
     public void loadDependencies(Dependency... dependencies) {
-        Path saveDirectory = getSaveDirectory();
+        this.loadDependencies(null, null, null, true, dependencies);
+    }
+
+    public void loadDependencies(SuperLogger logger, PluginClassLoader classLoader, File folder, boolean createSub, Dependency... dependencies) {
+        if(logger == null) {
+            logger = bootstrap.getPluginLogger();
+        }
+        if(classLoader == null) {
+            classLoader = bootstrap.getPluginClassLoader();
+        }
+
+        File saveFolder = getSaveDirectory(folder, createSub);
 
         // create a list of file sources
         List<Source> sources = new ArrayList<>();
 
         // obtain a file for each of the dependencies
         for (Dependency dependency : dependencies) {
-            if (this.loaded.containsKey(dependency)) {
+            if (loaded.containsKey(dependency)) {
                 continue;
             }
 
             try {
-                Path file = downloadDependency(saveDirectory, dependency);
+                File file = downloadDependency(logger, saveFolder, dependency);
                 sources.add(new Source(dependency, file));
             } catch (Throwable e) {
-                this.plugin.getPluginLogger().severe("Exception whilst downloading dependency " + dependency.getId());
+                logger.severe("Exception whilst downloading dependency " + dependency.getId());
                 e.printStackTrace();
             }
         }
@@ -132,18 +157,18 @@ public class DependencyManager {
             try {
                 // apply remap rules
                 List<Relocation> relocations = new ArrayList<>(source.getDependency().getRelocations());
-                relocations.addAll(this.registry.getLegacyRelocations(source.getDependency()));
+                relocations.addAll(registry.getLegacyRelocations(source.getDependency()));
 
                 if (relocations.isEmpty()) {
                     remappedJars.add(source);
                     continue;
                 }
 
-                Path input = source.getFile();
-                Path output = input.getParent().resolve("remapped-" + input.getFileName().toString());
+                File input = source.getFile();
+                File output = new File(input.getParent(), "remapped-" + input.getName());
 
                 // if the remapped file exists already, just use that.
-                if (Files.exists(output)) {
+                if (output.exists()) {
                     remappedJars.add(new Source(source.getDependency(), output));
                     continue;
                 }
@@ -152,12 +177,12 @@ public class DependencyManager {
                 RelocationHandler relocationHandler = getRelocationHandler();
 
                 // attempt to remap the jar.
-                this.plugin.getPluginLogger().info("Attempting to apply relocations to " + input.getFileName().toString() + "...");
+                logger.info("Attempting to apply relocations to " + input.getName() + "...");
                 relocationHandler.remap(input, output, relocations);
 
                 remappedJars.add(new Source(source.getDependency(), output));
             } catch (Throwable e) {
-                this.plugin.getPluginLogger().severe("Unable to remap the source file '" + source.getDependency().getId() + "'.");
+                logger.severe("Unable to remap the source file '" + source.getDependency().getId() + "'.");
                 e.printStackTrace();
             }
         }
@@ -165,26 +190,26 @@ public class DependencyManager {
         // load each of the jars
         for (Source source : remappedJars) {
             if (!source.getDependency().shoultAutoLoad()) {
-                this.loaded.put(source.getDependency(), source.getFile());
+                loaded.put(source.getDependency(), source.getFile());
                 continue;
             }
 
             try {
-                this.plugin.getPluginClassLoader().loadJar(source.getFile());
-                this.loaded.put(source.getDependency(), source.getFile());
+                classLoader.loadJar(source.getFile());
+                loaded.put(source.getDependency(), source.getFile());
             } catch (Throwable e) {
-                this.plugin.getPluginLogger().severe("Failed to load dependency jar '" + source.getFile().getFileName().toString() + "'.");
+                logger.severe("Failed to load dependency jar '" + source.getFile().getName() + "'.");
                 e.printStackTrace();
             }
         }
     }
 
-    private Path downloadDependency(Path saveDirectory, Dependency dependency) throws Exception {
+    private File downloadDependency(SuperLogger logger, File saveFolder, Dependency dependency) throws Exception {
         String fileName = dependency.getId().toLowerCase() + "-" + dependency.getVersion() + ".jar";
-        Path file = saveDirectory.resolve(fileName);
+        File file = new File(saveFolder, fileName);
 
         // if the file already exists, don't attempt to re-download it.
-        if (Files.exists(file)) {
+        if (file.exists()) {
             return file;
         }
 
@@ -208,18 +233,18 @@ public class DependencyManager {
                         "Actual: " + Base64.getEncoder().encodeToString(hash));
             }
 
-            this.plugin.getPluginLogger().info("Successfully downloaded '" + fileName + "' with matching checksum: " + Base64.getEncoder().encodeToString(hash));
+            logger.info("Successfully downloaded '" + fileName + "' with matching checksum: " + Base64.getEncoder().encodeToString(hash));
 
             // if the checksum matches, save the content to disk
-            Files.write(file, bytes);
+            Files.write(file.toPath(), bytes);
         }
 
         // ensure the file saved correctly
-        if (!Files.exists(file)) {
+        if (!file.exists()) {
             throw new IllegalStateException("File not present. - " + file.toString());
-        } else {
-            return file;
         }
+
+        return file;
     }
 
 }
