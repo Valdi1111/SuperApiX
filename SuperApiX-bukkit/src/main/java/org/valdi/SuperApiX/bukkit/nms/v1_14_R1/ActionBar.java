@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.ActionBarMessageEvent;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractActionBar;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
 public class ActionBar extends AbstractActionBar {
@@ -18,7 +17,7 @@ public class ActionBar extends AbstractActionBar {
 	}
 
 	@Override
-	public void sendActionBar(Player player, String message) throws VersionUnsupportedException {
+	public void sendActionBar(Player player, String message) {
 		if(!player.isOnline() || message == null) {
 			return;
 		}

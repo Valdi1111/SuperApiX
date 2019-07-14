@@ -1,7 +1,6 @@
 package org.valdi.SuperApiX.bukkit.nms.base;
 
 import org.bukkit.entity.Player;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public interface ITabList {
 
@@ -12,6 +11,6 @@ public interface ITabList {
      * @param header  The header for the tablist.
      * @param footer  The footer for the tablist.
      */
-	void sendTabTitle(Player player, String header, String footer) throws VersionUnsupportedException;
+	void sendTabTitle(Player player, String header, String footer);
 
 }

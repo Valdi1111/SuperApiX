@@ -1,13 +1,16 @@
 general:
   database:
-    # SQLITE, MYSQL
-    type: "SQLITE"
+    # H2, MYSQL, MARIADB
+    type: "H2"
+    name: "superapix"
     host: "localhost"
+    options: ";mode=MySQL"
     # Port 3306 is MySQL's default. Port 27017 is MongoDB's default.
     port: 3306
-    name: "superapix"
-    username: "username"
+    username: "admin"
     password: "password"
+    pool-size: 15
+    pool-name: "SuperApiX-Hikari"
     # How often the data will be saved to file in mins. Default is 5 minutes.
     # This helps prevent issues if the server crashes.
     # Data is also saved at important points in the game.

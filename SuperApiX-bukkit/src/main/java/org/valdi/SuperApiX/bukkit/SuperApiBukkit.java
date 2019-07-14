@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.valdi.SuperApiX.bukkit.advancements.AdvancementProvider;
 import org.valdi.SuperApiX.bukkit.bossbar.IBossBarProvider;
 import org.valdi.SuperApiX.bukkit.config.serializers.LocationSerializer;
 import org.valdi.SuperApiX.bukkit.config.serializers.VectorSerializer;
@@ -15,9 +14,8 @@ import org.valdi.SuperApiX.bukkit.config.serializers.WorldUuidSerializer;
 import org.valdi.SuperApiX.bukkit.listeners.JoinLeaveListener;
 import org.valdi.SuperApiX.bukkit.listeners.PluginListener;
 import org.valdi.SuperApiX.bukkit.nms.core.NmsProvider;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionManager;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.managers.PlayersManager;
+import org.valdi.SuperApiX.bukkit.nms.nbt.utils.MinecraftVersion;
 import org.valdi.SuperApiX.bukkit.plugin.AbstractBukkitPlugin;
 import org.valdi.SuperApiX.bukkit.users.VaultHandler;
 import org.valdi.SuperApiX.common.config.advanced.ConfigLoader;
@@ -27,20 +25,15 @@ import org.valdi.SuperApiX.common.databases.*;
 public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	private static SuperApiBukkit instance;
 
-	private ServiceProviderManager provider;
-	private VersionManager version;
-	
-	private NmsProvider nmsProvider;
-	private AdvancementProvider advProvider;
-
-	private IDataStorage database;
-
 	// Databases
+	private IDataStorage database;
 	private PlayersManager playersManager;
 
 	// Settings
 	private ConfigLoader<Settings> settings;
 
+	private ServiceProviderManager provider;
+	private NmsProvider nmsProvider;
 	private VaultHandler vault;
     
     public SuperApiBukkit(BukkitBootstrap bootstrap) {
@@ -60,17 +53,12 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
     	new VectorSerializer().register();
     	new LocationSerializer().register();
     	new WorldUuidSerializer().register();
+
+		// Initialize NBT support
+		MinecraftVersion.getVersion();
         
 		provider = new ServiceProviderManager(this);
-		version = new VersionManager(this);
-
 		nmsProvider = new NmsProvider(this);
-		try {
-			advProvider = new AdvancementProvider(this);
-		} catch (VersionUnsupportedException e) {
-			e.printStackTrace();
-		}
-
 		provider.registerAll();
 
 		// Load settings
@@ -111,10 +99,6 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 			return;
 		}
 
-		if(advProvider != null) {
-			advProvider.onEnable();
-		}
-
 		vault = new VaultHandler();
 		vault.canLoad(this);
 
@@ -133,10 +117,6 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	public void disable() {
 		super.disable();
 
-		if(advProvider != null) {
-			advProvider.onDisable();
-		}
-
 		// Save data
 		if (playersManager != null) {
 			playersManager.shutdown();
@@ -147,9 +127,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 			try {
 				database.close();
 			} catch (DatabaseException e) {
-				this.getLogger().severe("### Unable close Database connection. ###");
-				this.getLogger().severe("Error: " + e.getMessage());
-				this.getLogger().debug("Database error", e);
+				this.getLogger().severe("### Unable close Database connection. ###", e);
 			}
 		}
 		
@@ -162,26 +140,28 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	}
 
 	private boolean setupDatabase() {
-		String mysqlIp = this.getSettings().getDatabaseHost();
-		int mysqlPort = this.getSettings().getDatabasePort();
-		String mysqlDatabase = this.getSettings().getDatabaseName();
-		String mysqlOptions = "";
-		String mysqlUsername = this.getSettings().getDatabaseUsername();
-		String mysqlPassword = this.getSettings().getDatabasePassword();
+		String ip = this.getSettings().getDatabaseHost();
+		int port = this.getSettings().getDatabasePort();
+		String options = this.getSettings().getOptions();
+		String dbName = this.getSettings().getDatabaseName();
+		String username = this.getSettings().getDatabaseUsername();
+		String password = this.getSettings().getDatabasePassword();
+		int poolSize = this.getSettings().getDatabasePoolSize();
+		String poolName = this.getSettings().getDatabasePoolName();
 
 		try {
 			database = DatabasesProvider.builder()
 					.setStoreLoader(this)
 					.setType(getSettings().getDatabaseType())
-					.setFile(this.getDataFolder(), "database.db")
-					.setAddress(mysqlIp)
-					.setPort(mysqlPort)
-					.setOptions(mysqlOptions)
-					.setDatabase(mysqlDatabase)
-					.setUsername(mysqlUsername)
-					.setPassword(mysqlPassword)
-					.setPoolSize(15)
-					.setPoolName("SuperApiX-Hikari")
+					.setFile(this.getDataFolder(), dbName)
+					.setAddress(ip)
+					.setPort(port)
+					.setOptions(options)
+					.setDatabase(dbName)
+					.setUsername(username)
+					.setPassword(password)
+					.setPoolSize(poolSize)
+					.setPoolName(poolName)
 					.build();
 			return true;
 		} catch (DatabaseException e) {
@@ -194,16 +174,8 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		return instance;
 	}
 	
-	public VersionManager getVersionManager() {
-		return this.version;
-	}
-	
 	public NmsProvider getNmsProvider() {
 		return this.nmsProvider;
-	}
-
-	public AdvancementProvider getAdvProvider() {
-    	return this.advProvider;
 	}
 	
 	public Optional<IBossBarProvider> getBossBarSender() {
@@ -221,8 +193,8 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	}
 
 	/**
-	 * Returns the player database
-	 * @return the player database
+	 * Returns the players database
+	 * @return the players database
 	 */
 	public PlayersManager getPlayersManager() {
 		return playersManager;

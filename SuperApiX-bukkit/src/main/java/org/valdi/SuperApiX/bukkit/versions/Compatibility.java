@@ -5,6 +5,12 @@ public enum Compatibility {
      * The server software is compatible with the current version of the plugin.
      * There shouldn't be any issues.
      */
+    UNKNOWN(true),
+
+    /**
+     * The server software is compatible with the current version of the plugin.
+     * There shouldn't be any issues.
+     */
     COMPATIBLE(true),
 
     /**

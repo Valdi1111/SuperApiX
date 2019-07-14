@@ -1,10 +1,9 @@
 package org.valdi.SuperApiX.bukkit.nms.base;
 
 import org.bukkit.entity.Player;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public interface IPlayerUtils {
 
-    int getPing(Player player) throws VersionUnsupportedException;
+    int getPing(Player player);
 
 }

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.ITitle;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class Title {
 	
@@ -49,13 +48,9 @@ public class Title {
 	        if(provider == null) {
 	            return false;
 	        }
-	        
-	        try {
-				provider.getProvider().sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
-				return true;
-			} catch (VersionUnsupportedException ignored) {
-				return false;
-			}
+
+			provider.getProvider().sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
+			return true;
 		}
 	}
 

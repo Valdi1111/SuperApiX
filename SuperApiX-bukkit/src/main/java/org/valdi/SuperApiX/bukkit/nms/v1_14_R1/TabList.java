@@ -14,6 +14,8 @@ import org.valdi.SuperApiX.bukkit.nms.base.ITabList;
 import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
+import java.io.IOException;
+
 public class TabList extends AbstractNmsProvider implements ITabList {
 
 	public TabList(final SuperApiBukkit plugin) {
@@ -21,7 +23,7 @@ public class TabList extends AbstractNmsProvider implements ITabList {
 	}
 
 	@Override
-	public void sendTabTitle(Player player, String header, String footer) throws VersionUnsupportedException {
+	public void sendTabTitle(Player player, String header, String footer) {
 		if(!player.isOnline() || (header == null && footer == null)) {
 			return;
 		}
@@ -42,8 +44,8 @@ public class TabList extends AbstractNmsProvider implements ITabList {
 			tabPacket.a(dataSerialized);
 			
 	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(tabPacket);
-		} catch (Exception ex) {
-			throw new VersionUnsupportedException(ex);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 

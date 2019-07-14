@@ -5,22 +5,20 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.ActionBarMessageEvent;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractActionBar;
-import org.valdi.SuperApiX.bukkit.nms.base.IActionBar;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
 import net.minecraft.server.v1_8_R1.ChatSerializer;
 import net.minecraft.server.v1_8_R1.IChatBaseComponent;
 import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
 
-public class ActionBar extends AbstractActionBar implements IActionBar {
+public class ActionBar extends AbstractActionBar {
 
 	public ActionBar(final SuperApiBukkit plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public void sendActionBar(Player player, String message) throws VersionUnsupportedException {
+	public void sendActionBar(Player player, String message) {
 		if(!player.isOnline() || message == null) {
 			return;
 		}

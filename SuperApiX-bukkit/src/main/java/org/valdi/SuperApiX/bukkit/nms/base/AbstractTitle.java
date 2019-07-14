@@ -2,7 +2,6 @@ package org.valdi.SuperApiX.bukkit.nms.base;
 
 import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public abstract class AbstractTitle extends AbstractNmsProvider implements ITitle {
 	
@@ -11,17 +10,17 @@ public abstract class AbstractTitle extends AbstractNmsProvider implements ITitl
 	}
 
 	@Override
-	public void sendFullTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException {
+	public void sendFullTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
 		sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
 	}
 
 	@Override
-	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) throws VersionUnsupportedException {
+	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) {
 		sendTitle(player, fadeIn, stay, fadeOut, title, null);
 	}
 
 	@Override
-	public void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) throws VersionUnsupportedException {
+	public void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) {
 		sendTitle(player, fadeIn, stay, fadeOut, null, subtitle);
 	}
 

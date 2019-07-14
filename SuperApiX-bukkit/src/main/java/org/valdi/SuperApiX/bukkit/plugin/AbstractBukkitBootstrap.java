@@ -52,6 +52,7 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
     private final ServerCompatibility compatibility;
     private final Map<ServerSoftware, Compatibility> compatibleSoftwares;
     private final Map<ServerVersion, Compatibility> compatibleVersions;
+    private final Map<MinecraftVersion, Compatibility> compatibleMinecrafts;
 
     private BukkitTask task;
 
@@ -62,6 +63,7 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
         this.compatibility = new ServerCompatibility();
         this.compatibleSoftwares = new HashMap<>();
         this.compatibleVersions = new HashMap<>();
+        this.compatibleMinecrafts = new HashMap<>();
     }
 
     @Override
@@ -297,9 +299,9 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 	}
 	
 	public Compatibility getSoftwareCompatibility(ServerSoftware software) {
-		if(software == null) {
-			return Compatibility.INCOMPATIBLE;
-		}
+        if(software.equals(ServerSoftware.UNKNOWN)) {
+            return Compatibility.INCOMPATIBLE;
+        }
 		
 		return compatibleSoftwares.getOrDefault(software, Compatibility.COMPATIBLE);
 	}
@@ -309,9 +311,9 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 	}
 	
 	public Compatibility getVersionCompatibility(ServerVersion version) {
-		if(version == null) {
-			return Compatibility.INCOMPATIBLE;
-		}
+        if(version.equals(ServerSoftware.UNKNOWN)) {
+            return Compatibility.NOT_SUPPORTED;
+        }
 
 		return compatibleVersions.getOrDefault(version, Compatibility.COMPATIBLE);
 	}
@@ -319,5 +321,17 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
 	protected void registerVersionCompatibility(Compatibility compatibility, ServerVersion... versions) {
 		Arrays.stream(versions).forEach(v -> compatibleVersions.put(v, compatibility));
 	}
+
+    public Compatibility getMinecraftCompatibility(MinecraftVersion version) {
+        if(version.equals(MinecraftVersion.UNKNOWN)) {
+            return Compatibility.INCOMPATIBLE;
+        }
+
+        return compatibleMinecrafts.getOrDefault(version, Compatibility.COMPATIBLE);
+    }
+
+    protected void registerMinecraftCompatibility(Compatibility compatibility, MinecraftVersion... versions) {
+        Arrays.stream(versions).forEach(v -> compatibleMinecrafts.put(v, compatibility));
+    }
 
 }

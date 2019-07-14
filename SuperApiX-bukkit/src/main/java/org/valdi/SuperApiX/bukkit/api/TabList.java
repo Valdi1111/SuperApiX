@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.ITabList;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class TabList {
 	
@@ -31,13 +30,9 @@ public class TabList {
 	        if(provider == null) {
 	            return false;
 	        }
-	        
-	        try {
-				provider.getProvider().sendTabTitle(player, header, footer);
-				return true;
-			} catch (VersionUnsupportedException ignored) {
-				return false;
-			}
+
+			provider.getProvider().sendTabTitle(player, header, footer);
+			return true;
 		}
 	}
 

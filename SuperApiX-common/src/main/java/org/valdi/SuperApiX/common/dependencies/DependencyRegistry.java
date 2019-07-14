@@ -18,8 +18,8 @@ public class DependencyRegistry {
             .put(StorageType.MARIADB, ImmutableList.of(Dependencies.MARIADB_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.MYSQL, ImmutableList.of(Dependencies.MYSQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.POSTGRESQL, ImmutableList.of(Dependencies.POSTGRESQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.SQLITE, ImmutableList.of(Dependencies.SQLITE_DRIVER))
-            .put(StorageType.H2, ImmutableList.of(Dependencies.H2_DRIVER))
+            .put(StorageType.SQLITE, ImmutableList.of(Dependencies.SQLITE_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
+            .put(StorageType.H2, ImmutableList.of(Dependencies.H2_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.CUSTOM, ImmutableList.of())
             .build();
 

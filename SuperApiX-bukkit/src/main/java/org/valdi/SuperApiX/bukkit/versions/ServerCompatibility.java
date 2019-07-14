@@ -13,6 +13,10 @@ public class ServerCompatibility {
 
     // ---- CONTENT ----
 
+    private ServerSoftware serverSoftware;
+    private ServerVersion serverVersion;
+    private MinecraftVersion minecraftVersion;
+
     private Compatibility result;
 
     /**
@@ -26,7 +30,7 @@ public class ServerCompatibility {
             // Check the server version first
         	Compatibility version = plugin.getVersionCompatibility(getServerVersion(plugin.getServer()));
 
-            if (version == null || version.equals(Compatibility.INCOMPATIBLE)) {
+            if (version.equals(Compatibility.INCOMPATIBLE)) {
                 // 'Version = null' means that it's not listed. And therefore, it's implicitly incompatible.
                 result = Compatibility.INCOMPATIBLE;
                 return result;
@@ -35,7 +39,7 @@ public class ServerCompatibility {
             // Now, check the server software
             Compatibility software = plugin.getSoftwareCompatibility(getServerSoftware(plugin.getServer()));
 
-            if (software == null || software.equals(Compatibility.INCOMPATIBLE)) {
+            if (software.equals(Compatibility.INCOMPATIBLE)) {
                 // 'software = null' means that it's not listed. And therefore, it's implicitly incompatible.
                 result = Compatibility.INCOMPATIBLE;
                 return result;
@@ -60,31 +64,45 @@ public class ServerCompatibility {
     }
 
     /**
-     * Returns the {@link ServerSoftware} entry corresponding to the current server software, may be null.
+     * Returns the {@link ServerSoftware} entry corresponding to the current server software, may be UNKNOWN.
      * @param server the {@link Server} instance, must not be null.
-     * @return the {@link ServerSoftware} run by this server or null.
+     * @return the {@link ServerSoftware} run by this server or UNKNOWN.
      */
     public ServerSoftware getServerSoftware(Server server) {
-        String serverSoftware = server.getVersion().substring(4).split("-")[0];
-        try {
-            return ServerSoftware.getById(serverSoftware.toUpperCase()).orElse(null);
-        } catch (IllegalArgumentException e) {
-            return null;
+        if(serverSoftware == null) {
+            String software = server.getVersion().substring(4).split("-")[0];
+            serverSoftware = ServerSoftware.getById(software.toUpperCase()).orElse(ServerSoftware.UNKNOWN);
         }
+
+        return serverSoftware;
     }
 
     /**
-     * Returns the {@link ServerVersion} entry corresponding to the current server software, may be null.
+     * Returns the {@link ServerVersion} entry corresponding to the current server software, may be UNKNOWN.
      * @param server the {@link Server} instance, must not be null.
-     * @return the {@link ServerVersion} run by this server or null.
+     * @return the {@link ServerVersion} run by this server or UNKNOWN.
      */
     public ServerVersion getServerVersion(Server server) {
-        String serverVersion = server.getBukkitVersion().split("-")[0].replace(".", "_");
-        try {
-            return ServerVersion.getById("V" + serverVersion.toUpperCase()).orElse(null);
-        } catch (IllegalArgumentException e) {
-            return null;
+        if(serverVersion == null) {
+            String version = server.getBukkitVersion().split("-")[0].replace(".", "_");
+            serverVersion = ServerVersion.getById("v" + version).orElse(ServerVersion.UNKNOWN);
         }
+
+        return serverVersion;
+    }
+
+    /**
+     * Returns the {@link MinecraftVersion} entry corresponding to the current server software, may be UNKNOWN.
+     * @param server the {@link Server} instance, must not be null.
+     * @return the {@link MinecraftVersion} run by this server or UNKNOWN.
+     */
+    public MinecraftVersion getMinecraftVersion(Server server) {
+        if(minecraftVersion == null) {
+            String version = server.getClass().getPackage().getName().replace(".", ",").split(",")[3];
+            minecraftVersion = MinecraftVersion.getById(version).orElse(MinecraftVersion.UNKNOWN);
+        }
+
+        return minecraftVersion;
     }
     
     public Compatibility getCompatibility() {
