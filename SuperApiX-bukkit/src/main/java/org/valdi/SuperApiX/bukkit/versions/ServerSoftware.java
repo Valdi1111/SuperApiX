@@ -11,7 +11,8 @@ import org.bukkit.Bukkit;
  * Provides a list of server software.
  * Any software that is not listed here is implicitly considered as "INCOMPATIBLE".
  */
-public class ServerSoftware {	
+public class ServerSoftware {
+	public static final ServerSoftware UNKNOWN = new ServerSoftware("UNKNOWN");
 	public static final ServerSoftware CRAFTBUKKIT = new ServerSoftware("CRAFTBUKKIT");
 	public static final ServerSoftware BUKKIT = new ServerSoftware("BUKKIT");
 	public static final ServerSoftware GLOWSTONE = new ServerSoftware("GLOWSTONE");

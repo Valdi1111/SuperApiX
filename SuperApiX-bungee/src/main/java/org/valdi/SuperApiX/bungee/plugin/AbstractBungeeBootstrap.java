@@ -2,9 +2,7 @@ package org.valdi.SuperApiX.bungee.plugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -12,6 +10,7 @@ import java.util.stream.Stream;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import org.valdi.SuperApiX.bungee.logging.BungeePluginLogger;
 import org.valdi.SuperApiX.bungee.utils.RedisBungeeUtil;
+import org.valdi.SuperApiX.common.dependencies.DependencyManager;
 import org.valdi.SuperApiX.common.plugin.ISuperBootstrap;
 import org.valdi.SuperApiX.common.PlatformType;
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
@@ -36,7 +35,7 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
     /**
      * A scheduler adapter for the platform
      */
-    private SimpleScheduler schedulerAdapter;
+    private SimpleScheduler scheduler;
 
     /**
      * The plugin classloader
@@ -50,44 +49,6 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
 
     private ScheduledTask task;
 
-    // provide adapters
-
-    @Override
-    public String getName() {
-        return super.getDescription().getName();
-    }
-
-    @Override
-	public SuperLogger getPluginLogger() {
-        if (this.logger == null) {
-            throw new IllegalStateException("Logger has not been initialised yet");
-        }
-        return this.logger;
-	}
-
-	@Override
-	public SimpleScheduler getScheduler() {
-        if (this.schedulerAdapter == null) {
-            throw new IllegalStateException("Scheduler has not been initialised yet");
-        }
-		return this.schedulerAdapter;
-	}
-
-	@Override
-	public PluginClassLoader getPluginClassLoader() {
-		return this.classLoader;
-	}
-	
-    @Override
-	public File getJarFile() {
-		return super.getFile();
-	}
-	
-    @Override
-	public ClassLoader getJarLoader() {
-		return super.getClass().getClassLoader();
-	}
-
     // load/enable latches
     private final CountDownLatch loadLatch = new CountDownLatch(1);
     private final CountDownLatch enableLatch = new CountDownLatch(1);
@@ -95,11 +56,35 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
     protected AbstractBungeeBootstrap() {
         this.classLoader = new ReflectionClassLoader(this);
     }
-	
-	@Override
+
+    @Override
+    public T getPlugin() {
+        return plugin;
+    }
+
+    // provide information about the plugin
+
+    @Override
+    public String getName() {
+        return super.getDescription().getName();
+    }
+
+    @Override
+    public String getVersion() {
+        return getDescription().getVersion();
+    }
+
+    @Override
+    public List<String> getAuthors() {
+        return Collections.singletonList(getDescription().getAuthor());
+    }
+
+    // plugin life cycle
+
+    @Override
 	public void onLoad() {
         this.logger = new BungeePluginLogger(getLogger());
-        this.schedulerAdapter = new SimpleScheduler(plugin);
+        this.scheduler = new SimpleScheduler(plugin);
         
         try {
         	getPlugin().load();
@@ -118,12 +103,13 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
                 @Override
                 public void run() {
                     ++alteredTicks;
-                    schedulerAdapter.tick(alteredTicks);
+                    scheduler.tick(alteredTicks);
 
                     //getLogger().info("Ticking scheduler... Ticks: " + alteredTicks);
                 }
             }, 0L, 50L, TimeUnit.MILLISECONDS);
 
+            SimpleScheduler.startAcceptingTasks();
         	getPlugin().enable();
         } finally {
             this.enableLatch.countDown();
@@ -138,17 +124,50 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
         } catch (Exception e) {
             e.printStackTrace();
         }
-		schedulerAdapter.shutdown();
+        scheduler.shutdown();
 	}
 
+    // provide adapters
+
     @Override
-    public T getPlugin() {
-        return plugin;
+    public SuperLogger getPluginLogger() {
+        if (this.logger == null) {
+            throw new IllegalStateException("Logger has not been initialised yet");
+        }
+        return this.logger;
     }
 
     @Override
-    public CountDownLatch getEnableLatch() {
-        return this.enableLatch;
+    public SimpleScheduler getScheduler() {
+        if (this.scheduler == null) {
+            throw new IllegalStateException("Scheduler has not been initialised yet");
+        }
+        return this.scheduler;
+    }
+
+    @Override
+    public File getJarFile() {
+        return super.getFile();
+    }
+
+    @Override
+    public ClassLoader getJarLoader() {
+        return super.getClass().getClassLoader();
+    }
+
+    @Override
+    public PluginClassLoader getPluginClassLoader() {
+        return this.classLoader;
+    }
+
+    @Override
+    public InputStream getResourceStream(String path) {
+        return getResourceAsStream(path);
+    }
+
+    @Override
+    public DependencyManager getDependencyManager() {
+        return DependencyManager.getInstance();
     }
 
     @Override
@@ -156,11 +175,9 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
         return this.loadLatch;
     }
 
-    // provide information about the plugin
-
     @Override
-    public String getVersion() {
-        return getDescription().getVersion();
+    public CountDownLatch getEnableLatch() {
+        return this.enableLatch;
     }
 
     @Override
@@ -188,16 +205,6 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
     @Override
     public String getServerName() {
         return getProxy().getName();
-    }
-
-    @Override
-    public Path getDataDirectory() {
-        return getDataFolder().toPath().toAbsolutePath();
-    }
-
-    @Override
-    public InputStream getResourceStream(String path) {
-        return getResourceAsStream(path);
     }
 
     @Override

@@ -2,13 +2,12 @@ package org.valdi.SuperApiX.bukkit.nms.base;
 
 import org.valdi.SuperApiX.bukkit.SuperKey;
 import org.valdi.SuperApiX.bukkit.nms.JSONMessage;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public interface IGeneralUtils<K, V> {
 
-    SuperKey spaceKeyFromMinecraft(K key) throws VersionUnsupportedException;
+    SuperKey spaceKeyFromMinecraft(K key);
 
-    K minecraftKeyFromSpace(SuperKey key) throws VersionUnsupportedException;
+    K minecraftKeyFromSpace(SuperKey key);
 
     V getBaseComponentFromJson(String json);
 

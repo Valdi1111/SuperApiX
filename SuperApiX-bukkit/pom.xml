@@ -22,8 +22,22 @@
 	      	<version>3.8.1</version>
 	      	<scope>test</scope>
     	</dependency>
+
+		<!-- Kotlin -->
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib-jdk8</artifactId>
+			<version>${kotlin.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-test</artifactId>
+			<version>${kotlin.version}</version>
+			<scope>test</scope>
+		</dependency>
     	
-	   	<!--Spigot API-->
+	   	<!-- Spigot API -->
 	   	<dependency>
 	     	<groupId>org.spigotmc</groupId>
 	     	<artifactId>spigot-api</artifactId>
@@ -31,14 +45,15 @@
 		  	<scope>provided</scope>
 	   	</dependency>
 	   
-	   	<!--Bukkit API-->
+	   	<!-- Bukkit API -->
 	   	<dependency>
 	     	<groupId>org.bukkit</groupId>
 	     	<artifactId>bukkit</artifactId>
 	     	<version>1.12-R0.1-SNAPSHOT</version>
 		  	<scope>provided</scope>
 	   	</dependency>
-        
+
+		<!-- Nms jars -->
 		<dependency>
 			<groupId>bukkit.org</groupId>
 			<artifactId>craftbukkit</artifactId>
@@ -129,7 +144,8 @@
 			<version>1.14.2</version>
 			<scope>provided</scope>
 		</dependency>
-	   	
+
+		<!-- SuperApiX -->
 	   	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
@@ -144,7 +160,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-        <!-- configurate -->
+        <!-- Configurate -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-core</artifactId>
@@ -173,17 +189,6 @@
 			<version>2.4.1</version>
 		  	<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
   	
 	<repositories>
@@ -218,7 +223,7 @@
 			</resource>
 			<resource>
 				<targetPath>locales</targetPath>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 				<directory>${basedir}/src/main/resources/locales</directory>
 				<includes>
 					<include>*.yml</include>
@@ -292,6 +297,35 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
   	</build> 
 </project>

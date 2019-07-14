@@ -6,7 +6,6 @@ import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.TabTitleSendEvent;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.ITabList;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
 import io.netty.buffer.Unpooled;
@@ -22,7 +21,7 @@ public class TabList extends AbstractNmsProvider implements ITabList {
 	}
 
 	@Override
-	public void sendTabTitle(Player player, String header, String footer) throws VersionUnsupportedException {
+	public void sendTabTitle(Player player, String header, String footer) {
 		if(!player.isOnline() || (header == null && footer == null)) {
 			return;
 		}
@@ -32,20 +31,16 @@ public class TabList extends AbstractNmsProvider implements ITabList {
 			return;
 		}
 
-		try {
-			IChatBaseComponent headerText = ChatSerializer.a("{\"text\": \"" + e.getHeader() + "\"}");
-			IChatBaseComponent footerText = ChatSerializer.a("{\"text\": \"" + e.getFooter() + "\"}");
-			PacketDataSerializer dataSerialized = new PacketDataSerializer(Unpooled.buffer());
-			dataSerialized.a(headerText);
-			dataSerialized.a(footerText);
-			
-			PacketPlayOutPlayerListHeaderFooter tabPacket = new PacketPlayOutPlayerListHeaderFooter();
-			tabPacket.a(dataSerialized);
-			
-	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(tabPacket);
-		} catch (Exception ex) {
-			throw new VersionUnsupportedException(ex);
-		}
+		IChatBaseComponent headerText = ChatSerializer.a("{\"text\": \"" + e.getHeader() + "\"}");
+		IChatBaseComponent footerText = ChatSerializer.a("{\"text\": \"" + e.getFooter() + "\"}");
+		PacketDataSerializer dataSerialized = new PacketDataSerializer(Unpooled.buffer());
+		dataSerialized.a(headerText);
+		dataSerialized.a(footerText);
+
+		PacketPlayOutPlayerListHeaderFooter tabPacket = new PacketPlayOutPlayerListHeaderFooter();
+		tabPacket.a(dataSerialized);
+
+		((CraftPlayer) player).getHandle().playerConnection.sendPacket(tabPacket);
 	}
 
 }

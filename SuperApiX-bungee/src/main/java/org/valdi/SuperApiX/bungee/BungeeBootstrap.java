@@ -5,6 +5,8 @@ import org.valdi.SuperApiX.common.PluginDetails;
 import org.valdi.SuperApiX.common.annotation.plugin.Description;
 import org.valdi.SuperApiX.common.annotation.plugin.BungeePlugin;
 import org.valdi.SuperApiX.common.annotation.plugin.author.Author;
+import org.valdi.SuperApiX.common.dependencies.Dependencies;
+import org.valdi.SuperApiX.common.dependencies.DependencyManager;
 
 @BungeePlugin(name = PluginDetails.NAME, version = PluginDetails.VERSION)
 @Description(PluginDetails.DESCRIPTION)
@@ -15,6 +17,12 @@ public class BungeeBootstrap extends AbstractBungeeBootstrap<SuperApiBungee> {
 
     public BungeeBootstrap() {
         super();
+
+		DependencyManager.init(this);
+
+		// load dependencies
+		getDependencyManager().loadStorageDependencies();
+		getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
         
         this.plugin = new SuperApiBungee(this);
     }
@@ -23,16 +31,15 @@ public class BungeeBootstrap extends AbstractBungeeBootstrap<SuperApiBungee> {
 	public void onEnable() {
         super.onEnable();
 
-    	metrics = new Metrics(this);
-        // Optional: Add custom charts
-        // metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
+    	this.metrics = new Metrics(this);
+		getLogger().info("Metrics loaded.");
 	}
 
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		
-		metrics = null;
+
+		this.metrics = null;
 	}
 	
 	public Metrics getMetrics() {

@@ -1,12 +1,11 @@
 package org.valdi.SuperApiX.bukkit.nms.base;
 
 import org.bukkit.entity.Player;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public interface ITitle {
 
 	@Deprecated
-	public void sendFullTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException;
+	void sendFullTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle);
 
     /**
      * Sends the specified player a title with the specified params.
@@ -19,7 +18,7 @@ public interface ITitle {
      * @deprecated Use {@link sendTitle} instead
      */
 	@Deprecated
-	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title) throws VersionUnsupportedException;
+	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title);
 
     /**
      * Sends the specified player a subtitle with the specified params.
@@ -32,7 +31,7 @@ public interface ITitle {
      * @deprecated Use {@link sendTitle} instead
      */
 	@Deprecated
-	void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle) throws VersionUnsupportedException;
+	void sendSubtitle(Player player, int fadeIn, int stay, int fadeOut, String subtitle);
 
     /**
      * Sends the specified player a title with a subtitle with the specified params.
@@ -44,6 +43,6 @@ public interface ITitle {
      * @param title    The message for the title.
      * @param subtitle The message for the subtitle.
      */
-	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException;
+	void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle);
 
 }

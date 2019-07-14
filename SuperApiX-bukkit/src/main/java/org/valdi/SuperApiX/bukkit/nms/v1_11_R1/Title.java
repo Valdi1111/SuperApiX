@@ -5,8 +5,6 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.TitleSendEvent;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractTitle;
-import org.valdi.SuperApiX.bukkit.nms.base.ITitle;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
@@ -14,14 +12,14 @@ import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle.EnumTitleAction;
 
-public class Title extends AbstractTitle implements ITitle {
+public class Title extends AbstractTitle {
 
 	public Title(final SuperApiBukkit plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException {
+	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
 		if(!player.isOnline() || (title == null && subtitle == null)) {
 			return;
 		}

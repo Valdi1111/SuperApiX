@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.IActionBar;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class ActionBar {
 	
@@ -31,13 +30,9 @@ public class ActionBar {
 	        if(provider == null) {
 	            return false;
 	        }
-	        
-	        try {
-				provider.getProvider().sendActionBar(player, message, time);
-				return true;
-			} catch (VersionUnsupportedException ignored) {
-				return false;
-			}
+
+			provider.getProvider().sendActionBar(player, message, time);
+			return true;
 		}
 	}
 

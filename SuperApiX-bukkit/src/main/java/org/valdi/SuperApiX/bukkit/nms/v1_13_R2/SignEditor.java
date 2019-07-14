@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.ISignEditor;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 import net.minecraft.server.v1_13_R2.BlockPosition;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
@@ -22,7 +21,7 @@ public class SignEditor extends AbstractNmsProvider implements ISignEditor {
 	}
 
 	@Override
-	public void openSignEditor(Player player, Sign sign) throws VersionUnsupportedException {
+	public void openSignEditor(Player player, Sign sign) {
 		Location loc = sign.getLocation();
 		TileEntitySign tileSign = (TileEntitySign) ((CraftWorld) sign.getWorld()).getHandle().getTileEntity(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
 		tileSign.isEditable = true;

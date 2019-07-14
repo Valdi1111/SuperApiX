@@ -3,7 +3,6 @@ package org.valdi.SuperApiX.bukkit;
 import com.google.common.base.Preconditions;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -156,14 +155,7 @@ public class SuperKey {
     }
 
     public static SuperKey fromMinecraftKey(Object key) {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> {
-            try {
-                return u.spaceKeyFromMinecraft(key);
-            } catch (VersionUnsupportedException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
     }
 
     public NamespacedKey toNamespacedKey() {
@@ -171,13 +163,6 @@ public class SuperKey {
     }
 
     public Object toMinecraftKey() {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> {
-            try {
-                return u.minecraftKeyFromSpace(this);
-            } catch (VersionUnsupportedException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.minecraftKeyFromSpace(this)).orElse(null);
     }
 }

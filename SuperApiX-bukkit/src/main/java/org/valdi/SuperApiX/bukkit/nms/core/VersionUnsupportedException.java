@@ -1,6 +1,6 @@
 package org.valdi.SuperApiX.bukkit.nms.core;
 
-public class VersionUnsupportedException extends Exception {
+public class VersionUnsupportedException extends RuntimeException {
 	
     private static final long serialVersionUID = -7220124061402078571L;
 

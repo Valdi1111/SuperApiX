@@ -12,11 +12,9 @@ import org.valdi.SuperApiX.common.databases.StorageType;
 public class Settings implements DataObject {
 
     // Database
-    @ConfigComment("FLATFILE, MYSQL, MONGO")
-    @ConfigComment("if you use MONGO, you must also run the BSBMongo plugin (not addon)")
-    @ConfigComment("See https://github.com/tastybento/bsbMongo/releases/")
+    @ConfigComment("H2, MYSQL, MARIADB")
     @ConfigEntry(path = "general.database.type", needsReset = true)
-    private StorageType databaseType = StorageType.SQLITE;
+    private StorageType databaseType = StorageType.H2;
 
     @ConfigEntry(path = "general.database.host")
     private String databaseHost = "localhost";
@@ -25,14 +23,23 @@ public class Settings implements DataObject {
     @ConfigEntry(path = "general.database.port")
     private int databasePort = 3306;
 
+    @ConfigEntry(path = "general.database.options")
+    private String options = "";
+
     @ConfigEntry(path = "general.database.name")
-    private String databaseName = "spacetravels";
+    private String databaseName = "superapix";
 
     @ConfigEntry(path = "general.database.username")
-    private String databaseUsername = "username";
+    private String databaseUsername = "admin";
 
     @ConfigEntry(path = "general.database.password")
     private String databasePassword = "password";
+
+    @ConfigEntry(path = "general.database.pool-size")
+    private int databasePoolSize = 15;
+
+    @ConfigEntry(path = "general.database.pool-name")
+    private String databasePoolName = "SuperApiX-Hikari";
 
     @ConfigComment("How often the data will be saved to file in mins. Default is 5 minutes.")
     @ConfigComment("This helps prevent issues if the server crashes.")
@@ -79,6 +86,14 @@ public class Settings implements DataObject {
         this.databasePort = databasePort;
     }
 
+    public String getOptions() {
+        return options;
+    }
+
+    public void setOptions(String options) {
+        this.options = options;
+    }
+
     public String getDatabaseName() {
         return databaseName;
     }
@@ -101,6 +116,22 @@ public class Settings implements DataObject {
 
     public void setDatabasePassword(String databasePassword) {
         this.databasePassword = databasePassword;
+    }
+
+    public int getDatabasePoolSize() {
+        return databasePoolSize;
+    }
+
+    public void setDatabasePoolSize(int databasePoolSize) {
+        this.databasePoolSize = databasePoolSize;
+    }
+
+    public String getDatabasePoolName() {
+        return databasePoolName;
+    }
+
+    public void setDatabasePoolName(String databasePoolName) {
+        this.databasePoolName = databasePoolName;
     }
 
     public int getDatabaseBackupPeriod() {

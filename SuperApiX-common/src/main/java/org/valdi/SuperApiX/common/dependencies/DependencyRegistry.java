@@ -1,9 +1,6 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.valdi.SuperApiX.common.config.types.ConfigType;
 import org.valdi.SuperApiX.common.databases.StorageType;
@@ -21,8 +18,8 @@ public class DependencyRegistry {
             .put(StorageType.MARIADB, ImmutableList.of(Dependencies.MARIADB_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.MYSQL, ImmutableList.of(Dependencies.MYSQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.POSTGRESQL, ImmutableList.of(Dependencies.POSTGRESQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.SQLITE, ImmutableList.of(Dependencies.SQLITE_DRIVER))
-            .put(StorageType.H2, ImmutableList.of(Dependencies.H2_DRIVER))
+            .put(StorageType.SQLITE, ImmutableList.of(Dependencies.SQLITE_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
+            .put(StorageType.H2, ImmutableList.of(Dependencies.H2_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
             .put(StorageType.CUSTOM, ImmutableList.of())
             .build();
 
@@ -34,7 +31,7 @@ public class DependencyRegistry {
             .put(ConfigType.CUSTOM, ImmutableList.of())
             .build();
 
-    public Set<Dependency> resolveStorageDependencies() {
+    public Dependency[] resolveStorageDependencies() {
         Set<Dependency> dependencies = new LinkedHashSet<>();
         for (StorageType storageType : StorageType.values()) {
             dependencies.addAll(STORAGE_DEPENDENCIES.get(storageType));
@@ -50,12 +47,12 @@ public class DependencyRegistry {
             dependencies.remove(Dependencies.SLF4J_SIMPLE);
         }
 
-        return dependencies;
+        return dependencies.toArray(new Dependency[0]);
     }
 
     // support for legacy (bukkit 1.7.10)
     public List<Relocation> getLegacyRelocations(Dependency dependency) {
-        if (RelocationHandler.DEPENDENCIES.contains(dependency)) {
+        if (Arrays.asList(RelocationHandler.DEPENDENCIES).contains(dependency)) {
             return ImmutableList.of();
         }
 

@@ -1,6 +1,7 @@
 package org.valdi.SuperApiX.common.scheduler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.valdi.SuperApiX.common.plugin.IllegalPluginAccessException;
 import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.scheduler.task.*;
 
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 
 public class SimpleScheduler implements SuperScheduler {
     private static final int RECENT_TICKS = 30;
+    private static boolean started = false;
 
     private final StoreLoader plugin;
 
@@ -365,10 +367,9 @@ public class SimpleScheduler implements SuperScheduler {
         if(!(task instanceof Runnable || task instanceof Consumer || task instanceof Callable)) {
             throw new IllegalArgumentException("Task must be Runnable, Consumer, or Callable");
         }
-        // TODO fix validating task fun for not enabled plugin check
-        /*if (!plugin.isEnabled()) {
+        if (!started) {
             throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
-        }*/
+        }
     }
 
     private int nextId() {
@@ -403,6 +404,10 @@ public class SimpleScheduler implements SuperScheduler {
         return !this.pending.isEmpty() && this.pending.peek().getNextRun() <= currentTick;
     }
 
+    public static void startAcceptingTasks() {
+        started = true;
+    }
+
     public String toString() {
         int debugTick = this.currentTick;
         StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
@@ -412,6 +417,7 @@ public class SimpleScheduler implements SuperScheduler {
 
     @Override
     public void shutdown() {
+        started = false;
         this.cancelTasks();
     }
 }

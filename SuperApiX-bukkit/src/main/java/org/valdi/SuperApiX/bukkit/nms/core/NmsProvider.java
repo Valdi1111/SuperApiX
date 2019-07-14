@@ -6,38 +6,38 @@ import java.util.Optional;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.nms.base.*;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionManager.NmsVersion;
+import org.valdi.SuperApiX.bukkit.versions.MinecraftVersion;
 
 public class NmsProvider {
+	public static final String VERSION = "[version]";
+	public static final String CLASSNAME = "[classname]";
+
+	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms." + VERSION + "." + CLASSNAME;
+
 	private final SuperApiBukkit plugin;
 	
-	private List<NmsComponent<?>> components;
-
-	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms.[version].[classname]";
-	public static final String ADVANCEMENTS_PACKAGE = "org.valdi.SuperApiX.bukkit.nms.[version].advancements.[classname]";
+	private List<NmsComponent> components;
 	
 	public NmsProvider(final SuperApiBukkit plugin) {
 		this.plugin = plugin;
 		
 		this.components = new ArrayList<>();
-		this.components.add(new NmsComponent<>(NmsName.ACTIONBAR, "ActionBar", "IActionBar"));
-		this.components.add(new NmsComponent<>(NmsName.TITLE, "Title", "ITitle"));
-		this.components.add(new NmsComponent<>(NmsName.TABLIST, "TabList", "ITabList"));
-		this.components.add(new NmsComponent<>(NmsName.ADVANCEMENT_UTILS, "AdvancementUtils", "IAdvancementUtils"));
-		this.components.add(new NmsComponent<>(NmsName.PLAYER_UTILS, "PlayerUtils", "IPlayerUtils"));
-		this.components.add(new NmsComponent<>(NmsName.ITEM_UTILS, "ItemUtils", "IItemUtils"));
-		this.components.add(new NmsComponent<>(NmsName.GENERAL_UTILS, "GeneralUtils", "IGeneralUtils"));
-		this.components.add(new NmsComponent<>(NmsName.SIGN_EDITOR, "SignEditor", "ISignEditor"));
-		this.components.add(new NmsComponent<>(NmsName.WORLD_BORDER, "WorldBorder", "IWorldBorder"));
-		this.components.add(new NmsComponent<>(NmsName.WORLD_MANAGER, "WorldManager", "IWorldManager"));
-//		this.components.add(new NmsComponent<>(NmsName.CUSTOM_ENTITIES, "CustomEntity", "ICustomEntity"));
+		this.components.add(new NmsComponent<>("ACTIONBAR", "ActionBar", IActionBar.class));
+		this.components.add(new NmsComponent<>("TITLE", "Title", ITitle.class));
+		this.components.add(new NmsComponent<>("TABLIST", "TabList", ITabList.class));
+		this.components.add(new NmsComponent<>("PLAYER_UTILS", "PlayerUtils", IPlayerUtils.class));
+		this.components.add(new NmsComponent<>("ITEM_UTILS", "ItemUtils", IItemUtils.class));
+		this.components.add(new NmsComponent<>("GENERAL_UTILS", "GeneralUtils", IGeneralUtils.class));
+		this.components.add(new NmsComponent<>("SIGN_EDITOR", "SignEditor", ISignEditor.class));
+		this.components.add(new NmsComponent<>("WORLD_MANAGER", "WorldManager", IWorldManager.class));
+		//this.components.add(new NmsComponent<>("CUSTOM_ENTITIES", "CustomEntity", ICustomEntity.class));
 		
 		this.setupProviders();
 	}
 	
 	public void setupProviders() {
-		NmsVersion version = plugin.getVersionManager().getNmsVersion();
-		if(version == NmsVersion.INCOMPATIBLE) {
+		MinecraftVersion version = plugin.getBootstrap().getServerCompatibility().getMinecraftVersion(plugin.getServer());
+		if(version == MinecraftVersion.UNKNOWN) {
 			plugin.getLogger().severe("Cannot provide support for this nms version... Using bukkit handler, some methods won't work.");
 			return;
 		}
@@ -54,47 +54,39 @@ public class NmsProvider {
 	}
 	
 	public Optional<IActionBar> getActionBar() {
-		return this.getComponent(NmsName.ACTIONBAR);
+		return this.getComponent(IActionBar.class);
 	}
 	
 	public Optional<ITitle> getTitle() {
-		return this.getComponent(NmsName.TITLE);
+		return this.getComponent(ITitle.class);
 	}
 	
 	public Optional<ITabList> getTabList() {
-		return this.getComponent(NmsName.TABLIST);
-	}
-
-	public Optional<IAdvancementUtils> getAdvancementUtils() {
-		return this.getComponent(NmsName.ADVANCEMENT_UTILS);
+		return this.getComponent(ITabList.class);
 	}
 	
 	public Optional<IPlayerUtils> getPlayerUtils() {
-		return this.getComponent(NmsName.PLAYER_UTILS);
+		return this.getComponent(IPlayerUtils.class);
 	}
 
 	public Optional<IItemUtils> getItemUtils() {
-		return this.getComponent(NmsName.ITEM_UTILS);
+		return this.getComponent(IItemUtils.class);
 	}
 
 	public Optional<IGeneralUtils> getGeneralUtils() {
-		return this.getComponent(NmsName.GENERAL_UTILS);
+		return this.getComponent(IGeneralUtils.class);
 	}
 	
 	public Optional<ISignEditor> getSignEditor() {
-		return this.getComponent(NmsName.SIGN_EDITOR);
-	}
-	
-	public Optional<IWorldBorder> getWorldBorder() {
-		return this.getComponent(NmsName.WORLD_BORDER);
+		return this.getComponent(ISignEditor.class);
 	}
 	
 	public Optional<IWorldManager> getWorldManager() {
-		return this.getComponent(NmsName.WORLD_MANAGER);
+		return this.getComponent(IWorldManager.class);
 	}
 	
-	private <T> Optional<T> getComponent(NmsName<T> type) {
-		Optional<NmsComponent<?>> opt = components.stream().filter(c -> c.isType(type)).findFirst();
+	public <T> Optional<T> getComponent(Class<T> clazz) {
+		Optional<NmsComponent> opt = components.stream().filter(c -> c.getSuper().equals(clazz)).findFirst();
 		if(!opt.isPresent()) {
 			return Optional.empty();
 		}
@@ -102,8 +94,13 @@ public class NmsProvider {
 		NmsComponent<T> component = (NmsComponent<T>) opt.get();
 		return component.getInstance();
 	}
-	
-	public NmsVersion getVersion() {
-		return plugin.getVersionManager().getNmsVersion();
+
+	public Optional<?> getComponent(String id) {
+		Optional<NmsComponent> opt = components.stream().filter(c -> c.getId().equals(id)).findFirst();
+		if(!opt.isPresent()) {
+			return Optional.empty();
+		}
+
+		return opt.get().getInstance();
 	}
 }

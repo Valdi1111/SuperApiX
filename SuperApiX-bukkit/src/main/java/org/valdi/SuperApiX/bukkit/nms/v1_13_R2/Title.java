@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.events.TitleSendEvent;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractTitle;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 import org.valdi.SuperApiX.bukkit.utils.Formatting;
 
 import net.minecraft.server.v1_13_R2.PacketPlayOutTitle;
@@ -20,7 +19,7 @@ public class Title extends AbstractTitle {
 	}
 
 	@Override
-	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) throws VersionUnsupportedException {
+	public void sendTitle(Player player, int fadeIn, int stay, int fadeOut, String title, String subtitle) {
 		if(!player.isOnline() || (title == null && subtitle == null)) {
 			return;
 		}

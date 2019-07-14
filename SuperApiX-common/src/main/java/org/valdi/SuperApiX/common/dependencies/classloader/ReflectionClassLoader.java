@@ -1,11 +1,11 @@
 package org.valdi.SuperApiX.common.dependencies.classloader;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 
 public class ReflectionClassLoader implements PluginClassLoader {
     private static final Method ADD_URL_METHOD;
@@ -40,9 +40,9 @@ public class ReflectionClassLoader implements PluginClassLoader {
     }
 
     @Override
-    public void loadJar(Path file) {
+    public void loadJar(File file) {
         try {
-            loadJar(file.toUri().toURL());
+            loadJar(file.toURI().toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.nms.base.AbstractNmsProvider;
 import org.valdi.SuperApiX.bukkit.nms.base.IPlayerUtils;
-import org.valdi.SuperApiX.bukkit.nms.core.VersionUnsupportedException;
 
 public class PlayerUtils extends AbstractNmsProvider implements IPlayerUtils {
 
@@ -14,7 +13,7 @@ public class PlayerUtils extends AbstractNmsProvider implements IPlayerUtils {
 	}
 
 	@Override
-	public int getPing(Player player) throws VersionUnsupportedException {
+	public int getPing(Player player) {
 		return ((CraftPlayer) player).getHandle().ping;
 	}
 
