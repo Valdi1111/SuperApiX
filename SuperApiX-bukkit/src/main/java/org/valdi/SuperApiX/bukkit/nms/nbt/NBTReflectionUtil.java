@@ -236,8 +236,7 @@ public class NBTReflectionUtil {
 			return;
 		Object workingtag = gettoCompount(nbttag, comp);
 		try {
-			ReflectionMethod.COMPOUND_SET.run(workingtag, name,
-					ClassWrapper.NMS_NBTTAGCOMPOUND.getClazz().newInstance());
+			ReflectionMethod.COMPOUND_SET.run(workingtag, name, ClassWrapper.NMS_NBTTAGCOMPOUND.getClazz().newInstance());
 			comp.setCompound(nbttag);
 		} catch (Exception e) {
 			throw new NbtApiException("Exception while adding a Compound!", e);
@@ -400,7 +399,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Uses Gson to load back a {@link Serializable} object from the Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @param type

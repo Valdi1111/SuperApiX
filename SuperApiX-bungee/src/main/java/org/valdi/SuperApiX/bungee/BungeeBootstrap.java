@@ -22,7 +22,7 @@ public class BungeeBootstrap extends AbstractBungeeBootstrap<SuperApiBungee> {
 
 		// load dependencies
 		getDependencyManager().loadStorageDependencies();
-		getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
+		getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP, Dependencies.JSOUP);
         
         this.plugin = new SuperApiBungee(this);
     }

@@ -197,7 +197,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-  	</dependencies>
+
+        <!-- Jsoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+
+    </dependencies>
   
   	<build>
 	    <defaultGoal>clean package install</defaultGoal>

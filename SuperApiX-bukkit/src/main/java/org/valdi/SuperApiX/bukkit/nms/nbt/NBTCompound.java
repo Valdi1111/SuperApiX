@@ -48,7 +48,7 @@ public class NBTCompound {
 	/**
 	 * Merges all data from comp into this compound. This is done in one action, so
 	 * it also works with Tiles/Entities
-	 * 
+	 *
 	 * @param comp
 	 */
 	public void mergeCompound(NBTCompound comp) {
@@ -57,7 +57,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -67,7 +67,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -81,7 +81,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -91,7 +91,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -101,7 +101,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -111,7 +111,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -121,7 +121,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -131,7 +131,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -141,7 +141,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -151,7 +151,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -161,7 +161,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -171,7 +171,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -181,7 +181,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -191,7 +191,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -201,7 +201,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -211,7 +211,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -221,7 +221,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -231,7 +231,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -241,7 +241,7 @@ public class NBTCompound {
 
 	/**
 	 * Setter
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -255,7 +255,7 @@ public class NBTCompound {
 
 	/**
 	 * Getter
-	 * 
+	 *
 	 * @param key
 	 * @return The stored value or NMS fallback
 	 */
@@ -265,7 +265,7 @@ public class NBTCompound {
 
 	/**
 	 * Uses Gson to store an {@link Serializable} Object
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -275,7 +275,7 @@ public class NBTCompound {
 
 	/**
 	 * Uses Gson to retrieve a stored Object
-	 * 
+	 *
 	 * @param key
 	 * @param type Class of the Object
 	 * @return The created Object or null if empty
@@ -311,7 +311,7 @@ public class NBTCompound {
 
 	/**
 	 * Creates a subCompound
-	 * 
+	 *
 	 * @param name Key to use
 	 * @return The subCompound Object
 	 */

@@ -67,6 +67,15 @@ public class Dependencies {
 			.setAutoLoad(true)
 			.build();
 
+	public static final Dependency JSOUP = Dependency
+			.builder("JSOUP")
+			.setGroupId("org.jsoup")
+			.setArtifactId("jsoup")
+			.setVersion("1.11.3")
+			.setChecksum("Sso+VSr7HOtH+JVmhfYpWiduSfoD+QZvi2voO+xW+2Y=")
+			.setAutoLoad(true)
+			.build();
+
 	public static final Dependency MARIADB_DRIVER = Dependency
 			.builder("MARIADB_DRIVER")
 			.setGroupId("org{}mariadb{}jdbc")
@@ -151,24 +160,6 @@ public class Dependencies {
 			.setChecksum("yllBCqAZwWCNUoMPR0JWilqhVA46+9F47wIcnYOcoy4=")
 			.setAutoLoad(true)
 			.build();
-
-	/*public static final Dependency JEDIS = Dependency
-			.builder("JEDIS")
-			.setGroupId("redis.clients")
-			.setArtifactId("jedis")
-			.setVersion("2.9.0")
-			.setChecksum("HqqWy45QVeTVF0Z/DzsrPLvGKn2dHotqI8YX7GDThvo=")
-			.setAutoLoad(true)
-			.build();
-
-	public static final Dependency COMMONS_POOL_2 = Dependency
-			.builder("COMMONS_POOL_2")
-			.setGroupId("org.apache.commons")
-			.setArtifactId("commons-pool2")
-			.setVersion("2.5.0")
-			.setChecksum("IRhwQ8eZcdnISLlxhA3oQdoOXE3zDJI6lpFBMfue+Wk=")
-			.setAutoLoad(true)
-			.build();*/
 
 	public static final Dependency CONFIGURATE_CORE = Dependency
 			.builder("CONFIGURATE_CORE")

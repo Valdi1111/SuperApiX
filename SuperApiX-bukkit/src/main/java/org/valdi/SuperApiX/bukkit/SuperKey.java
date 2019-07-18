@@ -3,6 +3,7 @@ package org.valdi.SuperApiX.bukkit;
 import com.google.common.base.Preconditions;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class SuperKey {
      * @param plugin the plugin to use for the namespace
      * @param key the key to create
      */
-    public SuperKey(Plugin plugin, String key) {
+    public SuperKey(StoreLoader plugin, String key) {
         Preconditions.checkArgument(plugin != null, "plugin");
         Preconditions.checkArgument(key != null, "key");
 

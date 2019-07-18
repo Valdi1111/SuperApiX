@@ -7,8 +7,8 @@ import org.valdi.SuperApiX.bukkit.nms.WorldBuilder;
 
 public interface IWorldManager {
 
-	void sendBorder(Player player, double radius, Location loc);
-	
-	World createWorld(WorldBuilder creator);
+    void sendBorder(Player player, double radius, Location loc);
+
+    World createWorld(WorldBuilder creator);
 
 }

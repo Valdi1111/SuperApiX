@@ -9,7 +9,7 @@ import org.valdi.SuperApiX.common.PluginDetails;
  * This class acts as the "Brain" of the NBTApi. It contains the main logger for
  * other classes,registers bStats and checks rather Maven shading was done
  * correctly.
- * 
+ *
  * @author tr7zw
  *
  */
@@ -49,7 +49,7 @@ public enum MinecraftVersion {
 	/**
 	 * Getter for this servers MinecraftVersion. Also init's bStats and checks the
 	 * shading.
-	 * 
+	 *
 	 * @return The enum for the MinecraftVersion this server is running
 	 */
 	public static MinecraftVersion getVersion() {
