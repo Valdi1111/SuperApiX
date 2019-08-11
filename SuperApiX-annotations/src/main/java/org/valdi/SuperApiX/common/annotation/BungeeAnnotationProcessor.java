@@ -71,6 +71,7 @@ public class BungeeAnnotationProcessor extends AbstractProcessor {
 
         if (!processingEnv.getTypeUtils().isSubtype(mainPluginType.asType(), AnnotationUtils.fromClass(processingEnv, Plugin.class))) {
             AnnotationUtils.raiseError(processingEnv, "Class annotated with @BungeePlugin is not an subclass of " + Plugin.class.getName() + "!", mainPluginType);
+            return false;
         }
 
         Map<String, Object> yml = new LinkedHashMap<>(); // linked so we can maintain the same output into file for sanity

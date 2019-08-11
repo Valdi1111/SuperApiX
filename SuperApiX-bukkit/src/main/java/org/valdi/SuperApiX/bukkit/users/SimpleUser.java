@@ -8,11 +8,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.Vector;
-import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.valdi.SuperApiX.bukkit.plugin.BukkitStoreLoader;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.api.ActionBar;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
  * @author tastybento
  */
 public class SimpleUser implements User {
-    protected static Map<UUID, SimpleUser> users = new HashMap<>();
+    protected static Map<UUID, SimpleUser> users = new ConcurrentHashMap<>();
 
     /**
      * Clears all Users from the User list
@@ -42,10 +44,12 @@ public class SimpleUser implements User {
      * @return User - User
      */
     public static User getInstance(CommandSender sender) {
-        if (sender instanceof Player) {
-            return getInstance((Player)sender);
+        if (sender == null) {
+            return null;
         }
-        // Console
+        if(sender instanceof Player) {
+            return getInstance((Player) sender);
+        }
         return new SimpleUser(sender);
     }
 
@@ -65,6 +69,25 @@ public class SimpleUser implements User {
     }
 
     /**
+     * Gets an instance of User from an OfflinePlayer
+     * @param offlinePlayer offline Player
+     * @return user
+     * @since 1.0.0-beta
+     */
+    public static User getInstance(OfflinePlayer offlinePlayer) {
+        if (offlinePlayer == null) {
+            return null;
+        }
+        if(offlinePlayer.isOnline()) {
+            return getInstance(offlinePlayer.getPlayer());
+        }
+        if (users.containsKey(offlinePlayer.getUniqueId())) {
+            return users.get(offlinePlayer.getUniqueId());
+        }
+        return new SimpleUser(offlinePlayer);
+    }
+
+    /**
      * Gets an instance of User from a UUID
      * @param uuid - UUID
      * @return User - User
@@ -76,30 +99,20 @@ public class SimpleUser implements User {
         if (users.containsKey(uuid)) {
             return users.get(uuid);
         }
-        // Return player, or null if they are not online
-        return new SimpleUser(uuid);
-    }
-
-    /**
-     * Gets an instance of User from an OfflinePlayer
-     * @param offlinePlayer offline Player
-     * @return user
-     * @since 1.0.0-beta
-     */
-    public static User getInstance(OfflinePlayer offlinePlayer) {
-        if (offlinePlayer == null) {
-            return null;
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        if(offlinePlayer.isOnline()) {
+            return getInstance(offlinePlayer.getPlayer());
         }
-        return getInstance(offlinePlayer.getUniqueId());
+        return getInstance(offlinePlayer);
     }
 
     /**
      * Removes this player from the User cache
      * @param player - the player
      */
-    public static void removePlayer(Player player) {
+    public static void remove(Player player) {
         if (player != null) {
-            removePlayer(player.getUniqueId());
+            remove(player.getUniqueId());
         }
     }
 
@@ -107,111 +120,52 @@ public class SimpleUser implements User {
      * Removes this player from the User cache
      * @param playerUUID - the player's uuid
      */
-    public static void removePlayer(UUID playerUUID) {
+    public static void remove(UUID playerUUID) {
         if (playerUUID != null) {
             users.remove(playerUUID);
         }
     }
 
-    /**
-     * Removes this player from the User cache
-     * @param offlinePlayer - the player
-     */
-    public static void removePlayer(OfflinePlayer offlinePlayer) {
-        if (offlinePlayer != null) {
-            removePlayer(offlinePlayer.getUniqueId());
-        }
-    }
-
-
-    //
-
-
-    private static SuperApiBukkit plugin = SuperApiBukkit.getInstance();
-
-    private Player player;
-    private OfflinePlayer offlinePlayer;
     private final UUID playerUUID;
-    private final CommandSender sender;
 
     protected SimpleUser(CommandSender sender) {
-        this.player = null;
         this.playerUUID = null;
-        this.sender = sender;
+    }
+
+    protected SimpleUser(OfflinePlayer offlinePlayer) {
+        this.playerUUID = offlinePlayer.getUniqueId();
     }
 
     protected SimpleUser(Player player) {
-        if(player == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.playerUUID = player.getUniqueId();
-        this.player = player;
-        this.offlinePlayer = player;
-        this.sender = player;
         users.put(playerUUID, this);
     }
 
-    protected SimpleUser(UUID playerUUID) {
-        this(Bukkit.getPlayer(playerUUID));
+    @Override
+    public boolean isConsole() {
+        return playerUUID == null;
     }
 
     @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-        return sender.getEffectivePermissions();
-    }
-
-    @Override
-    public PlayerInventory getInventory() {
-        return player != null ? player.getInventory() : null;
-    }
-
-    @Override
-    public Location getLocation() {
-        return player != null ? player.getLocation() : null;
-    }
-
-    @Override
-    public String getName() {
-        String name = getOfflinePlayer().getName();
-        if(name == null) {
-            name =  SuperApiBukkit.getInstance().getPlayersManager().getName(playerUUID);
+    public CommandSender getSender() {
+        if(isConsole()) {
+            return Bukkit.getServer().getConsoleSender();
         }
-
-        return name;
-    }
-
-    /**
-     * @return the player
-     */
-    @Override
-    public Player getPlayer() {
-        return player;
+        if(isPlayer()) {
+            return getPlayer();
+        }
+        return null;
     }
 
     @Override
-    public long getFirstPlayed() {
-        return player.getFirstPlayed();
+    public boolean isOfflinePlayer() {
+        return playerUUID != null;
     }
 
+    @NotNull
     @Override
-    public long getLastPlayed() {
-        return player.getLastPlayed();
-    }
-
-    @Override
-    public boolean hasPlayedBefore() {
-        return player.hasPlayedBefore();
-    }
-
-    @Override
-    public Location getBedSpawnLocation() {
-        return player.getBedSpawnLocation();
-    }
-
-    @Override
-    public User getUser() {
-        return this;
+    public OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(playerUUID);
     }
 
     /**
@@ -219,30 +173,21 @@ public class SimpleUser implements User {
      */
     @Override
     public boolean isPlayer() {
-        return player != null;
+        return isOfflinePlayer() && getOfflinePlayer().isOnline();
     }
 
     /**
-     * @return the offline player
-     * @since 1.0.0-beta
+     * @return the player
      */
+    @NotNull
     @Override
-    public OfflinePlayer getOfflinePlayer() {
-        return offlinePlayer;
-    }
-
-    /**
-     * @return true if this user is an OfflinePlayer, false if not, e.g., console
-     * @since 1.0.0-beta
-     */
-    @Override
-    public boolean isOfflinePlayer() {
-        return offlinePlayer != null;
+    public Player getPlayer() {
+        return Bukkit.getPlayer(playerUUID);
     }
 
     @Override
-    public CommandSender getSender() {
-        return sender;
+    public User getUser() {
+        return this;
     }
 
     @Override
@@ -251,26 +196,73 @@ public class SimpleUser implements User {
     }
 
     @Override
-    public boolean isBanned() {
-        if (playerUUID != null && offlinePlayer != null) {
-            return offlinePlayer.isBanned();
+    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+        CommandSender sender = getSender();
+        if(sender != null) {
+            return sender.getEffectivePermissions();
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public PlayerInventory getInventory() {
+        return isPlayer() ? getPlayer().getInventory() : null;
+    }
+
+    @Override
+    public Location getLocation() {
+        return isPlayer() ? getPlayer().getLocation() : null;
+    }
+
+    @Override
+    public String getName() {
+        if(isConsole()) {
+            return getSender().getName();
+        }
+        String name = getOfflinePlayer().getName();
+        if(name == null) {
+            name =  SuperApiBukkit.getInstance().getPlayersManager().getName(playerUUID);
+        }
+
+        return name;
+    }
+
+    @Override
+    public long getFirstPlayed() {
+        return isOfflinePlayer() ? getOfflinePlayer().getFirstPlayed() : 0L;
+    }
+
+    @Override
+    public long getLastPlayed() {
+        return isOfflinePlayer() ? getOfflinePlayer().getLastPlayed() : 0L;
+    }
+
+    @Override
+    public boolean hasPlayedBefore() {
+        return isOfflinePlayer() && getOfflinePlayer().hasPlayedBefore();
+    }
+
+    @Override
+    public Location getBedSpawnLocation() {
+        return isOfflinePlayer() ? getOfflinePlayer().getBedSpawnLocation() : null;
+    }
+
+    @Override
+    public boolean isBanned() {
+        return isOfflinePlayer() && getOfflinePlayer().isBanned();
     }
 
     @Override
     public boolean isWhitelisted() {
-        if (playerUUID != null && offlinePlayer != null) {
-            return offlinePlayer.isWhitelisted();
-        }
-        return false;
+        return isOfflinePlayer() && getOfflinePlayer().isWhitelisted();
     }
 
     @Override
     public void setWhitelisted(boolean value) {
-        if (playerUUID != null && offlinePlayer != null) {
-            offlinePlayer.setWhitelisted(value);
+        if(!isOfflinePlayer()) {
+            return;
         }
+        getOfflinePlayer().setWhitelisted(value);
     }
 
     /**
@@ -279,12 +271,16 @@ public class SimpleUser implements User {
      */
     @Override
     public boolean hasPermission(String permission) {
-        return permission.isEmpty() || isOp() || sender.hasPermission(permission);
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return false;
+        }
+        return permission == null || permission.isEmpty() || isOp() || sender.hasPermission(permission);
     }
 
     @Override
     public boolean isOnline() {
-        return offlinePlayer != null && offlinePlayer.isOnline();
+        return isConsole() || getOfflinePlayer().isOnline();
     }
 
     /**
@@ -293,24 +289,21 @@ public class SimpleUser implements User {
      */
     @Override
     public boolean isOp() {
-        if (sender != null) {
-            return sender.isOp();
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return getOfflinePlayer().isOp();
         }
-        if (playerUUID != null && offlinePlayer != null) {
-            return offlinePlayer.isOp();
-        }
-        return false;
+        return sender.isOp();
     }
 
     @Override
     public void setOp(boolean value) {
-        if (sender != null) {
-            sender.setOp(value);
+        CommandSender sender = getSender();
+        if(sender == null) {
+            getOfflinePlayer().setOp(value);
             return;
         }
-        if (playerUUID != null && offlinePlayer != null) {
-            offlinePlayer.setOp(value);
-        }
+        sender.setOp(value);
     }
 
     /**
@@ -321,6 +314,11 @@ public class SimpleUser implements User {
      */
     @Override
     public int getPermissionValue(String permissionPrefix, int defaultValue) {
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return 0;
+        }
+
         int value = defaultValue;
 
         // If there is a dot at the end of the permissionPrefix, remove it
@@ -329,7 +327,7 @@ public class SimpleUser implements User {
         }
         final String permPrefix = permissionPrefix + ".";
 
-        List<String> permissions = player.getEffectivePermissions().stream()
+        List<String> permissions = sender.getEffectivePermissions().stream()
                 .map(PermissionAttachmentInfo::getPermission)
                 .filter(permission -> permission.startsWith(permPrefix))
                 .collect(Collectors.toList());
@@ -342,7 +340,7 @@ public class SimpleUser implements User {
                 String[] spl = permission.split(permPrefix);
                 if (spl.length > 1) {
                     if (!NumberUtils.isNumber(spl[1])) {
-                        plugin.getLogger().severe("Player " + player.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
+                        SuperApiBukkit.getInstance().getLogger().severe("Sender " + sender.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
                     } else {
                         int v = Integer.parseInt(spl[1]);
                         if (v < 0) {
@@ -368,7 +366,11 @@ public class SimpleUser implements User {
      * @return Translated string with colors converted, or the reference if nothing has been found
      */
     @Override
-    public String getTranslation(ISuperBukkitPlugin plugin, String reference, String... variables) {
+    public String getTranslation(BukkitStoreLoader plugin, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         // Get translation
         String translation = plugin.getLocalesManager().get(this, reference);
 
@@ -399,16 +401,22 @@ public class SimpleUser implements User {
      * @return Translated string with colors converted, or a blank String if nothing has been found
      */
     @Override
-    public String getTranslationOrNothing(ISuperBukkitPlugin plugin, String reference, String... variables) {
+    public String getTranslationOrNothing(BukkitStoreLoader plugin, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         String translation = getTranslation(plugin, reference, variables);
         return translation.equals(reference) ? "" : translation;
     }
 
     @Override
     public void sendMessage(BaseComponent... components) {
-        if (sender != null) {
-            sender.spigot().sendMessage(components);
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return;
         }
+        sender.spigot().sendMessage(components);
     }
 
     /**
@@ -417,9 +425,18 @@ public class SimpleUser implements User {
      * @param variables - CharSequence target, replacement pairs
      */
     @Override
-    public void sendMessage(ISuperBukkitPlugin plugin, String reference, String... variables) {
+    public void sendMessage(BukkitStoreLoader plugin, String reference, String... variables) {
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return;
+        }
+
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         String message = getTranslation(plugin, reference, variables);
-        if (!ChatColor.stripColor(message).trim().isEmpty() && sender != null) {
+        if (!ChatColor.stripColor(message).trim().isEmpty()) {
             sender.sendMessage(message);
         }
     }
@@ -430,9 +447,12 @@ public class SimpleUser implements User {
      */
     @Override
     public void sendRawMessage(String message) {
-        if (sender != null) {
-            sender.sendMessage(message);
+        CommandSender sender = getSender();
+        if(sender == null) {
+            return;
         }
+
+        sender.sendMessage(message);
     }
 
     /**
@@ -441,14 +461,12 @@ public class SimpleUser implements User {
      */
     @Override
     public void sendRawBar(String message) {
-        if (sender != null) {
-            if(!(sender instanceof Player)) {
-                this.sendRawMessage(message);
-                return;
-            }
-
-            ActionBar.builder().message(message).send((Player) sender);
+        if(!isPlayer()) {
+            this.sendRawMessage(message);
+            return;
         }
+
+        ActionBar.builder().message(message).send(getPlayer());
     }
 
     /**
@@ -459,7 +477,11 @@ public class SimpleUser implements User {
      * @see Notifier
      */
     @Override
-    public void notify(ISuperBukkitPlugin plugin, String reference, String... variables) {
+    public void notify(BukkitStoreLoader plugin, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         this.notify(plugin, false, reference, variables);
     }
 
@@ -471,19 +493,31 @@ public class SimpleUser implements User {
      * @see Notifier
      */
     @Override
-    public void notifyBar(ISuperBukkitPlugin plugin, String reference, String... variables) {
+    public void notifyBar(BukkitStoreLoader plugin, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         this.notify(plugin, true, reference, variables);
     }
 
     @Override
-    public void notify(ISuperBukkitPlugin plugin, boolean bar, String reference, String... variables) {
+    public void notify(BukkitStoreLoader plugin, boolean bar, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         this.notify(plugin, null, bar, reference, variables);
     }
 
     @Override
-    public void notify(ISuperBukkitPlugin plugin, Runnable task, boolean bar, String reference, String... variables) {
+    public void notify(BukkitStoreLoader plugin, Runnable task, boolean bar, String reference, String... variables) {
+        if(plugin == null) {
+            plugin = SuperApiBukkit.getInstance();
+        }
+
         String message = getTranslation(plugin, reference, variables);
-        if (!ChatColor.stripColor(message).trim().isEmpty() && sender != null) {
+        if (!ChatColor.stripColor(message).trim().isEmpty()) {
             plugin.getNotifier().notify(this, message, task, bar);
         }
     }
@@ -494,9 +528,11 @@ public class SimpleUser implements User {
      */
     @Override
     public void setGameMode(GameMode mode) {
-        if (playerUUID != null && player != null) {
-            player.setGameMode(mode);
+        if (!isPlayer()) {
+            return;
         }
+
+        getPlayer().setGameMode(mode);
     }
 
     /**
@@ -505,9 +541,11 @@ public class SimpleUser implements User {
      */
     @Override
     public void teleport(Location location) {
-        if (playerUUID != null && player != null) {
-            player.teleport(location);
+        if (!isPlayer()) {
+            return;
         }
+
+        getPlayer().teleport(location);
     }
 
     /**
@@ -516,10 +554,7 @@ public class SimpleUser implements User {
      */
     @Override
     public World getWorld() {
-        if (playerUUID != null && player != null) {
-            return player.getWorld();
-        }
-        return null;
+        return isPlayer() ? getPlayer().getWorld() : null;
     }
 
     /**
@@ -527,9 +562,11 @@ public class SimpleUser implements User {
      */
     @Override
     public void closeInventory() {
-        if (playerUUID != null && player != null) {
-            player.closeInventory();
+        if (!isPlayer()) {
+            return;
         }
+
+        getPlayer().closeInventory();
     }
 
     /**
@@ -538,10 +575,11 @@ public class SimpleUser implements User {
      */
     @Override
     public Locale getLocale() {
-        if (sender instanceof Player && !plugin.getPlayersManager().getLocale(playerUUID).isEmpty()) {
-            return Locale.forLanguageTag(plugin.getPlayersManager().getLocale(playerUUID));
+        String locale = SuperApiBukkit.getInstance().getPlayersManager().getLocale(playerUUID);
+        if (isPlayer() && locale != null && !locale.isEmpty()) {
+            return Locale.forLanguageTag(locale);
         }
-        return Locale.forLanguageTag(plugin.getSettings().getDefaultLanguage());
+        return Locale.forLanguageTag(SuperApiBukkit.getInstance().getSettings().getDefaultLanguage());
     }
 
     /**
@@ -550,9 +588,11 @@ public class SimpleUser implements User {
      */
     @Override
     public void updateInventory() {
-        if (playerUUID != null && player != null) {
-            player.updateInventory();
+        if (!isPlayer()) {
+            return;
         }
+
+        getPlayer().updateInventory();
     }
 
     /**
@@ -562,10 +602,11 @@ public class SimpleUser implements User {
      */
     @Override
     public boolean performCommand(String cmd) {
-        if (playerUUID != null && player != null) {
-            return player.performCommand(cmd);
+        if (!isPlayer()) {
+            return false;
         }
-        return false;
+
+        return getPlayer().performCommand(cmd);
     }
 
     /**
@@ -585,11 +626,11 @@ public class SimpleUser implements User {
             throw new IllegalArgumentException("A non-null Particle.DustOptions must be provided when using Particle.REDSTONE as particle.");
         }
         // Check if this particle is beyond the viewing distance of the server
-        if (playerUUID != null && player != null && player.getLocation().toVector().distanceSquared(new Vector(x,y,z)) < (Bukkit.getServer().getViewDistance()*256*Bukkit.getServer().getViewDistance())) {
+        if (isPlayer() && getPlayer().getLocation().toVector().distanceSquared(new Vector(x,y,z)) < (Bukkit.getServer().getViewDistance()*256*Bukkit.getServer().getViewDistance())) {
             if (particle.equals(Particle.REDSTONE)) {
-                player.spawnParticle(particle, x, y, z, 1, 0, 0, 0, 1, dustOptions);
+                getPlayer().spawnParticle(particle, x, y, z, 1, 0, 0, 0, 1, dustOptions);
             } else {
-                player.spawnParticle(particle, x, y, z, 1);
+                getPlayer().spawnParticle(particle, x, y, z, 1);
             }
         }
     }
@@ -611,67 +652,33 @@ public class SimpleUser implements User {
 
     @Override
     public String getPrefix() {
-        return plugin.getVault().getPrefix(this);
+        return SuperApiBukkit.getInstance().getVault().getPrefix(this);
     }
 
     @Override
     public String getSuffix() {
-        return plugin.getVault().getSuffix(this);
+        return SuperApiBukkit.getInstance().getVault().getSuffix(this);
     }
 
     @Override
     public String getGroup() {
-        return plugin.getVault().getGroup(this);
+        return SuperApiBukkit.getInstance().getVault().getGroup(this);
     }
 
     @Override
     public List<String> getGroups() {
-        return plugin.getVault().getGroups(this);
+        return SuperApiBukkit.getInstance().getVault().getGroups(this);
     }
 
     @Override
     public boolean inGroups(String group) {
-        return plugin.getVault().inGroup(this, group);
-    }
-
-    @Override
-    public String toString() {
-        return "User[name=" + this.getName() + "]";
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((playerUUID == null) ? 0 : playerUUID.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SimpleUser)) {
-            return false;
-        }
-        SimpleUser other = (SimpleUser) obj;
-        if (playerUUID == null) {
-            return other.playerUUID == null;
-        } else return playerUUID.equals(other.playerUUID);
+        return SuperApiBukkit.getInstance().getVault().inGroup(this, group);
     }
 
     @Override
     public Map<String, Object> serialize() {
-        return null;
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("UUID", playerUUID != null ? playerUUID.toString() : null);
+        return result;
     }
 }

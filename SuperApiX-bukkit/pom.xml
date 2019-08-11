@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX-bukkit</artifactId>
-  	<version>3.5</version>
+  	<version>3.5.1</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX-bukkit</name>
@@ -140,8 +140,8 @@
 
 		<dependency>
 			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.14.3</artifactId>
-			<version>1.14.3</version>
+			<artifactId>spigot-1.14.4</artifactId>
+			<version>1.14.4</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -149,7 +149,7 @@
 	   	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
-  			<version>3.5</version>
+  			<version>3.5.1</version>
 	   	</dependency>
 
 		<!-- Vault -->

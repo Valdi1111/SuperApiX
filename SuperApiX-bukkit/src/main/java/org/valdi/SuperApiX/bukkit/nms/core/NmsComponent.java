@@ -33,9 +33,7 @@ public class NmsComponent<T> {
 
 	public void setupProvider(final MinecraftVersion version, Class[] classes, Object[] values)
 			throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-		String rawClass = packageName;
-		rawClass = rawClass.replace(NmsProvider.VERSION, version.getVersion());
-		rawClass = rawClass.replace(NmsProvider.CLASSNAME, className);
+		String rawClass = String.format(packageName, version.getId(), className);
 		this.instance = (T) Class.forName(rawClass).getConstructor(classes).newInstance(values);
 	}
 

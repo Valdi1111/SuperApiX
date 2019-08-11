@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitPlugin;
+import org.valdi.SuperApiX.bukkit.plugin.BukkitStoreLoader;
 
 /**
  * Combines {@link Player}, {@link OfflinePlayer} and {@link CommandSender} to provide convenience methods related to
@@ -27,22 +27,27 @@ import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitPlugin;
  */
 public interface User extends OfflineUser {
 
-    Set<PermissionAttachmentInfo> getEffectivePermissions();
-
-    PlayerInventory getInventory();
-
-    Location getLocation();
-
-    /**
-     * @return true if this User is a player, false if not, e.g., console
-     */
-    boolean isPlayer();
+    boolean isConsole();
 
     /**
      * @return true if this user is an OfflinePlayer, false if not, e.g., console
      * @since 1.0.0-beta
      */
     boolean isOfflinePlayer();
+
+    /**
+     * @return true if this User is a player, false if not, e.g., console
+     */
+    boolean isPlayer();
+
+    @Override
+    Player getPlayer();
+
+    Set<PermissionAttachmentInfo> getEffectivePermissions();
+
+    PlayerInventory getInventory();
+
+    Location getLocation();
 
     CommandSender getSender();
 
@@ -73,7 +78,7 @@ public interface User extends OfflineUser {
      *                  "[name]", "tastybento"
      * @return Translated string with colors converted, or the reference if nothing has been found
      */
-    String getTranslation(ISuperBukkitPlugin plugin, String reference, String... variables);
+    String getTranslation(BukkitStoreLoader plugin, String reference, String... variables);
 
     /**
      * Gets a translation of this reference for this User.
@@ -82,7 +87,7 @@ public interface User extends OfflineUser {
      *                  "[name]", "tastybento"
      * @return Translated string with colors converted, or a blank String if nothing has been found
      */
-    String getTranslationOrNothing(ISuperBukkitPlugin plugin, String reference, String... variables);
+    String getTranslationOrNothing(BukkitStoreLoader plugin, String reference, String... variables);
 
     void sendMessage(BaseComponent... components);
 
@@ -91,7 +96,7 @@ public interface User extends OfflineUser {
      * @param reference - language file reference
      * @param variables - CharSequence target, replacement pairs
      */
-    void sendMessage(ISuperBukkitPlugin plugin, String reference, String... variables);
+    void sendMessage(BukkitStoreLoader plugin, String reference, String... variables);
 
     /**
      * Sends a message to sender without any modification (colors, multi-lines, placeholders).
@@ -112,7 +117,7 @@ public interface User extends OfflineUser {
      *
      * @see Notifier
      */
-    void notify(ISuperBukkitPlugin plugin, String reference, String... variables);
+    void notify(BukkitStoreLoader plugin, String reference, String... variables);
 
     /**
      * Sends an actionBar to sender if message is not empty and if the same wasn't sent within the previous {@link Notifier#NOTIFICATION_DELAY} seconds.
@@ -121,11 +126,11 @@ public interface User extends OfflineUser {
      *
      * @see Notifier
      */
-    void notifyBar(ISuperBukkitPlugin plugin, String reference, String... variables);
+    void notifyBar(BukkitStoreLoader plugin, String reference, String... variables);
 
-    void notify(ISuperBukkitPlugin plugin, boolean bar, String reference, String... variables);
+    void notify(BukkitStoreLoader plugin, boolean bar, String reference, String... variables);
 
-    void notify(ISuperBukkitPlugin plugin, Runnable task, boolean bar, String reference, String... variables);
+    void notify(BukkitStoreLoader plugin, Runnable task, boolean bar, String reference, String... variables);
 
     /**
      * Sets the User's game mode

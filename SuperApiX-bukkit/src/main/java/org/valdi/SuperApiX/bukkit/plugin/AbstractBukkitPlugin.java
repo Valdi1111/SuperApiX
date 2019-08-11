@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.managers.CommandsManager;
 import org.valdi.SuperApiX.bukkit.managers.LocalesManager;
@@ -14,7 +15,7 @@ import org.valdi.SuperApiX.common.plugin.AbstractPlugin;
 import org.valdi.SuperApiX.common.config.IFilesProvider;
 import org.valdi.SuperApiX.common.databases.IDatabasesProvider;
 
-public abstract class AbstractBukkitPlugin<T extends ISuperBukkitBootstrap> extends AbstractPlugin<T> implements ISuperBukkitPlugin<T> {
+public abstract class AbstractBukkitPlugin<T extends AbstractBukkitBootstrap> extends AbstractPlugin<T> implements ISuperBukkitPlugin<T> {
 
 	// Managers
 	protected LocalesManager localesManager;
@@ -76,8 +77,14 @@ public abstract class AbstractBukkitPlugin<T extends ISuperBukkitBootstrap> exte
 		return Optional.ofNullable(provider.getProvider());
 	}
 
+	@Override
 	public Server getServer() {
 		return this.getBootstrap().getServer();
+	}
+
+	@Override
+	public JavaPlugin getJavaPlugin() {
+		return getBootstrap();
 	}
 
 }

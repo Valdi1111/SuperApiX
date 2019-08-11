@@ -2,6 +2,7 @@ package org.valdi.SuperApiX.bukkit.commands;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
+import org.valdi.SuperApiX.bukkit.plugin.BukkitStoreLoader;
 import org.valdi.SuperApiX.bukkit.users.User;
 import org.valdi.SuperApiX.bukkit.users.locale.TextVariables;
 
@@ -15,9 +16,7 @@ import java.util.Optional;
  * @author tastybento
  *
  */
-public class DefaultHelpCommand extends CompositeCommand {
-    private final SuperApiBukkit superApi;
-
+public class DefaultHelpCommand<T extends BukkitStoreLoader> extends CompositeCommand<T> {
     private static final int MAX_DEPTH = 2;
     private static final String USAGE_PLACEHOLDER = "[usage]";
     private static final String PARAMS_PLACEHOLDER = "[parameters]";
@@ -26,10 +25,8 @@ public class DefaultHelpCommand extends CompositeCommand {
     private static final String HELP_SYNTAX_NO_PARAMETERS_REF = "commands.help.syntax-no-parameters";
     private static final String HELP = "help";
 
-    public DefaultHelpCommand(CompositeCommand parent) {
+    public DefaultHelpCommand(CompositeCommand<T> parent) {
         super(parent, HELP);
-
-        this.superApi = SuperApiBukkit.getInstance();
     }
 
     @Override
@@ -49,23 +46,23 @@ public class DefaultHelpCommand extends CompositeCommand {
                 depth = Optional.ofNullable(args.get(0)).map(NumberUtils::toInt).orElse(-1);
             } else {
                 String usage = parent.getUsage();
-                String params = user.getTranslation(superApi, "commands.help.parameters");
-                String desc = user.getTranslation(superApi, "commands.help.description");
-                user.sendMessage(superApi, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
+                String params = user.getTranslation(null, "commands.help.parameters");
+                String desc = user.getTranslation(null, "commands.help.description");
+                user.sendMessage(null, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
                 return true;
             }
         }
         if (depth == 0) {
             // Get the name of the world for the help header, or console if there is no world association
-            String labelText = plugin.getBootstrap().getName(); //PluginDetails.NAME;
-            user.sendMessage(superApi, "commands.help.header", TextVariables.LABEL, labelText);
+            String labelText = plugin.getName(); //PluginDetails.NAME;
+            user.sendMessage(null, "commands.help.header", TextVariables.LABEL, labelText);
         }
         if (depth < MAX_DEPTH) {
             if (!parent.getLabel().equals(HELP)) {
                 // Get elements
                 String usage = parent.getUsage();
-                String params = user.getTranslationOrNothing(superApi, getParameters());
-                String desc = user.getTranslation(superApi, getDescription());
+                String params = user.getTranslationOrNothing(plugin, getParameters());
+                String desc = user.getTranslation(plugin, getDescription());
 
                 if (showPrettyHelp(user, usage, params, desc)) {
                     // No more to show
@@ -76,7 +73,7 @@ public class DefaultHelpCommand extends CompositeCommand {
             runSubCommandHelp(user, depth + 1);
         }
         if (depth == 0) {
-            user.sendMessage(superApi, "commands.help.end");
+            user.sendMessage(null, "commands.help.end");
         }
         return true;
     }
@@ -98,9 +95,9 @@ public class DefaultHelpCommand extends CompositeCommand {
             // Player. Check perms
             if (user.hasPermission(parent.getPermission())) {
                 if (params == null || params.isEmpty()) {
-                    user.sendMessage(superApi, HELP_SYNTAX_NO_PARAMETERS_REF, USAGE_PLACEHOLDER, usage, DESC_PLACEHOLDER, desc);
+                    user.sendMessage(null, HELP_SYNTAX_NO_PARAMETERS_REF, USAGE_PLACEHOLDER, usage, DESC_PLACEHOLDER, desc);
                 } else {
-                    user.sendMessage(superApi, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
+                    user.sendMessage(null, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
                 }
             } else {
                 // No permission, nothing to see here. If you don't have permission, you cannot see any sub commands
@@ -109,9 +106,9 @@ public class DefaultHelpCommand extends CompositeCommand {
         } else if (!parent.isOnlyPlayer()) {
             // Console. Only show if it is a console command
             if (params == null || params.isEmpty()) {
-                user.sendMessage(superApi, HELP_SYNTAX_NO_PARAMETERS_REF, USAGE_PLACEHOLDER, usage, DESC_PLACEHOLDER, desc);
+                user.sendMessage(null, HELP_SYNTAX_NO_PARAMETERS_REF, USAGE_PLACEHOLDER, usage, DESC_PLACEHOLDER, desc);
             } else {
-                user.sendMessage(superApi, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
+                user.sendMessage(null, HELP_SYNTAX_REF, USAGE_PLACEHOLDER, usage, PARAMS_PLACEHOLDER, params, DESC_PLACEHOLDER, desc);
             }
         }
         return false;

@@ -18,7 +18,7 @@ public class GeneralUtils extends AbstractNmsProvider implements IGeneralUtils<M
 
     @Override
     public SuperKey spaceKeyFromMinecraft(MinecraftKey key) {
-        return new SuperKey(key.b(), key.getKey());
+        return new SuperKey(key.getNamespace(), key.getKey());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class GeneralUtils extends AbstractNmsProvider implements IGeneralUtils<M
 
     @Override
     public int getTicks() {
-        return getServer().getServer().ai();
+        return getServer().getServer().aj();
     }
 
     private CraftServer getServer() {

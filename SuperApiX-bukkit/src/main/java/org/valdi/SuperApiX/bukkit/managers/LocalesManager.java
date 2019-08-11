@@ -1,11 +1,10 @@
 package org.valdi.SuperApiX.bukkit.managers;
 
 import org.valdi.SuperApiX.bukkit.Constants;
+import org.valdi.SuperApiX.bukkit.plugin.BukkitStoreLoader;
 import org.valdi.SuperApiX.bukkit.users.User;
-import org.valdi.SuperApiX.bukkit.users.locale.LocaleHandler;
 import org.valdi.SuperApiX.bukkit.users.locale.SpaceLocale;
 import org.valdi.SuperApiX.bukkit.utils.FileLister;
-import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitPlugin;
 import org.valdi.SuperApiX.common.plugin.StoreLoader;
 import org.valdi.SuperApiX.common.config.IFileStorage;
 import org.valdi.SuperApiX.common.config.IFilesProvider;
@@ -21,34 +20,28 @@ import java.util.*;
  * @author tastybento, Poslovitch
  */
 public class LocalesManager {
-    private ISuperBukkitPlugin plugin;
     private Map<Locale, SpaceLocale> languages = new HashMap<>();
-    private Set<LocaleHandler> handlers = new HashSet<>();
 
-    public LocalesManager(ISuperBukkitPlugin plugin) {
+    private BukkitStoreLoader plugin;
+    private File pluginFolder;
+    private String subFolder;
+
+    public LocalesManager(BukkitStoreLoader plugin) {
+        this(plugin, plugin.getDataFolder(), null);
+    }
+
+    public LocalesManager(BukkitStoreLoader plugin, File pluginFolder, String subFolder) {
         this.plugin = plugin;
-
-        this.registerLocaleHandler(new LocaleHandler(plugin, null));
-    }
-
-    public void registerLocaleHandler(LocaleHandler handler) {
-        unregisterLocaleHandler(handler.getLoader());
-        handlers.add(handler);
-    }
-
-    public void unregisterLocaleHandler(StoreLoader loader) {
-        handlers.removeIf(h -> h.getLoader().equals(loader));
+        this.pluginFolder = pluginFolder;
+        this.subFolder = subFolder;
     }
 
     public void init() {
-        handlers.forEach(h -> {
-            this.copyDefaultLocales(h.getLoader(), h.getFolder());
-            this.loadLocalesFromFile(h.getFolder());
-        });
+        this.copyDefaultLocales(plugin);
+        this.loadLocalesFromFile();
     }
 
     public void disable() {
-        handlers.clear();
         languages.clear();
     }
 
@@ -115,16 +108,25 @@ public class LocalesManager {
 	    	plugin.getLogger().severe("ERROR: en-US locale is null!!!");
 	    	plugin.getLogger().severe(" - valid locales loaded: ");
 	    	for(Map.Entry<Locale, SpaceLocale> entry : languages.entrySet()) {
-	        	plugin.getLogger().debug("     " + entry.getKey() + " -> " + entry.getValue());
+	        	plugin.getLogger().severe("     " + entry.getKey() + " -> " + entry.getValue());
 	    	}
     	}
         return null;
     }
-    
-    public File getLocalesFolder() {
-        File localesFolder = new File(plugin.getBootstrap().getDataFolder(), Constants.LOCALES_FOLDER);
-        if(!localesFolder.exists()) {
-        	localesFolder.mkdirs();
+
+    public File getLocalesFolder(boolean create) {
+        File localesFolder = new File(pluginFolder, Constants.LOCALES_FOLDER);
+        if(subFolder != null && !subFolder.isEmpty()) {
+            localesFolder = new File(localesFolder, subFolder);
+        }
+
+        if(localesFolder.exists() && !localesFolder.isDirectory()) {
+            throw new RuntimeException("Locales folder already exists, but it isn't a file!!");
+        }
+
+        // If there is no locale folder, create it
+        if (!localesFolder.exists() && create) {
+            localesFolder.mkdirs();
         }
         
         return localesFolder;
@@ -134,27 +136,24 @@ public class LocalesManager {
      * Copies all the locale files from the plugin jar to the filesystem.
      * Only done if the locale folder does not already exist.
      */
-    public void copyDefaultLocales(StoreLoader loader, String subFolder) {
-        File localeFolder = this.getLocalesFolder();
-        if(subFolder != null && !subFolder.isEmpty()) {
-            localeFolder = new File(this.getLocalesFolder(), subFolder);
-        }
-
-        // If the folder does not exist, then make it
-        if (!localeFolder.exists()) {
-            localeFolder.mkdirs();
-        }
-
-        // Run through the files and store the locales
-        // Fill with the locale files from the jar
-        // If it does exist, then new files will NOT be written!
+    public void copyDefaultLocales(StoreLoader loader) {
         try {
-            for (String name : FileLister.listJar(loader, Constants.LOCALES_FOLDER, Constants.LOCALES_EXTENSION)) {
-                // We cannot use Bukkit's saveResource, because we want it to go into a specific folder, so...
+            List<String> locales = FileLister.listJar(loader, Constants.LOCALES_FOLDER, Constants.LOCALES_EXTENSION);
+            if(locales.isEmpty()) {
+                return;
+            }
+
+            // Get the folder
+            File localeFolder = this.getLocalesFolder(true);
+
+            // Run through the files and store the locales
+            // Fill with the locale files from the jar
+            // If it does exist, then new files will NOT be written!
+            for (String name : locales) {
                 // Get the last part of the name
                 int lastIndex = name.lastIndexOf('/');
-                File outFile = new File(localeFolder, name.substring(lastIndex >= 0 ? lastIndex : 0, name.length()));
-                InputStream initialStream = plugin.getBootstrap().getResource(name);
+                File outFile = new File(localeFolder, name.substring(Math.max(lastIndex, 0), name.length()));
+                InputStream initialStream = plugin.getResource(name);
                 if (!outFile.exists()) {
                     Files.copy(initialStream, outFile.toPath());
                 }
@@ -167,24 +166,24 @@ public class LocalesManager {
     /**
      * Loads all the locales available in the locale folder given. Used for loading all locales from plugin
      */
-    public void loadLocalesFromFile(String subFolder) {
+    public void loadLocalesFromFile() {
         // Filter for files of length 9 and ending with .yml
         int extSize = Constants.LOCALES_EXTENSION.length();
         FilenameFilter ymlFilter = (dir, name) -> name.toLowerCase(Locale.ENGLISH).endsWith(Constants.LOCALES_EXTENSION) && name.length() == (5 + extSize);
 
         // Get the folder
-        File localeFolder = this.getLocalesFolder();
-        if(subFolder != null && !subFolder.isEmpty()) {
-            localeFolder = new File(this.getLocalesFolder(), subFolder);
-        }
-
-        // If there is no locale folder, then return
-        if (!localeFolder.exists()) {
+        File localeFolder = this.getLocalesFolder(false);
+        if(!localeFolder.exists()) {
             return;
         }
 
         // Run through the files and store the locales
-        for (File language : localeFolder.listFiles(ymlFilter)) {
+        File[] files = localeFolder.listFiles(ymlFilter);
+        if(files == null) {
+            return;
+        }
+
+        for (File language : files) {
             String localeRaw = language.getName().substring(0, language.getName().length() - extSize);
             plugin.getLogger().debug("Loading file " + language.getName() + " to locale " + localeRaw + " from folder " + language.getParentFile());
             Locale locale = Locale.forLanguageTag(localeRaw);
@@ -206,13 +205,12 @@ public class LocalesManager {
                     languages.put(locale, new SpaceLocale(locale, localeFile));
                 }
             } catch (Exception e) {
-                plugin.getLogger().severe("Could not load locale file!");
+                plugin.getLogger().severe("Could not load locale file!", e);
                 plugin.getLogger().severe("The file has likely an invalid file format or has been made unreadable during the process.");
-                plugin.getLogger().severe(" - file: " + language.getPath().toString());
+                plugin.getLogger().severe(" - file: " + language.getPath());
                 plugin.getLogger().severe(" - locale: " + localeRaw);
                 plugin.getLogger().severe(" - message: " + e.getMessage());
                 plugin.getLogger().severe(" - cause: " + e.getCause());
-                e.printStackTrace();
             }
         }
     }

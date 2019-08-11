@@ -9,10 +9,7 @@ import org.valdi.SuperApiX.bukkit.nms.base.*;
 import org.valdi.SuperApiX.bukkit.versions.MinecraftVersion;
 
 public class NmsProvider {
-	public static final String VERSION = "[version]";
-	public static final String CLASSNAME = "[classname]";
-
-	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms." + VERSION + "." + CLASSNAME;
+	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms.%1$s.%2$s";
 
 	private final SuperApiBukkit plugin;
 	

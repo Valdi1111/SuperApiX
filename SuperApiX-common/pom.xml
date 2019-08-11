@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX-common</artifactId>
-  	<version>3.5</version>
+  	<version>3.5.1</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX-common</name>

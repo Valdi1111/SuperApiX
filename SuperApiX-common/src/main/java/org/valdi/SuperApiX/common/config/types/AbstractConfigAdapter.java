@@ -21,19 +21,19 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public abstract class AbstractConfigAdapter implements IFileStorage {
     private final StoreLoader loader;
-    private final File configFile;
+    private final File file;
 
 	private ConfigurationLoader<? extends ConfigurationNode> manager;
     private ConfigNode root;
     
     protected AbstractConfigAdapter(StoreLoader loader, File path, String fileName) {
-		this.configFile = new File(path, fileName);
+		this.file = new File(path, fileName);
         this.loader = loader;
     }
     
     @Override
     public File getFile() {
-    	return configFile;
+    	return file;
     }
     
     @Override
@@ -46,12 +46,12 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void fromParent() {
-		fromParent(configFile.getName());
+		fromParent(file.getName());
 	}
 
 	@Override
 	public void fromParent(String path) {
-    	configFile.getParentFile().mkdirs();
+    	file.getParentFile().mkdirs();
     	InputStream is = loader.getResource(path);
 
 		this.fromStream(is);
@@ -59,11 +59,11 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void fromStream(InputStream is) {
-	    if (!configFile.exists()) {
+	    if (!file.exists()) {
 	        try {
-                Files.copy(is, configFile.toPath());
+                Files.copy(is, file.toPath());
 	        } catch (NullPointerException | IOException e) {
-	        	loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
+	        	loader.getLogger().info("Error on config creating (" + file.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
 				return;
 	        }
@@ -74,12 +74,12 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 
 	@Override
 	public void create() {	
-	    if (!configFile.exists()) {
+	    if (!file.exists()) {
 			try {
-    	    	configFile.getParentFile().mkdirs();
-				configFile.createNewFile();
+    	    	file.getParentFile().mkdirs();
+				file.createNewFile();
 			} catch (IOException e) {
-				loader.getLogger().info("Error on config creating (" + configFile.getName() + ") > " + e.getMessage());
+				loader.getLogger().info("Error on config creating (" + file.getName() + ") > " + e.getMessage());
 	        	e.printStackTrace();
 				return;
 			}
@@ -96,7 +96,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 			tempFile.deleteOnExit();
 			Files.copy(is, tempFile.toPath());
 		} catch (IOException e) {
-			loader.getLogger().info("Error on temp file creating (" + configFile.getName() + ") > " + e.getMessage());
+			loader.getLogger().info("Error on temp file creating (" + file.getName() + ") > " + e.getMessage());
 			e.printStackTrace();
 			return;
 		}
@@ -115,7 +115,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 		try {
 			this.root = new ConfigNode(manager.load());
 		} catch (IOException e) {
-			loader.getLogger().info("Error on config loading (" + configFile.getName() + ") > " + e.getMessage());
+			loader.getLogger().info("Error on config loading (" + file.getName() + ") > " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -139,9 +139,9 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         try {
         	manager.save(this.root.getNativeNode());
 		} catch (NullPointerException e) { // Null manager, loadOnly() hasn't been called
-			loader.getLogger().severe("You must load a file before saving! (" + configFile.getName() + ") > " + e.getMessage());
+			loader.getLogger().severe("You must load a file before saving! (" + file.getName() + ") > " + e.getMessage());
 		} catch (IOException e) {
-			loader.getLogger().info("Error on config saving (" + configFile.getName() + ") > " + e.getMessage());
+			loader.getLogger().info("Error on config saving (" + file.getName() + ") > " + e.getMessage());
         	e.printStackTrace();
 		}
 	}

@@ -4,7 +4,7 @@
 
   	<groupId>org.valdi</groupId>
   	<artifactId>SuperApiX-bungee</artifactId>
-  	<version>3.5</version>
+  	<version>3.5.1</version>
   	<packaging>jar</packaging>
 
   	<name>SuperApiX-bungee</name>
@@ -42,7 +42,7 @@
 	   	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
-  			<version>3.5</version>
+  			<version>3.5.1</version>
 	   	</dependency>
 	   	
 	   	<!-- RedisBungee -->

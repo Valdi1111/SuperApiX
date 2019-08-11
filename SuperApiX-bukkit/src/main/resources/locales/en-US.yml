@@ -1,3 +1,13 @@
+###########################################################################################
+# This is a YML file. Be careful when editing. Check your edits in a YAML checker like    #
+# the one at http://yaml-online-parser.appspot.com                                        #
+###########################################################################################
+
+meta:
+  authors:
+    - tastybento
+    - Poslovitch
+  banner: "WHITE_BANNER:1:STRIPE_SMALL:RED:SQUARE_TOP_RIGHT:CYAN:SQUARE_TOP_RIGHT:BLUE"
 
 general:
   success: "&aSuccess!"
@@ -23,3 +33,7 @@ commands:
     end: "&7================================="
     parameters: "[command]"
     description: "help command"
+  confirmation:
+    confirm: "&cType command again within &b[seconds]s&c to confirm."
+    previous-request-cancelled: "&6Previous confirmation request cancelled."
+    request-cancelled: "&cConfirmation timeout - &brequest cancelled."

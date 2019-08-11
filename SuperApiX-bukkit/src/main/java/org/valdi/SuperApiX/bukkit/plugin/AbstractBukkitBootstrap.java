@@ -19,7 +19,7 @@ import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader
 import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.scheduler.SimpleScheduler;
 
-public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> extends JavaPlugin implements ISuperBukkitBootstrap<T> {
+public abstract class AbstractBukkitBootstrap<T extends AbstractBukkitPlugin> extends JavaPlugin implements ISuperBukkitBootstrap<T> {
     /**
      * The plugin instance
      */

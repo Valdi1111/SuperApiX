@@ -42,8 +42,9 @@ public class ConfigLoader<Data> {
 
     /**
      * Constructor
+     *
      * @param loader a loader instance (plugin)
-     * @param data class to store
+     * @param data   class to store
      */
     public ConfigLoader(StoreLoader loader, Class<Data> data) {
         this.loader = loader;
@@ -57,19 +58,8 @@ public class ConfigLoader<Data> {
      * Load values from file. The config class must be annotated
      * with {@code FileType} class to change the file type (default is YAML)and
      * with {@code StoreTo} class to create physical file and
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
-     * @deprecated use {@code #loadAnnotated()} instead
-     */
-    @Deprecated
-    public void loadAnnotatedConfig() {
-        this.loadAnnotated();
-    }
-
-    /**
-     * Load values from file. The config class must be annotated
-     * with {@code FileType} class to change the file type (default is YAML)and
-     * with {@code StoreTo} class to create physical file and
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
+     * with {@code StoredAt} class to copy it from jar if doesn't exists
+     * or the file will be created from the class.
      */
     public void loadAnnotated() {
         StoreTo to = data.getAnnotation(StoreTo.class);
@@ -83,19 +73,9 @@ public class ConfigLoader<Data> {
 
     /**
      * Load values from file. The config class must be annotated
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
-     * @param folder the physical file folder
-     * @param name   the physical file name (including file extension)
-     * @deprecated use {@code #loadDinamicalAnnotated(File, String)} instead
-     */
-    @Deprecated
-    public void loadDynamicalAnnotatedConfig(File folder, String name) {
-        this.loadDynamicalAnnotated(folder, name);
-    }
-
-    /**
-     * Load values from file. The config class must be annotated
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
+     * with {@code StoredAt} class to copy it from jar if doesn't exists
+     * or the file will be created from the class.
+     *
      * @param folder the physical file folder
      * @param name   the physical file name (including file extension)
      */
@@ -115,48 +95,51 @@ public class ConfigLoader<Data> {
 
     /**
      * Load values from file. The config class must be annotated
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
-     * @param storage the physical file's IFileStorage
-     * @deprecated use {@code #loadDinamicalAnnotated(IFileStorage)} instead
+     * with {@code StoredAt} class to copy it from jar if doesn't exists
+     * or the file will be created from the class.
+     *
+     * @param file the physical file's IFileStorage
      */
-    @Deprecated
-    public void loadDynamicalAnnotatedConfig(IFileStorage storage) {
-        this.loadDynamicalAnnotated(storage);
-    }
-
-    /**
-     * Load values from file. The config class must be annotated
-     * with {@code StoredAt} class to copy it from jar if doesn't exists.
-     * @param storage the physical file's IFileStorage
-     */
-    public void loadDynamicalAnnotated(IFileStorage storage) {
-        StoredAt from = data.getAnnotation(StoredAt.class);
-        String path = from.filename();
-        if (!from.path().isEmpty()) {
-            path = from.path() + File.separator + path;
-        }
-
-        storage.fromParent(path);
-        load(storage);
-    }
-
-    /**
-     * Load class fields from file.
-     * @param file the config file
-     * @deprecated use {@code #load()} instead
-     */
-    @Deprecated
-    public void loadConfig(IFileStorage file) {
-        this.load(file);
-    }
-
-    /**
-     * Load class fields from file.
-     * @param file the config file
-     */
-    public void load(IFileStorage file) {
+    public void loadDynamicalAnnotated(IFileStorage file) {
         this.storage = file;
 
+        if (storage.getFile().exists()) {
+            storage.loadOnly();
+            load();
+            return;
+        }
+
+        if (data.isAnnotationPresent(StoredAt.class)) {
+            StoredAt from = data.getAnnotation(StoredAt.class);
+            String path = from.filename();
+            if (!from.path().isEmpty()) {
+                path = from.path() + File.separator + path;
+            }
+
+            storage.fromParent(path);
+            load();
+            return;
+        }
+
+        storage.create();
+
+        // Create a new instance of the data of type T (which can be any class)
+        try {
+            this.instance = data.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            loader.getLogger().severe("Failed to create a new instance for class " + data.getName(), e);
+            return;
+        }
+
+        save();
+    }
+
+    /**
+     * Load class fields from file.
+     *
+     * @param file the config file
+     */
+    public void load() {
         // Create a new instance of the data of type T (which can be any class)
         try {
             this.instance = data.getDeclaredConstructor().newInstance();
@@ -218,18 +201,9 @@ public class ConfigLoader<Data> {
 
     /**
      * Save changes to file.
-     * @deprecated use {@code #save()} instead
-     */
-    @Deprecated
-    public void saveConfig() {
-        this.save();
-    }
-
-    /**
-     * Save changes to file.
      */
     public void save() {
-        if(saving.getAndSet(true)) {
+        if (saving.getAndSet(true)) {
             loader.getLogger().severe("Skipping config saving for " + storage.getFile().getName() + ", it's already saving!");
             return;
         }
@@ -337,7 +311,8 @@ public class ConfigLoader<Data> {
 
     /**
      * Adds comments to the file.
-     * @param file file
+     *
+     * @param file       file
      * @param commentMap map of comments to apply to file
      */
     private void commentFile(File file, Map<String, String> commentMap) {
@@ -372,8 +347,9 @@ public class ConfigLoader<Data> {
 
     /**
      * This method is necessary because Windows has problems with Files.copy and file locking.
+     *
      * @param source file
-     * @param dest file
+     * @param dest   file
      * @throws IOException - exception
      */
     private void copyFileUsingStream(File source, File dest) throws IOException {
@@ -405,6 +381,7 @@ public class ConfigLoader<Data> {
 
     /**
      * Get the file manager for this config.
+     *
      * @return the manager
      */
     public IFileStorage getFileStorage() {
@@ -417,6 +394,7 @@ public class ConfigLoader<Data> {
 
     /**
      * Get an active instance of the config class.
+     *
      * @return the config
      */
     public Data getConfig() {

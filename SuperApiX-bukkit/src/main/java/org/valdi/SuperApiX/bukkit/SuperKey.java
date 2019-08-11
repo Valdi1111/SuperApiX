@@ -95,6 +95,10 @@ public class SuperKey {
             final SuperKey other = (SuperKey) obj;
             return this.namespace.equals(other.namespace) && this.key.equals(other.key);
         }
+        if(obj.getClass().getSimpleName().equals("MinecraftKey")) {
+            final SuperKey other = fromMinecraftKey(obj);
+            return this.equals(other);
+        }
         return false;
     }
 
@@ -157,6 +161,14 @@ public class SuperKey {
 
     public static SuperKey fromMinecraftKey(Object key) {
         return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
+    }
+
+    public static SuperKey fromString(String value) {
+        String[] args = value.split(":");
+        if(args.length != 2) {
+            return null;
+        }
+        return new SuperKey(args[0], args[1]);
     }
 
     public NamespacedKey toNamespacedKey() {

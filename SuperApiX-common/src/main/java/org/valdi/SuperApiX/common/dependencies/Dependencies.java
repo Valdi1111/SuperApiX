@@ -72,7 +72,7 @@ public class Dependencies {
 			.setGroupId("org.jsoup")
 			.setArtifactId("jsoup")
 			.setVersion("1.11.3")
-			.setChecksum("Sso+VSr7HOtH+JVmhfYpWiduSfoD+QZvi2voO+xW+2Y=")
+			.setChecksum("3yxxpCQOy9rnzc0WZ7zw10fk49zv6BYeeHrc/35fL6A=")
 			.setAutoLoad(true)
 			.build();
 

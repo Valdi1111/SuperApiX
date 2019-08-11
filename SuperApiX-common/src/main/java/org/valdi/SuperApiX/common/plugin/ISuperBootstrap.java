@@ -91,6 +91,22 @@ public interface ISuperBootstrap<T extends ISuperPlugin> {
     InputStream getResourceStream(String path);
 
     /**
+     * Saves the raw contents of any resource embedded with an addon's .jar
+     * file assuming it can be found using {@link #getResource(String)}.
+     * <p>
+     * The resource is saved into the addon's data folder using the same
+     * hierarchy as the .jar file (subdirectories are preserved).
+     *
+     * @param resourcePath the embedded resource path to look for within the
+     *     addon's .jar file. (No preceding slash).
+     * @param replace if true, the embedded resource will overwrite the
+     *     contents of an existing file.
+     * @throws IllegalArgumentException if the resource path is null, empty,
+     *     or points to a nonexistent resource.
+     */
+    void saveResource(String resourcePath, boolean replace);
+
+    /**
      * Get an active instance of the DependencyManager.
      * @return the dependency manager
      */
