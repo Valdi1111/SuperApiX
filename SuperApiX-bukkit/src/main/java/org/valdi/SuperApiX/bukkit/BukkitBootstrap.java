@@ -28,7 +28,7 @@ public class BukkitBootstrap extends AbstractBukkitBootstrap<SuperApiBukkit> {
 
         // load dependencies
         getDependencyManager().loadStorageDependencies();
-        getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP);
+        getDependencyManager().loadDependencies(Dependencies.TEXT, Dependencies.CAFFEINE, Dependencies.OKIO, Dependencies.OKHTTP, Dependencies.JSOUP);
 
         this.plugin = new SuperApiBukkit(this);
     }

@@ -18,17 +18,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
+import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
 import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.plugin.ISuperBootstrap;
 import org.valdi.SuperApiX.common.dependencies.classloader.IsolatedClassLoader;
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 /**
  * Responsible for loading runtime dependencies.
  */
-public class DependencyManager {
-    private final ISuperBootstrap bootstrap;
+public class DependencyManager implements IDependencyManager {
+    private ISuperBootstrap bootstrap;
+    private StoreLoader loader;
     private final MessageDigest digest;
     private final DependencyRegistry registry;
     private final Map<Dependency, File> loaded = new HashMap<>();
@@ -50,8 +53,26 @@ public class DependencyManager {
         return getInstance();
     }
 
+    public static DependencyManager init(StoreLoader loader) {
+        if(instance != null) {
+            throw new RuntimeException("DependencyManager cannot be redefined!");
+        }
+
+        instance = new DependencyManager(loader);
+        return getInstance();
+    }
+
     private DependencyManager(ISuperBootstrap bootstrap) {
+        this();
         this.bootstrap = bootstrap;
+    }
+
+    private DependencyManager(StoreLoader loader) {
+        this();
+        this.loader = loader;
+    }
+
+    private DependencyManager() {
         try {
             this.digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -67,6 +88,7 @@ public class DependencyManager {
         return this.relocator;
     }
 
+    @Override
     public IsolatedClassLoader obtainClassLoaderWith(Dependency... dependencies) {
         ImmutableSet<Dependency> set = ImmutableSet.copyOf(dependencies);
 
@@ -101,7 +123,7 @@ public class DependencyManager {
 
     private File getSaveDirectory(File saveFolder, boolean createSub) {
         if(saveFolder == null) {
-            saveFolder = bootstrap.getDataFolder();
+            saveFolder = bootstrap == null ? loader.getDataFolder() : bootstrap.getDataFolder();
             createSub = true;
         }
 
@@ -115,20 +137,23 @@ public class DependencyManager {
         return saveFolder;
     }
 
+    @Override
     public void loadStorageDependencies() {
         this.loadDependencies(registry.resolveStorageDependencies());
     }
 
+    @Override
     public void loadDependencies(Dependency... dependencies) {
         this.loadDependencies(null, null, null, true, dependencies);
     }
 
+    @Override
     public void loadDependencies(SuperLogger logger, PluginClassLoader classLoader, File folder, boolean createSub, Dependency... dependencies) {
         if(logger == null) {
-            logger = bootstrap.getPluginLogger();
+            logger = bootstrap == null ? loader.getLogger() : bootstrap.getPluginLogger();
         }
         if(classLoader == null) {
-            classLoader = bootstrap.getPluginClassLoader();
+            classLoader = bootstrap == null ? new ReflectionClassLoader(loader) : bootstrap.getPluginClassLoader();
         }
 
         File saveFolder = getSaveDirectory(folder, createSub);

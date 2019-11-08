@@ -4,8 +4,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
-import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitBootstrap;
-import org.valdi.SuperApiX.bukkit.plugin.ISuperBukkitPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.valdi.SuperApiX.bukkit.plugin.BukkitStoreLoader;
 import org.valdi.SuperApiX.bukkit.events.command.CommandEvent;
 import org.valdi.SuperApiX.bukkit.users.SimpleUser;
 import org.valdi.SuperApiX.bukkit.users.User;
@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
  * @author tastybento
  * @author Poslovitch
  */
-public abstract class CompositeCommand extends Command implements PluginIdentifiableCommand, SuperCommand {
+public abstract class CompositeCommand<T extends BukkitStoreLoader> extends Command implements PluginIdentifiableCommand, SuperCommand {
 
-    protected final ISuperBukkitPlugin plugin;
+    protected final T plugin;
     
     private static final String COMMANDS = "commands.";
 
@@ -41,7 +41,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
     /**
      * The parent command to this one. If this is a top-level command it will be empty.
      */
-    protected final CompositeCommand parent;
+    protected final CompositeCommand<? extends BukkitStoreLoader> parent;
     /**
      * The permission required to execute this command
      */
@@ -53,12 +53,12 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
     /**
      * Map of sub commands
      */
-    private Map<String, CompositeCommand> subCommands;
+    private Map<String, CompositeCommand<? extends BukkitStoreLoader>> subCommands;
 
     /**
      * Map of aliases for subcommands
      */
-    private Map<String, CompositeCommand> subCommandAliases;
+    private Map<String, CompositeCommand<? extends BukkitStoreLoader>> subCommandAliases;
     /**
      * The command chain from the very top, e.g., island team promote
      */
@@ -85,8 +85,9 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
      * @param label - string for this command
      * @param aliases - aliases
      */
-    public CompositeCommand(ISuperBukkitPlugin plugin, String label, String... aliases) {
+    public CompositeCommand(T plugin, String label, String... aliases) {
         super(label, "", "", Arrays.asList(aliases));
+
         this.topLabel = label;
         this.plugin = plugin;
         setAliases(new ArrayList<>(Arrays.asList(aliases)));
@@ -106,22 +107,23 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
         setParametersHelp(COMMANDS + label + ".parameters");
         setup();
         if (!getSubCommand("help").isPresent() && !label.equals("help")) {
-            new DefaultHelpCommand(this);
+            new DefaultHelpCommand<>(this);
         }
     }
 
-    public CompositeCommand(CompositeCommand parent, String label, String... aliases ) {
-        this(parent.getPlugin().getPlugin(), parent, label, aliases);
+    public CompositeCommand(CompositeCommand<T> parent, String label, String... aliases ) {
+        this(parent.plugin, parent, label, aliases);
     }
     
      /**
-     * Command to register a command from an plugin under a parent command (that could be from another plugin)
+     * Command to register a command from a plugin under a parent command (that could be from another plugin)
      * @param plugin - this command's plugin
      * @param parent - parent command
      * @param aliases - aliases for this command
      */
-    public CompositeCommand(ISuperBukkitPlugin plugin, CompositeCommand parent, String label, String... aliases ) {
+    public CompositeCommand(T plugin, CompositeCommand<? extends BukkitStoreLoader> parent, String label, String... aliases ) {
         super(label, "", "", Arrays.asList(aliases));
+
         this.topLabel = parent.getTopLabel();
         this.plugin = plugin;
         this.parent = parent;
@@ -154,7 +156,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
         setup();
         // If this command does not define its own help class, then use the default help command
         if (!getSubCommand("help").isPresent() && !label.equals("help")) {
-            new DefaultHelpCommand(this);
+            new DefaultHelpCommand<>(this);
         }
     }
     
@@ -169,12 +171,12 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
         CompositeCommand cmd = getCommandFromArgs(args);
         // Check for console and permissions
         if (cmd.onlyPlayer && !(sender instanceof Player)) {
-            user.sendMessage(plugin, "general.errors.use-in-game");
+            user.sendMessage(null, "general.errors.use-in-game");
             return false;
         }
         // Check perms, but only if this isn't the console
         if ((sender instanceof Player) && !sender.isOp() && !cmd.getPermission().isEmpty() && !sender.hasPermission(cmd.getPermission())) {
-            user.sendMessage(plugin,"general.errors.no-permission", TextVariables.PERMISSION, cmd.getPermission());
+            user.sendMessage(null,"general.errors.no-permission", TextVariables.PERMISSION, cmd.getPermission());
             return false;
         }
         // Fire an event to see if this command should be cancelled
@@ -246,7 +248,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
     /**
      * @return the parent command object
      */
-    public CompositeCommand getParent() {
+    public CompositeCommand<? extends BukkitStoreLoader> getParent() {
         return parent;
     }
 
@@ -256,8 +258,12 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
     }
 
     @Override
-    public ISuperBukkitBootstrap getPlugin() {
-        return plugin.getBootstrap();
+    public JavaPlugin getPlugin() {
+        return plugin.getJavaPlugin();
+    }
+
+    public T getStoreLoader() {
+        return plugin;
     }
 
     /**
@@ -265,7 +271,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
      * @param label - command label or alias
      * @return CompositeCommand or null if none found
      */
-    public Optional<CompositeCommand> getSubCommand(String label) {
+    public Optional<CompositeCommand<? extends BukkitStoreLoader>> getSubCommand(String label) {
         label = label.toLowerCase(java.util.Locale.ENGLISH);
         if (subCommands.containsKey(label)) {
             return Optional.ofNullable(subCommands.get(label));
@@ -280,7 +286,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
     /**
      * @return Map of sub commands for this command
      */
-    public Map<String, CompositeCommand> getSubCommands() {
+    public Map<String, CompositeCommand<? extends BukkitStoreLoader>> getSubCommands() {
         return subCommands;
     }
 
@@ -291,9 +297,9 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
      * @return Map of sub commands for this command
      * @see #hasSubCommands(boolean)
      */
-    public Map<String, CompositeCommand> getSubCommands(boolean ignoreHelp) {
+    public Map<String, CompositeCommand<? extends BukkitStoreLoader>> getSubCommands(boolean ignoreHelp) {
         if (ignoreHelp && getSubCommand("help").isPresent()) {
-            Map<String, CompositeCommand> result = subCommands;
+            Map<String, CompositeCommand<? extends BukkitStoreLoader>> result = subCommands;
             result.remove("help");
             return result;
         }
@@ -495,7 +501,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
      * @param command the CompositeCommand to get the subcommands from
      * @return a list of subcommands labels or an empty list.
      */
-    private List<String> getSubCommandLabels(CommandSender sender, CompositeCommand command) {
+    private List<String> getSubCommandLabels(CommandSender sender, CompositeCommand<T> command) {
         return command.getSubCommands().values().stream()
                 .filter(cmd -> !cmd.isOnlyPlayer() || sender.isOp() || (sender instanceof Player && (cmd.getPermission().isEmpty() || sender.hasPermission(cmd.getPermission()))) )
                 .map(CompositeCommand::getLabel).collect(Collectors.toList());
@@ -507,14 +513,14 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
      * @param user - the User
      * @return result of help command or false if no help defined
      */
-    protected boolean showHelp(CompositeCommand command, User user) {
+    protected boolean showHelp(CompositeCommand<? extends BukkitStoreLoader> command, User user) {
         return command.getSubCommand("help").map(helpCommand -> helpCommand.execute(user, helpCommand.getLabel(), new ArrayList<>())).orElse(false);
     }
 
     /**
      * @return the subCommandAliases
      */
-    public Map<String, CompositeCommand> getSubCommandAliases() {
+    public Map<String, CompositeCommand<? extends BukkitStoreLoader>> getSubCommandAliases() {
         return subCommandAliases;
     }
 
@@ -571,7 +577,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
             return false;
         }
         int timeToGo = (int) ((cooldowns.get(user.getUniqueId()).getOrDefault(targetUUID, 0L) - System.currentTimeMillis()) / 1000);
-        user.sendMessage(plugin, "general.errors.you-must-wait", TextVariables.NUMBER, String.valueOf(timeToGo));
+        user.sendMessage(null, "general.errors.you-must-wait", TextVariables.NUMBER, String.valueOf(timeToGo));
         return true;
     }
    

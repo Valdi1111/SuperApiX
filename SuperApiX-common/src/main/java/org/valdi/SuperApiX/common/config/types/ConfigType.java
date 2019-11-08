@@ -1,8 +1,7 @@
 package org.valdi.SuperApiX.common.config.types;
 
+import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.collect.ImmutableList;
 
 public enum ConfigType {
 
@@ -20,7 +19,7 @@ public enum ConfigType {
 
     private ConfigType(String name, String... identifiers) {
         this.name = name;
-        this.identifiers = ImmutableList.copyOf(identifiers);
+        this.identifiers = Arrays.asList(identifiers);
     }
 
     /**

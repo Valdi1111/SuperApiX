@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.valdi.SuperApiX.common.dependencies.Dependencies;
 import org.valdi.SuperApiX.common.dependencies.Dependency;
-import org.valdi.SuperApiX.common.dependencies.DependencyManager;
+import org.valdi.SuperApiX.common.dependencies.IDependencyManager;
 import org.valdi.SuperApiX.common.dependencies.classloader.IsolatedClassLoader;
 
 /**
@@ -23,7 +23,7 @@ public class RelocationHandler {
     private final Constructor<?> constructor;
     private final Method method;
 
-    public RelocationHandler(DependencyManager dependencyManager) {
+    public RelocationHandler(IDependencyManager dependencyManager) {
         try {
             // download the required dependencies for remapping
             dependencyManager.loadDependencies(DEPENDENCIES);

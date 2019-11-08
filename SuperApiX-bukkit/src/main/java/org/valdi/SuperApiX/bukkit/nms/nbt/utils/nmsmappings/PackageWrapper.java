@@ -10,7 +10,7 @@ package org.valdi.SuperApiX.bukkit.nms.nbt.utils.nmsmappings;
 public enum PackageWrapper {
 	NMS("net.minecraft.server"),
 	CRAFTBUKKIT("org.bukkit.craftbukkit");
-	
+
 	private final String uri;
 
 	PackageWrapper(String uri) {

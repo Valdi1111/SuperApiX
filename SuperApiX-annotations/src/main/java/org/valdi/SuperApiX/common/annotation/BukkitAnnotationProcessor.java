@@ -80,6 +80,7 @@ public class BukkitAnnotationProcessor extends AbstractProcessor {
 
         if (!processingEnv.getTypeUtils().isSubtype(mainPluginType.asType(), AnnotationUtils.fromClass(processingEnv, JavaPlugin.class))) {
             AnnotationUtils.raiseError(processingEnv, "Class annotated with @BukkitPlugin is not an subclass of " + JavaPlugin.class.getName() + "!", mainPluginType);
+            return false;
         }
 
         Map<String, Object> yml = new LinkedHashMap<>(); // linked so we can maintain the same output into file for sanity
@@ -149,7 +150,7 @@ public class BukkitAnnotationProcessor extends AbstractProcessor {
         // populate load-before
         LoadBefore[] loadBfs = mainPluginType.getAnnotationsByType(LoadBefore.class);
         List<String> loadBefore = new ArrayList<>();
-        for( LoadBefore loadBf : loadBfs) {
+        for (LoadBefore loadBf : loadBfs) {
             loadBefore.add(loadBf.value());
         }
         if (!loadBefore.isEmpty()) {

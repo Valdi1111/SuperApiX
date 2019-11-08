@@ -14,7 +14,7 @@ public class JSONMessage {
     }
 
     public Object getBaseComponent() {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.getBaseComponentFromJson(this)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsManager().getGeneralUtils().map(u -> u.getBaseComponentFromJson(this)).orElse(null);
     }
 
     public String toString() {

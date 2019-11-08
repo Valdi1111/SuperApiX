@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
+import org.valdi.SuperApiX.bukkit.managers.NmsManager;
 import org.valdi.SuperApiX.bukkit.versions.MinecraftVersion;
 
 public class NmsComponent<T> {
@@ -16,7 +17,7 @@ public class NmsComponent<T> {
 	private T instance;
 
 	public NmsComponent(final String id, final String className, final Class<T> superClazz) {
-		this(id, NmsProvider.PACKAGE, className, superClazz);
+		this(id, NmsManager.PACKAGE, className, superClazz);
 	}
 
 	public NmsComponent(final String id, final String packageName, final String className, final Class<T> superClazz) {
@@ -33,9 +34,7 @@ public class NmsComponent<T> {
 
 	public void setupProvider(final MinecraftVersion version, Class[] classes, Object[] values)
 			throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-		String rawClass = packageName;
-		rawClass = rawClass.replace(NmsProvider.VERSION, version.getPackageName());
-		rawClass = rawClass.replace(NmsProvider.CLASSNAME, className);
+		String rawClass = String.format(packageName, version.getId(), className);
 		this.instance = (T) Class.forName(rawClass).getConstructor(classes).newInstance(values);
 	}
 

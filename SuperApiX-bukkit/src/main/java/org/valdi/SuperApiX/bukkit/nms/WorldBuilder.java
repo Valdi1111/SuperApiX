@@ -316,7 +316,7 @@ public class WorldBuilder {
      * @return Newly created or loaded world
      */
     public World createWorld() {
-    	Optional<IWorldManager> provider = SuperApiBukkit.getInstance().getNmsProvider().getWorldManager();
+    	Optional<IWorldManager> provider = SuperApiBukkit.getInstance().getNmsManager().getWorldManager();
     	if(provider.isPresent()) {
             return provider.get().createWorld(this);
     	}

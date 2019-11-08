@@ -13,8 +13,9 @@ import org.valdi.SuperApiX.bukkit.config.serializers.VectorSerializer;
 import org.valdi.SuperApiX.bukkit.config.serializers.WorldUuidSerializer;
 import org.valdi.SuperApiX.bukkit.listeners.JoinLeaveListener;
 import org.valdi.SuperApiX.bukkit.listeners.PluginListener;
-import org.valdi.SuperApiX.bukkit.nms.core.NmsProvider;
+import org.valdi.SuperApiX.bukkit.managers.NmsManager;
 import org.valdi.SuperApiX.bukkit.managers.PlayersManager;
+import org.valdi.SuperApiX.bukkit.managers.ServiceProviderManager;
 import org.valdi.SuperApiX.bukkit.nms.nbt.utils.MinecraftVersion;
 import org.valdi.SuperApiX.bukkit.plugin.AbstractBukkitPlugin;
 import org.valdi.SuperApiX.bukkit.users.VaultHandler;
@@ -32,8 +33,8 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	// Settings
 	private ConfigLoader<Settings> settings;
 
-	private ServiceProviderManager provider;
-	private NmsProvider nmsProvider;
+	private ServiceProviderManager providerManager;
+	private NmsManager nmsManager;
 	private VaultHandler vault;
     
     public SuperApiBukkit(BukkitBootstrap bootstrap) {
@@ -56,14 +57,15 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 
 		// Initialize NBT support
 		MinecraftVersion.getVersion();
-        
-		provider = new ServiceProviderManager(this);
-		nmsProvider = new NmsProvider(this);
-		provider.registerAll();
+
+		providerManager = new ServiceProviderManager(this);
+		nmsManager = new NmsManager(this);
+		providerManager.registerAll();
 
 		// Load settings
 		if (!loadSettings()) {
 			// We're aborting the load.
+			this.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not load config... Disabling plugin.");
 			bootstrap.disablePlugin();
 			return;
 		}
@@ -84,7 +86,9 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	public void enable() {
 		super.enable();
 
+		// Create database
 		if(!setupDatabase()) {
+			// We're aborting the load.
 			this.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not connect to database... Disabling plugin.");
 			bootstrap.disablePlugin();
 			return;
@@ -139,6 +143,25 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		bootstrap.getServer().getConsoleSender().sendMessage(ChatColor.RED + bootstrap.getDescription().getName() + " V" + bootstrap.getDescription().getVersion() + " has been disabled... Goodbye :(");
 	}
 
+	/**
+	 * Loads the settings from the config file.
+	 * If it fails, it can shut the plugin down.
+	 * @return {@code true} if it loaded successfully.
+	 */
+	private boolean loadSettings() {
+		getLogger().info("Loading Settings from config.yml...");
+		// Load settings from config.yml. This will check if there are any issues with it too.
+		settings = new ConfigLoader<>(this, Settings.class);
+		settings.loadAnnotated();
+
+		if (settings == null) {
+			// Settings did not load correctly. Disable plugin.
+			getLogger().severe("### Settings did not load correctly - please check config.yml");
+			return false;
+		}
+		return true;
+	}
+
 	private boolean setupDatabase() {
 		String ip = this.getSettings().getDatabaseHost();
 		int port = this.getSettings().getDatabasePort();
@@ -150,6 +173,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		String poolName = this.getSettings().getDatabasePoolName();
 
 		try {
+			getLogger().info("Creating database and connecting to it...");
 			database = DatabasesProvider.builder()
 					.setStoreLoader(this)
 					.setType(getSettings().getDatabaseType())
@@ -165,7 +189,7 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 					.build();
 			return true;
 		} catch (DatabaseException e) {
-			this.getLogger().debug("Database error", e);
+			this.getLogger().debug("### Cannot create database ###", e);
 			return false;
 		}
 	}
@@ -174,8 +198,8 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 		return instance;
 	}
 	
-	public NmsProvider getNmsProvider() {
-		return this.nmsProvider;
+	public NmsManager getNmsManager() {
+		return this.nmsManager;
 	}
 	
 	public Optional<IBossBarProvider> getBossBarSender() {
@@ -205,26 +229,6 @@ public class SuperApiBukkit extends AbstractBukkitPlugin<BukkitBootstrap> {
 	 */
 	public Settings getSettings() {
 		return settings.getConfig();
-	}
-
-	/**
-	 * Loads the settings from the config file.
-	 * If it fails, it can shut the plugin down.
-	 * @return {@code true} if it loaded successfully.
-	 * @since 1.0.0-beta
-	 */
-	public boolean loadSettings() {
-		getLogger().info("Loading Settings from config.yml...");
-		// Load settings from config.yml. This will check if there are any issues with it too.
-		settings = new ConfigLoader<>(this, Settings.class);
-		settings.loadAnnotated();
-
-		if (settings == null) {
-			// Settings did not load correctly. Disable plugin.
-			getLogger().severe("Settings did not load correctly - disabling plugin - please check config.yml");
-			return false;
-		}
-		return true;
 	}
 
 	public VaultHandler getVault() {

@@ -1,7 +1,9 @@
 package org.valdi.SuperApiX.bungee.plugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -147,7 +149,7 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
 
     @Override
     public File getJarFile() {
-        return super.getFile();
+        return getFile();
     }
 
     @Override
@@ -163,6 +165,29 @@ public abstract class AbstractBungeeBootstrap<T extends AbstractBungeePlugin> ex
     @Override
     public InputStream getResourceStream(String path) {
         return getResourceAsStream(path);
+    }
+
+    @Override
+    public void saveResource(String resourcePath, boolean replace) {
+        if (resourcePath == null || resourcePath.equals("")) {
+            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+        }
+
+        resourcePath = resourcePath.replace('\\', '/');
+        try (InputStream in = getResourceStream(resourcePath)) {
+            if (in == null) {
+                throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + getJarFile());
+            }
+
+            File outFile = new File(getDataFolder(), resourcePath);
+            // Make any dirs that need to be made
+            outFile.getParentFile().mkdirs();
+            if (!outFile.exists() || replace) {
+                Files.copy(in, outFile.toPath());
+            }
+        } catch (IOException e) {
+            logger.severe("Could not save from jar file. " + resourcePath, e);
+        }
     }
 
     @Override

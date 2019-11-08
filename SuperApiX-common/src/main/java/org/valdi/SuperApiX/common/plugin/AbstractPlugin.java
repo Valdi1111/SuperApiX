@@ -87,6 +87,11 @@ public abstract class AbstractPlugin<T extends ISuperBootstrap> implements ISupe
 	}
 
 	@Override
+	public void saveResource(String resourcePath, boolean replace) {
+		getBootstrap().saveResource(resourcePath, replace);
+	}
+
+	@Override
 	public ThreadFactory getThreadFactory() {
 		ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) this.getExecutorService();
 		return threadPoolExecutor.getThreadFactory();

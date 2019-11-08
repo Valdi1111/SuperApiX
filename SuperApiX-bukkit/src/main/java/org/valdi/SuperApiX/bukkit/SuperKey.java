@@ -2,7 +2,7 @@ package org.valdi.SuperApiX.bukkit;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.Plugin;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -51,7 +51,7 @@ public class SuperKey {
      * @param plugin the plugin to use for the namespace
      * @param key the key to create
      */
-    public SuperKey(Plugin plugin, String key) {
+    public SuperKey(StoreLoader plugin, String key) {
         Preconditions.checkArgument(plugin != null, "plugin");
         Preconditions.checkArgument(key != null, "key");
 
@@ -93,6 +93,10 @@ public class SuperKey {
         if (obj instanceof SuperKey) {
             final SuperKey other = (SuperKey) obj;
             return this.namespace.equals(other.namespace) && this.key.equals(other.key);
+        }
+        if(obj.getClass().getSimpleName().equals("MinecraftKey")) {
+            final SuperKey other = fromMinecraftKey(obj);
+            return this.equals(other);
         }
         return false;
     }
@@ -155,7 +159,15 @@ public class SuperKey {
     }
 
     public static SuperKey fromMinecraftKey(Object key) {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsManager().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
+    }
+
+    public static SuperKey fromString(String value) {
+        String[] args = value.split(":");
+        if(args.length != 2) {
+            return null;
+        }
+        return new SuperKey(args[0], args[1]);
     }
 
     public NamespacedKey toNamespacedKey() {
@@ -163,6 +175,6 @@ public class SuperKey {
     }
 
     public Object toMinecraftKey() {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.minecraftKeyFromSpace(this)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsManager().getGeneralUtils().map(u -> u.minecraftKeyFromSpace(this)).orElse(null);
     }
 }

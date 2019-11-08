@@ -19,7 +19,7 @@ import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader
 import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.scheduler.SimpleScheduler;
 
-public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> extends JavaPlugin implements ISuperBukkitBootstrap<T> {
+public abstract class AbstractBukkitBootstrap<T extends AbstractBukkitPlugin> extends JavaPlugin implements ISuperBukkitBootstrap<T> {
     /**
      * The plugin instance
      */
@@ -60,7 +60,7 @@ public abstract class AbstractBukkitBootstrap<T extends ISuperBukkitPlugin> exte
         this.logger = new BukkitPluginLogger(getLogger());
         this.classLoader = new ReflectionClassLoader(this);
         
-        this.compatibility = new ServerCompatibility();
+        this.compatibility = new ServerCompatibility(this);
         this.compatibleSoftwares = new HashMap<>();
         this.compatibleVersions = new HashMap<>();
         this.compatibleMinecrafts = new HashMap<>();
