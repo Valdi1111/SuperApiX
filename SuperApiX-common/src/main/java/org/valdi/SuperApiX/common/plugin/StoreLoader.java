@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadFactory;
 
 import org.valdi.SuperApiX.common.config.IFilesProvider;
 import org.valdi.SuperApiX.common.databases.IDatabasesProvider;
-import org.valdi.SuperApiX.common.dependencies.DependencyManager;
+import org.valdi.SuperApiX.common.dependencies.IDependencyManager;
 import org.valdi.SuperApiX.common.logging.SuperLogger;
 import org.valdi.SuperApiX.common.scheduler.SuperScheduler;
 
@@ -98,7 +98,7 @@ public interface StoreLoader {
 	 * Get an active instance of the DependencyManager.
 	 * @return the dependency manager
 	 */
-	DependencyManager getDependencyManager();
+	IDependencyManager getDependencyManager();
 
 	/**
 	 * Get an active instance of the IDatabasesProvider.

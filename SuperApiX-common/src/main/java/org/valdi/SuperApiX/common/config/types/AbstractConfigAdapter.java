@@ -63,8 +63,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 	        try {
                 Files.copy(is, file.toPath());
 	        } catch (NullPointerException | IOException e) {
-	        	loader.getLogger().info("Error on config creating (" + file.getName() + ") > " + e.getMessage());
-	        	e.printStackTrace();
+	        	loader.getLogger().info("Error on config creating (" + file.getName() + ") > ", e);
 				return;
 	        }
 	    }
@@ -79,8 +78,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
     	    	file.getParentFile().mkdirs();
 				file.createNewFile();
 			} catch (IOException e) {
-				loader.getLogger().info("Error on config creating (" + file.getName() + ") > " + e.getMessage());
-	        	e.printStackTrace();
+				loader.getLogger().info("Error on config creating (" + file.getName() + ") > ", e);
 				return;
 			}
 	    }
@@ -96,8 +94,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 			tempFile.deleteOnExit();
 			Files.copy(is, tempFile.toPath());
 		} catch (IOException e) {
-			loader.getLogger().info("Error on temp file creating (" + file.getName() + ") > " + e.getMessage());
-			e.printStackTrace();
+			loader.getLogger().info("Error on temp file creating (" + file.getName() + ") > ", e);
 			return;
 		}
 
@@ -115,8 +112,7 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
 		try {
 			this.root = new ConfigNode(manager.load());
 		} catch (IOException e) {
-			loader.getLogger().info("Error on config loading (" + file.getName() + ") > " + e.getMessage());
-			e.printStackTrace();
+			loader.getLogger().info("Error on config loading (" + file.getName() + ") > ", e);
 		}
 	}
 
@@ -139,10 +135,9 @@ public abstract class AbstractConfigAdapter implements IFileStorage {
         try {
         	manager.save(this.root.getNativeNode());
 		} catch (NullPointerException e) { // Null manager, loadOnly() hasn't been called
-			loader.getLogger().severe("You must load a file before saving! (" + file.getName() + ") > " + e.getMessage());
+			loader.getLogger().severe("You must load a file before saving! (" + file.getName() + ") > ", e);
 		} catch (IOException e) {
-			loader.getLogger().info("Error on config saving (" + file.getName() + ") > " + e.getMessage());
-        	e.printStackTrace();
+			loader.getLogger().info("Error on config saving (" + file.getName() + ") > ", e);
 		}
 	}
 

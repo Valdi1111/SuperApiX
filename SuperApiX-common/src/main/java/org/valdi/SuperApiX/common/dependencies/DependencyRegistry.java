@@ -7,29 +7,31 @@ import org.valdi.SuperApiX.common.databases.StorageType;
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 
 public class DependencyRegistry {
 
-    private static final Map<StorageType, List<Dependency>> STORAGE_DEPENDENCIES = ImmutableMap.<StorageType, List<Dependency>>builder()
-            .put(StorageType.MONGODB, ImmutableList.of(Dependencies.MONGODB_DRIVER))
-            .put(StorageType.MARIADB, ImmutableList.of(Dependencies.MARIADB_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.MYSQL, ImmutableList.of(Dependencies.MYSQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.POSTGRESQL, ImmutableList.of(Dependencies.POSTGRESQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.SQLITE, ImmutableList.of(Dependencies.SQLITE_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.H2, ImmutableList.of(Dependencies.H2_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI))
-            .put(StorageType.CUSTOM, ImmutableList.of())
-            .build();
+    private static final Map<StorageType, List<Dependency>> STORAGE_DEPENDENCIES = new HashMap<StorageType, List<Dependency>>() {
+        {
+            this.put(StorageType.MONGODB, Arrays.asList(Dependencies.MONGODB_DRIVER));
+            this.put(StorageType.MARIADB, Arrays.asList(Dependencies.MARIADB_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI));
+            this.put(StorageType.MYSQL, Arrays.asList(Dependencies.MYSQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI));
+            this.put(StorageType.POSTGRESQL, Arrays.asList(Dependencies.POSTGRESQL_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI));
+            this.put(StorageType.SQLITE, Arrays.asList(Dependencies.SQLITE_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI));
+            this.put(StorageType.H2, Arrays.asList(Dependencies.H2_DRIVER, Dependencies.SLF4J_API, Dependencies.SLF4J_SIMPLE, Dependencies.HIKARI));
+            this.put(StorageType.CUSTOM, Collections.emptyList());
+        }
+    };
 
-    private static final Map<ConfigType, List<Dependency>> CONFIG_DEPENDENCIES = ImmutableMap.<ConfigType, List<Dependency>>builder()
-            .put(ConfigType.YAML, ImmutableList.of(Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_YAML))
-            .put(ConfigType.JSON, ImmutableList.of(Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_GSON))
-            .put(ConfigType.HOCON, ImmutableList.of(Dependencies.HOCON_CONFIG, Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_HOCON))
-            .put(ConfigType.TOML, ImmutableList.of(Dependencies.TOML4J, Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_TOML))
-            .put(ConfigType.CUSTOM, ImmutableList.of())
-            .build();
+    private static final Map<ConfigType, List<Dependency>> CONFIG_DEPENDENCIES = new HashMap<ConfigType, List<Dependency>>() {
+        {
+            this.put(ConfigType.YAML, Arrays.asList(Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_YAML));
+            this.put(ConfigType.JSON, Arrays.asList(Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_GSON));
+            this.put(ConfigType.HOCON, Arrays.asList(Dependencies.HOCON_CONFIG, Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_HOCON));
+            this.put(ConfigType.TOML, Arrays.asList(Dependencies.TOML4J, Dependencies.CONFIGURATE_CORE, Dependencies.CONFIGURATE_TOML));
+            this.put(ConfigType.CUSTOM, Collections.emptyList());
+        }
+    };
 
     public Dependency[] resolveStorageDependencies() {
         Set<Dependency> dependencies = new LinkedHashSet<>();
@@ -53,16 +55,16 @@ public class DependencyRegistry {
     // support for legacy (bukkit 1.7.10)
     public List<Relocation> getLegacyRelocations(Dependency dependency) {
         if (Arrays.asList(RelocationHandler.DEPENDENCIES).contains(dependency)) {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
 
         if (JsonElement.class.getName().startsWith("org.valdi")) {
-            return ImmutableList.of(
+            return Arrays.asList(
                     Relocation.of("guava", "com{}google{}common"),
                     Relocation.of("gson", "com{}google{}gson")
             );
         }
-        return ImmutableList.of();
+        return Collections.emptyList();
     }
 
     private static boolean classExists(String className) {

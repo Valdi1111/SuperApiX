@@ -2,7 +2,6 @@ package org.valdi.SuperApiX.bukkit;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.Plugin;
 import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
 import java.util.Locale;
@@ -160,7 +159,7 @@ public class SuperKey {
     }
 
     public static SuperKey fromMinecraftKey(Object key) {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsManager().getGeneralUtils().map(u -> u.spaceKeyFromMinecraft(key)).orElse(null);
     }
 
     public static SuperKey fromString(String value) {
@@ -176,6 +175,6 @@ public class SuperKey {
     }
 
     public Object toMinecraftKey() {
-        return SuperApiBukkit.getInstance().getNmsProvider().getGeneralUtils().map(u -> u.minecraftKeyFromSpace(this)).orElse(null);
+        return SuperApiBukkit.getInstance().getNmsManager().getGeneralUtils().map(u -> u.minecraftKeyFromSpace(this)).orElse(null);
     }
 }

@@ -8,8 +8,11 @@ import org.valdi.SuperApiX.bukkit.plugin.AbstractBukkitBootstrap;
  * @author Poslovitch
  */
 public class ServerCompatibility {
+    private final AbstractBukkitBootstrap plugin;
 
-    public ServerCompatibility() { }
+    public ServerCompatibility(final AbstractBukkitBootstrap plugin) {
+        this.plugin = plugin;
+    }
 
     // ---- CONTENT ----
 
@@ -19,13 +22,18 @@ public class ServerCompatibility {
 
     private Compatibility result;
 
+    @Deprecated
+    public Compatibility checkCompatibility(AbstractBukkitBootstrap ignored) {
+        return this.checkCompatibility();
+    }
+
     /**
      * Checks the compatibility with the current server software and returns the {@link Compatibility}.
      * Note this is a one-time calculation: further calls won't change the result.
      * @param plugin AbstractBukkitBootstrap instance to provide.
      * @return the {@link Compatibility}.
      */
-    public Compatibility checkCompatibility(AbstractBukkitBootstrap plugin) {
+    public Compatibility checkCompatibility() {
         if (result == null) {
             // Check the server version first
         	Compatibility version = plugin.getVersionCompatibility(getServerVersion(plugin.getServer()));
@@ -63,18 +71,28 @@ public class ServerCompatibility {
         return result;
     }
 
+    @Deprecated
+    public ServerSoftware getServerSoftware(Server ignored) {
+        return this.getServerSoftware();
+    }
+
     /**
      * Returns the {@link ServerSoftware} entry corresponding to the current server software, may be UNKNOWN.
      * @param server the {@link Server} instance, must not be null.
      * @return the {@link ServerSoftware} run by this server or UNKNOWN.
      */
-    public ServerSoftware getServerSoftware(Server server) {
+    public ServerSoftware getServerSoftware() {
         if(serverSoftware == null) {
-            String software = server.getVersion().substring(4).split("-")[0];
+            String software = plugin.getServer().getVersion().substring(4).split("-")[0];
             serverSoftware = ServerSoftware.getById(software.toUpperCase()).orElse(ServerSoftware.UNKNOWN);
         }
 
         return serverSoftware;
+    }
+
+    @Deprecated
+    public ServerVersion getServerVersion(Server ignored) {
+        return this.getServerVersion();
     }
 
     /**
@@ -82,13 +100,18 @@ public class ServerCompatibility {
      * @param server the {@link Server} instance, must not be null.
      * @return the {@link ServerVersion} run by this server or UNKNOWN.
      */
-    public ServerVersion getServerVersion(Server server) {
+    public ServerVersion getServerVersion() {
         if(serverVersion == null) {
-            String version = server.getBukkitVersion().split("-")[0].replace(".", "_");
+            String version = plugin.getServer().getBukkitVersion().split("-")[0].replace(".", "_");
             serverVersion = ServerVersion.getById("v" + version).orElse(ServerVersion.UNKNOWN);
         }
 
         return serverVersion;
+    }
+
+    @Deprecated
+    public MinecraftVersion getMinecraftVersion(Server ignored) {
+        return this.getMinecraftVersion();
     }
 
     /**
@@ -96,9 +119,9 @@ public class ServerCompatibility {
      * @param server the {@link Server} instance, must not be null.
      * @return the {@link MinecraftVersion} run by this server or UNKNOWN.
      */
-    public MinecraftVersion getMinecraftVersion(Server server) {
+    public MinecraftVersion getMinecraftVersion() {
         if(minecraftVersion == null) {
-            String version = server.getClass().getPackage().getName().replace(".", ",").split(",")[3];
+            String version = plugin.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
             minecraftVersion = MinecraftVersion.getById(version).orElse(MinecraftVersion.UNKNOWN);
         }
 

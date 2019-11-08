@@ -4,8 +4,6 @@ import java.util.*;
 
 import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
 
-import com.google.common.collect.ImmutableList;
-
 public class Dependency {
     private final String id;
     private final String url;
@@ -22,7 +20,7 @@ public class Dependency {
         this.version = version;
         this.checksum = Base64.getDecoder().decode(checksum);
         this.autoLoad = autoLoad;
-        this.relocations = ImmutableList.copyOf(relocations);
+        this.relocations = new ArrayList<>(relocations);
     }
 
     private static String rewriteEscaping(String s) {
@@ -75,6 +73,9 @@ public class Dependency {
         private boolean autoLoad = true;
         private List<Relocation> relocations = new ArrayList<>();
 
+        private boolean rewriteGroup = true;
+        private boolean rewriteArtifact = true;
+
         public Builder(String id) {
             this.id = id;
         }
@@ -114,12 +115,22 @@ public class Dependency {
             return this;
         }
 
+        public Builder setRewriteGroup(boolean rewriteGroup) {
+            this.rewriteGroup = rewriteGroup;
+            return this;
+        }
+
+        public Builder setRewriteArtifact(boolean rewriteArtifact) {
+            this.rewriteArtifact = rewriteArtifact;
+            return this;
+        }
+
         public Dependency build() {
             return new Dependency(id, String.format(url,
-                    rewriteEscaping(groupId).replace(".", "/"),
-                    rewriteEscaping(artifactId),
+                    rewriteGroup ? rewriteEscaping(groupId).replace(".", "/") : groupId,
+                    rewriteArtifact ? rewriteEscaping(artifactId) : artifactId,
                     version,
-                    rewriteEscaping(artifactId),
+                    rewriteArtifact ? rewriteEscaping(artifactId) : artifactId,
                     version),
                     version, checksum, autoLoad, relocations);
         }

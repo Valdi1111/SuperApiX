@@ -30,6 +30,10 @@ public class SimpleScheduler implements SuperScheduler {
     private SuperAsyncDebugger debugTail;
 
     public SimpleScheduler(StoreLoader plugin) {
+        this(plugin, plugin.getName() + " Thread - %d");
+    }
+
+    public SimpleScheduler(StoreLoader plugin, String name) {
         this.plugin = plugin;
 
         this.ids = new AtomicInteger(1);
@@ -46,7 +50,7 @@ public class SimpleScheduler implements SuperScheduler {
         this.runners = new ConcurrentHashMap<>();
         this.currentTask = null;
         this.currentTick = -1;
-        this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(plugin.getName() + " Thread - %d").build());
+        this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(name).build());
         this.debugHead = new SuperAsyncDebugger(-1, null, null) {
             @Override
             public StringBuilder debugTo(StringBuilder string) {

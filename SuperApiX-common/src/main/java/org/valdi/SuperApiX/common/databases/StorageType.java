@@ -1,8 +1,7 @@
 package org.valdi.SuperApiX.common.databases;
 
+import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.collect.ImmutableList;
 
 public enum StorageType {
 
@@ -24,7 +23,7 @@ public enum StorageType {
 
     private StorageType(String name, String... identifiers) {
         this.name = name;
-        this.identifiers = ImmutableList.copyOf(identifiers);
+        this.identifiers = Arrays.asList(identifiers);
     }
 
     /**

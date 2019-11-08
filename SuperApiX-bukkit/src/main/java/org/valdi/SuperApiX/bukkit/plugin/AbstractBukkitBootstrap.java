@@ -60,7 +60,7 @@ public abstract class AbstractBukkitBootstrap<T extends AbstractBukkitPlugin> ex
         this.logger = new BukkitPluginLogger(getLogger());
         this.classLoader = new ReflectionClassLoader(this);
         
-        this.compatibility = new ServerCompatibility();
+        this.compatibility = new ServerCompatibility(this);
         this.compatibleSoftwares = new HashMap<>();
         this.compatibleVersions = new HashMap<>();
         this.compatibleMinecrafts = new HashMap<>();

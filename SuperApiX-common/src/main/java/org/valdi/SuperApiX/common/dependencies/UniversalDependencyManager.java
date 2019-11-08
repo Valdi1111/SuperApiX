@@ -1,78 +1,46 @@
 package org.valdi.SuperApiX.common.dependencies;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.io.ByteStreams;
+import org.valdi.SuperApiX.common.dependencies.classloader.IsolatedClassLoader;
+import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
+import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
+import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
+import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
+import org.valdi.SuperApiX.common.logging.SuperLogger;
+import org.valdi.SuperApiX.common.plugin.StoreLoader;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.valdi.SuperApiX.common.dependencies.classloader.PluginClassLoader;
-import org.valdi.SuperApiX.common.dependencies.classloader.ReflectionClassLoader;
-import org.valdi.SuperApiX.common.logging.SuperLogger;
-import org.valdi.SuperApiX.common.plugin.ISuperBootstrap;
-import org.valdi.SuperApiX.common.dependencies.classloader.IsolatedClassLoader;
-import org.valdi.SuperApiX.common.dependencies.relocation.Relocation;
-import org.valdi.SuperApiX.common.dependencies.relocation.RelocationHandler;
-import org.valdi.SuperApiX.common.plugin.StoreLoader;
-
-/**
- * Responsible for loading runtime dependencies.
- */
-public class DependencyManager implements IDependencyManager {
-    private ISuperBootstrap bootstrap;
+public class UniversalDependencyManager implements IDependencyManager {
     private StoreLoader loader;
     private final MessageDigest digest;
     private final DependencyRegistry registry;
     private final Map<Dependency, File> loaded = new HashMap<>();
-    private final Map<ImmutableSet<Dependency>, IsolatedClassLoader> loaders = new HashMap<>();
+    private final Map<Set<Dependency>, IsolatedClassLoader> loaders = new HashMap<>();
     private RelocationHandler relocator = null;
 
-    private static DependencyManager instance;
+    private static UniversalDependencyManager instance;
 
-    public static DependencyManager getInstance() {
+    public static UniversalDependencyManager getInstance() {
         return instance;
     }
 
-    public static DependencyManager init(ISuperBootstrap bootstrap) {
+    public static UniversalDependencyManager init(StoreLoader loader) {
         if(instance != null) {
             throw new RuntimeException("DependencyManager cannot be redefined!");
         }
 
-        instance = new DependencyManager(bootstrap);
+        instance = new UniversalDependencyManager(loader);
         return getInstance();
     }
 
-    public static DependencyManager init(StoreLoader loader) {
-        if(instance != null) {
-            throw new RuntimeException("DependencyManager cannot be redefined!");
-        }
-
-        instance = new DependencyManager(loader);
-        return getInstance();
-    }
-
-    private DependencyManager(ISuperBootstrap bootstrap) {
-        this();
-        this.bootstrap = bootstrap;
-    }
-
-    private DependencyManager(StoreLoader loader) {
-        this();
+    private UniversalDependencyManager(StoreLoader loader) {
         this.loader = loader;
-    }
-
-    private DependencyManager() {
         try {
             this.digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -90,7 +58,7 @@ public class DependencyManager implements IDependencyManager {
 
     @Override
     public IsolatedClassLoader obtainClassLoaderWith(Dependency... dependencies) {
-        ImmutableSet<Dependency> set = ImmutableSet.copyOf(dependencies);
+        Set<Dependency> set = new HashSet<>(Arrays.asList(dependencies));
 
         for (Dependency dependency : dependencies) {
             if (!this.loaded.containsKey(dependency)) {
@@ -123,7 +91,7 @@ public class DependencyManager implements IDependencyManager {
 
     private File getSaveDirectory(File saveFolder, boolean createSub) {
         if(saveFolder == null) {
-            saveFolder = bootstrap == null ? loader.getDataFolder() : bootstrap.getDataFolder();
+            saveFolder = loader.getDataFolder();
             createSub = true;
         }
 
@@ -150,10 +118,10 @@ public class DependencyManager implements IDependencyManager {
     @Override
     public void loadDependencies(SuperLogger logger, PluginClassLoader classLoader, File folder, boolean createSub, Dependency... dependencies) {
         if(logger == null) {
-            logger = bootstrap == null ? loader.getLogger() : bootstrap.getPluginLogger();
+            logger = loader.getLogger();
         }
         if(classLoader == null) {
-            classLoader = bootstrap == null ? new ReflectionClassLoader(loader) : bootstrap.getPluginClassLoader();
+            classLoader = new ReflectionClassLoader(loader);
         }
 
         File saveFolder = getSaveDirectory(folder, createSub);
@@ -182,7 +150,7 @@ public class DependencyManager implements IDependencyManager {
             try {
                 // apply remap rules
                 List<Relocation> relocations = new ArrayList<>(source.getDependency().getRelocations());
-                relocations.addAll(registry.getLegacyRelocations(source.getDependency()));
+                //relocations.addAll(registry.getLegacyRelocations(source.getDependency()));
 
                 if (relocations.isEmpty()) {
                     remappedJars.add(source);
@@ -242,7 +210,7 @@ public class DependencyManager implements IDependencyManager {
         try (InputStream in = url.openStream()) {
 
             // download the jar content
-            byte[] bytes = ByteStreams.toByteArray(in);
+            byte[] bytes = toByteArray(in);
             if (bytes.length == 0) {
                 throw new RuntimeException("Empty stream");
             }
@@ -272,4 +240,24 @@ public class DependencyManager implements IDependencyManager {
         return file;
     }
 
+    /**
+     * Reads all bytes from an input stream into a byte array.
+     * Does not close the stream.
+     *
+     * @param in the input stream to read from
+     * @return a byte array containing all the bytes from the stream
+     * @throws IOException if an I/O error occurs
+     */
+    public static byte[] toByteArray(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        while (true) {
+            int r = in.read(buf);
+            if (r == -1) {
+                break;
+            }
+            out.write(buf, 0, r);
+        }
+        return out.toByteArray();
+    }
 }

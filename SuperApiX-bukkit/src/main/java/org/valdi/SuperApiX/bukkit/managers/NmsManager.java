@@ -1,24 +1,23 @@
-package org.valdi.SuperApiX.bukkit.nms.core;
+package org.valdi.SuperApiX.bukkit.managers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.valdi.SuperApiX.bukkit.SuperApiBukkit;
 import org.valdi.SuperApiX.bukkit.nms.base.*;
+import org.valdi.SuperApiX.bukkit.nms.core.NmsComponent;
 import org.valdi.SuperApiX.bukkit.versions.MinecraftVersion;
 
-public class NmsProvider {
+public class NmsManager {
 	public static final String PACKAGE = "org.valdi.SuperApiX.bukkit.nms.%1$s.%2$s";
 
 	private final SuperApiBukkit plugin;
 	
-	private List<NmsComponent> components;
+	private Set<NmsComponent> components;
 	
-	public NmsProvider(final SuperApiBukkit plugin) {
+	public NmsManager(final SuperApiBukkit plugin) {
 		this.plugin = plugin;
 		
-		this.components = new ArrayList<>();
+		this.components = new HashSet<>();
 		this.components.add(new NmsComponent<>("ACTIONBAR", "ActionBar", IActionBar.class));
 		this.components.add(new NmsComponent<>("TITLE", "Title", ITitle.class));
 		this.components.add(new NmsComponent<>("TABLIST", "TabList", ITabList.class));
@@ -32,7 +31,7 @@ public class NmsProvider {
 		this.setupProviders();
 	}
 	
-	public void setupProviders() {
+	private void setupProviders() {
 		MinecraftVersion version = plugin.getBootstrap().getServerCompatibility().getMinecraftVersion(plugin.getServer());
 		if(version == MinecraftVersion.UNKNOWN) {
 			plugin.getLogger().severe("Cannot provide support for this nms version... Using bukkit handler, some methods won't work.");
@@ -43,9 +42,8 @@ public class NmsProvider {
 			try {
 				component.setupProvider(plugin, version);
 			} catch(Exception e) {
-				e.printStackTrace();
 				plugin.getLogger().severe("Error initializing " + component.getSuperName() + " provider class...");
-				plugin.getLogger().severe("Try updating SuperApiX!");
+				plugin.getLogger().severe("Try updating SuperApiX!", e);
 			}
 		}
 	}
