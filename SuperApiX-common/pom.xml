@@ -28,14 +28,8 @@
             <version>2.12.1</version>
             <scope>provided</scope>
         </dependency>
-    	
-    	<dependency>
-		  	<groupId>org.valdi</groupId>
-		  	<artifactId>SuperApiX-annotations</artifactId>
-		  	<version>1.0.1-BETA</version>
-    	</dependency>
         
-        <!-- guava -->
+        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -43,14 +37,14 @@
 		  	<scope>provided</scope>
         </dependency>
 		
-        <!-- gson -->
+        <!-- Gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.7</version>
 		  	<scope>provided</scope>
         </dependency>
-        
+
         <!-- SnakeYAML -->
         <dependency>
             <groupId>org.yaml</groupId>
@@ -59,7 +53,7 @@
 		  	<scope>provided</scope>
         </dependency>
 
-        <!-- configurate -->
+        <!-- Configurate -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-core</artifactId>
@@ -73,7 +67,7 @@
             </exclusions>
         </dependency>
         
-        <!-- configurate yaml -->
+        <!-- Configurate yaml -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-yaml</artifactId>
@@ -87,7 +81,7 @@
             </exclusions>
         </dependency>
         
-        <!-- configurate gson -->
+        <!-- Configurate gson -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-gson</artifactId>
@@ -101,7 +95,7 @@
             </exclusions>
         </dependency>
         
-        <!-- configurate hocon -->
+        <!-- Configurate hocon -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-hocon</artifactId>
@@ -109,7 +103,7 @@
 		  	<scope>provided</scope>
         </dependency>
         
-        <!-- configurate toml -->
+        <!-- Configurate toml -->
         <dependency>
             <groupId>me.lucko.configurate</groupId>
             <artifactId>configurate-toml</artifactId>
@@ -122,54 +116,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
-		<!-- SqLite -->
-		<dependency>
-		    <groupId>org.xerial</groupId>
-		    <artifactId>sqlite-jdbc</artifactId>
-		    <version>3.23.1</version>
-		  	<scope>provided</scope>
-		</dependency>
-		
-		<!-- H2 -->
-		<dependency>
-		    <groupId>com.h2database</groupId>
-		    <artifactId>h2</artifactId>
-		    <version>1.4.197</version>
-		  	<scope>provided</scope>
-		</dependency>
-		
-		<!-- Mongodb -->
-		<dependency>
-		    <groupId>org.mongodb</groupId>
-		    <artifactId>mongo-java-driver</artifactId>
-		    <version>3.8.0</version>
-		  	<scope>provided</scope>
-		</dependency>
-				
-		<!-- Mariadb -->
-		<dependency>
-		    <groupId>org.mariadb.jdbc</groupId>
-		    <artifactId>mariadb-java-client</artifactId>
-		    <version>1.1.7</version>
-		  	<scope>provided</scope>
-		</dependency>
-			    
-	    <!-- MySql -->
-		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>8.0.11</version>
-		  	<scope>provided</scope>
-		</dependency>
-		
-		<!-- PostgreSql -->
-		<dependency>
-		    <groupId>postgresql</groupId>
-		    <artifactId>postgresql</artifactId>
-		    <version>9.1-901-1.jdbc4</version>
-		  	<scope>provided</scope>
-		</dependency>
         
         <!-- HikariCP -->
         <dependency>
@@ -179,7 +125,7 @@
 		  	<scope>provided</scope>
         </dependency>
 
-        <!-- text -->
+        <!-- Text -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>text</artifactId>
@@ -211,7 +157,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
-
     </dependencies>
   
   	<build>
@@ -220,7 +165,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <targetPath></targetPath>
+                <targetPath>.</targetPath>
             </resource>
         </resources>
         <plugins>
