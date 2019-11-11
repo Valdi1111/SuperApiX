@@ -38,7 +38,13 @@
 	     	<type>javadoc</type>
 		  	<scope>provided</scope>
 	   	</dependency>
-	   	
+
+		<!-- SuperApiX -->
+		<dependency>
+			<groupId>org.valdi</groupId>
+			<artifactId>SuperApiX-annotations</artifactId>
+			<version>1.0.1-BETA</version>
+		</dependency>
 	   	<dependency>
 		  	<groupId>org.valdi</groupId>
 		  	<artifactId>SuperApiX-common</artifactId>
